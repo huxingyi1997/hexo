@@ -1,0 +1,67 @@
+// Custom styles.
+code {
+    color: #ff7600;
+    background: #fbf7f8;
+    margin: 2px;
+}
+// 大代码块的自定义样式
+.highlight, pre {
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 3px;
+}
+.highlight, code, pre {
+    border: 1px solid #d6d6d6;
+}
+// 文章内链接文本样式
+.post-body a {
+	// 链接文字颜色
+	color: #0593d3;
+	// 去掉下划线：下划线效果是用下边框实现的，去掉即可
+	// border-bottom: none;
+    text-decoration: none;
+
+	&:hover {
+		// 鼠标悬停时链接文字颜色
+		color: #fc6423; 
+	}
+}
+// 主页文章添加阴影效果
+.post-block {
+    margin-top: 60px;
+    margin-bottom: 60px;
+    padding: 25px;
+    -webkit-box-shadow: 0 0 5px rgba(202, 203, 203, .5);
+    -moz-box-shadow: 0 0 5px rgba(202, 203, 204, .5);
+}
+// 修改背景样式
+@media screen and (min-width:1200px) {
+    body {
+        background-image:url(https://source.unsplash.com/random/1600x900);      //这一行的括号里填背景图片的路径，将图片重命名为background.jpg放在\themes\next\source\images下
+        // background-image:url(/images/background.jpg);      //这一行的括号里填背景图片的路径，将图片重命名为background.jpg放在\themes\next\source\images下
+        background-repeat: no-repeat;
+        background-attachment:fixed;
+        background-position:50% 50%;
+        background-size:100% 100%;
+    }
+
+    #footer a {
+        coler: #eee;
+    }
+
+    .content-wrap {
+        opacity: 0.9;
+    }
+
+    .sidebar {
+        opacity: 0.9;
+    }
+
+    .header-inner {
+        background: rgba(255,255,255,0.9);
+    }
+
+    .popup {
+        opacity: 0.9;
+    }
+}
