@@ -24,7 +24,7 @@ tags:
 
 那么接下来我们就开始初始化项目吧！
 
-项目发布在我的[github](https://github.com/huxingyi1997/ts-axios)和[gitee](https://gitee.com/hxy1997/ts-axios)上了。想要看分页文档可以参考[TypeScript 从零实现 axios](https://hxy1997.xyz/ts-axios-doc/)，这个使用了Vue-press框架，看起来更舒服。
+项目发布在我的[github](https://github.com/huxingyi1997/ts-axios)和[gitee](https://gitee.com/hxy1997/ts-axios)上了，可以直接看README.md说明部分使用。想要看分页文档可以参考[TypeScript 从零实现 axios](https://hxy1997.xyz/ts-axios-doc/)，这个使用了Vue-press框架，看起来更舒服。
 
 <!-- more -->
 
@@ -7630,8 +7630,6 @@ describe('xsrf', () => {
 
 注意在 `afterEach` 函数中我们清空了 `xsrf` 相关的 cookie。
 
-
-
 ## 36.4 上传下载模块单元测试
 
 上传下载模块允许我们监听上传和下载的进度，我们需要为其编写单元测试。
@@ -8246,36 +8244,60 @@ a {
 
 我们需要先执行 `npm install ts-axios-hxy` 安装 `ts-axios` 库，然后修改代码。
 
-`api/helpers.js`：
+只需要把所有的
+
+```javascript
+import axios from 'axios'
+```
+
+修改为
 
 ```javascript
 import axios from 'ts-axios-hxy'
-
-const urlMap = {
-  development: '/',
-  production: 'http://ustbhuangyi.com/sell/'
-}
-const baseUrl = urlMap[process.env.NODE_ENV]
-const ERR_OK = 0
-
-export function get(url) {
-  return function(params = {}) {
-    return axios.get(baseUrl + url, {
-      params
-    }).then((res) => {
-      const {errno, data} = res.data
-      if (errno === ERR_OK) {
-        return data
-      }
-    }).catch((e) => {
-    })
-  }
-}
-
 ```
 
-只需要把 `import axios from 'axios'` 修改为 `import axios from 'ts-axios-new'` 即可。
+以及使用cdn的
+
+`public/index.html`
+
+中的cdn链接替换为
+
+```html
+<script src="https://unpkg.com/ts-axios-hxy/dist/axios.es5.js" type="module"></script>
+```
+
+即可。
 
 接着运行项目，我们发现项目可以成功运行，因为我们实现了`axios` 在浏览器端的所有功能，所以可以放心的做替换。
 
 至此，我们就完成了 `ts-axios` 库的开发、测试、编译、发布和引用。课程到这里也就告一段落了，下一章我们会对整个课程做总结与展望。
+
+
+
+# 课程回顾与总结(原作者的话)
+
+这节课我们主要是对课程做回顾与总结，总共分为以下几个方面。
+
+- TypeScript 基础知识
+
+希望同学们学习后能掌握 TypeScript 的基础语法知识，并能灵活运用在实际项目中。学这部分知识除了看课程视频外，一定要多去翻 TypeScript 的官网文档（英文）。另外，对于一些课程中没有提到的语法知识，感兴趣的同学可以做延伸学习，并了解它们的使用场景。
+
+- ts-axios 实战
+
+希望同学们学习后不仅能学会使用 TypeScript 做开发，还要对 axios 的实现原理，接触到的 HTTP 等知识做巩固学习。课程文档中有很多文档链接，希望同学们可以对这些知识做延伸学习，查漏补缺。另外，同学们要学会模块化地编程思想，要学会写干净的代码，把一些编程技巧和思想运用在自己的实际工作中。
+
+- 单元测试
+
+希望同学们可以学会单元测试的编写，并养成写测试的习惯。另外可以对 Jest 测试框架做进一步延伸学习，并尝试在自己的项目中编写测试。
+
+- 编译和部署
+
+希望同学们可以对编译和部署的流程了解，掌握 webpack、rollup 等打包工具。并尝试在自己的项目中编写部署脚本，争取做到一键发布。
+
+- 课程展望
+
+未来我会开发 jest-ajax 插件，会以文章的方式告诉大家如何编写 Jest 的插件，并替换 jasmine-ajax 插件。另外也会更新 ts-axios 在 node.js 端的实现，会更新视频和电子书。
+
+另外如果对 Vue.js 开发感兴趣的同学，也可以关注我的 Vue 三部曲：[Vue.js2.5+cube-ui重构饿了么App（中级）](https://coding.imooc.com/class/74.html)   -> [Vue2.0开发企业级移动端音乐Web App（高级）](https://coding.imooc.com/class/107.html) -> [Vue.js源码全方位深入解析（高级）](https://coding.imooc.com/class/228.html)。未来随着 Vue.js 升级到 3.0，这些课程也会做同步更新（音乐课程和源码课程会重新录制），所以完全不用担心版本升级问题，也希望大家都能够支持我的正版课程。
+
+最后，祝愿同学们都能学有所成，精进技术，少加班，拿高薪。
