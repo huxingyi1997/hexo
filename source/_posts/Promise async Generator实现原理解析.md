@@ -107,13 +107,9 @@ p1.then(res => console.log(res))
 > 1. Promise本质是一个状态机，且状态只能为以下三种：`Pending（等待态）`、`Fulfilled（执行态）`、`Rejected（拒绝态）`，状态的变更是单向的，只能从Pending -> Fulfilled 或 Pending -> Rejected，状态变更不可逆
 > 2. `then方法`接收两个可选参数，分别对应状态改变时触发的回调。then方法返回一个promise。then 方法可以被同一个 promise 调用多次。
 
-
-
-![img](https://user-gold-cdn.xitu.io/2018/2/26/161d2454e68ff07b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210518223054.webp)
 
 根据规范，我们补充一下Promise的代码：
-
-
 
 ```js
 //Promise/A+规范的三种状态
@@ -754,6 +750,8 @@ class MyPromise {
 
 洋洋洒洒150多行的代码，到这里，我们终于可以给Promise的实现做一个结尾了。我们从一个最简单的Promise使用实例开始，通过对调用流程的分析，根据观察者模式实现了Promise的大致骨架，然后依据Promise/A+规范填充代码，重点实现了then 的链式调用，最后完成了Promise的静态/实例方法。其实Promise实现在整体上并没有太复杂的思想，但我们日常使用的时候往往忽略了很多Promise细节，因而很难写出一个符合规范的Promise实现，源码的实现过程，其实也是对Promise使用细节重新学习的过程。
 
+
+
 # async/await实现
 
 虽然前边花了这么多篇幅讲Promise的实现，不过探索`async/await`暂停执行的机制才是我们的初衷，下面我们就来进入这一块的内容。同样地，开头我们点一下async/await的使用意义。 在多个回调依赖的场景中，尽管Promise通过链式调用取代了回调嵌套，但过多的链式调用可读性仍然不佳，流程控制也不方便，ES7 提出的async 函数，终于让 JS 对于异步操作有了终极解决方案，简洁优美地解决了以上两个问题。
@@ -824,6 +822,8 @@ gen.next('test3')
 - `await`能够返回Promise的resolve/reject的值
 
 **我们对async/await的实现，其实也就是对应以上三点封装Generator**
+
+
 
 ## 1.自动执行
 
@@ -906,6 +906,8 @@ run(myGenerator)
 这样我们就初步实现了一个`async/await`。上边的代码只有五六行，但并不是一下就能看明白的，我们之前用了四个例子来做铺垫，也是为了让读者更好地理解这段代码。 简单来说，我们封装了一个run方法，run方法里我们把执行下一步的操作封装成`_next()`，每次Promise.then()的时候都去执行`_next()`，实现自动迭代的效果。在迭代的过程中，我们还把resolve的值传入`gen.next()`，使得yield得以返回Promise的resolve的值
 
 > 这里插一句，是不是只有`.then方法`这样的形式才能完成我们自动执行的功能呢？答案是否定的，yield后边除了接Promise，还可以接`thunk函数`，thunk函数不是一个新东西，所谓thunk函数，就是**单参的只接受回调的函数**，详细介绍可以看[阮一峰Thunk 函数的含义和用法](https://user-gold-cdn.xitu.io/2020/3/15/170dc5e88df6c208)，无论是Promise还是thunk函数，其核心都是通过**传入回调**的方式来实现Generator的自动执行。thunk函数只作为一个拓展知识，理解有困难的同学也可以跳过这里，并不影响后续理解。
+
+
 
 ## 2.返回Promise & 异常处理
 
@@ -1026,6 +1028,8 @@ foo().then(res => {
 
 有关`async/await`的实现，到这里就告一段落了。但是直到结尾，我们也不知道await到底是如何暂停执行的，有关await暂停执行的秘密，我们还要到Generator的实现中去寻找答案
 
+
+
 # Generator实现
 
 我们从一个简单的Generator使用实例开始，一步步探究Generator的实现原理：
@@ -1086,6 +1090,8 @@ console.log(gen.next().value);
 
 > 个人觉得啃源码的效果不是很好，建议读者拉到末尾先看结论和简略版实现，源码作为一个补充理解
 
+
+
 ## regeneratorRuntime.mark()
 
 `regeneratorRuntime.mark(foo)`这个方法在第一行被调用，我们先看一下runtime里mark()方法的定义
@@ -1100,6 +1106,8 @@ runtime.mark = function(genFun) {
 ```
 
 这里边`GeneratorFunctionPrototype`和`Gp`我们都不认识，他们被定义在runtime里，不过没关系，我们只要知道`mark()方法`为生成器函数（foo）绑定了一系列原型就可以了，这里就简单地过了
+
+
 
 ## regeneratorRuntime.wrap()
 
@@ -1220,6 +1228,8 @@ function defineIteratorMethods(prototype) {
 defineIteratorMethods(Gp);
 ```
 
+
+
 ## 低配实现 & 调用流程分析
 
 这么一遍源码下来，估计很多读者还是懵逼的，毕竟源码中纠集了很多概念和封装，一时半会不好完全理解，让我们跳出源码，实现一个简单的Generator，然后再回过头看源码，会得到更清晰的认识
@@ -1291,6 +1301,8 @@ g.next()  // {value: undefined, done: true}
 4. 当生成器函数运行到末尾（没有下一个yield或已经return），switch匹配不到对应代码块，就会return空值，这时`g.next()`返回`{value: undefined, done: true}`
 
 从中我们可以看出，**Generator实现的核心在于`上下文的保存`，函数并没有真的被挂起，每一次yield，其实都执行了一遍传入的生成器函数，只是在这个过程中间用了一个context对象储存上下文，使得每次执行生成器函数的时候，都可以从上一个执行结果开始执行，看起来就像函数被挂起了一样**
+
+
 
 # 总结 & 致谢
 

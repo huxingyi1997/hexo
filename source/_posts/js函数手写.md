@@ -3515,7 +3515,7 @@ function conver(data) {
     }
 }
 ```
-代码有小错，面试官放我过了，毕竟总算搞对了私立，将代码进行纠错和改进，能正常使用了
+代码有小错，面试官放我过了，毕竟总算搞对了思路，将代码进行纠错和改进，能正常使用了
 ```
 const data = [
     { id: 10, parentId: 0, text: "一级菜单-1" }, 
@@ -3949,7 +3949,7 @@ babel的转化，其实只实现了第2、3、5点
 
 ### 在ES5环境下实现const
 
-由于ES5环境没有`block`的概念，所以是无法百分百实现`const`，只能是挂载到某个对象下，要么是全局的`windo`w，要么就是自定义一个`object`来当容器对于const不可修改的特性，我们通过设置writable属性来实现
+由于ES5环境没有`block`的概念，所以是无法百分百实现`const`，只能是挂载到某个对象下，要么是全局的`window`，要么就是自定义一个`object`来当容器对于const不可修改的特性，我们通过设置writable属性来实现
 
 ```
 var _const = function __const (data, value) {
@@ -4187,7 +4187,7 @@ function random(m, n) {
 }
 
 for (let i = 0; i < 10; i++) {
-	console.log(random(28,45));
+	console.log(random(28, 45));
 }
 ```
 
