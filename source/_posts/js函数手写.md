@@ -922,7 +922,7 @@ function myInstanceof(target, origin){
 
 先总结一下判断一个数据是否是一个数组
 
-```
+```js
 Array.isArray(arr);
 arr instanceof Array;
 arr.constructor === Array;
@@ -931,7 +931,7 @@ Object.prototype.toString.call(arr) === '[object Array]';
 
 测试一下结果
 
-```
+```js
 let arr = [];
 console.log(Array.isArray(arr)); // true
 console.log(arr instanceof Array); // true
@@ -941,7 +941,7 @@ console.log(Object.prototype.toString.call(arr) === '[object Array]'); // true
 
 ### 使用toString实现Array.isArray
 
-```
+```js
 Array.myIsArray = function(obj) {
 	return Object.prototype.toString.call(Object(obj)) === '[object Array]';
 }
@@ -951,7 +951,7 @@ console.log(Array.myIsArray([])); // true
 
 ### 使用instanceof实现Array.isArray
 
-```
+```js
 Array.myIsArray = function(obj) {
 	return obj instanceof Array;
 }
@@ -961,7 +961,7 @@ console.log(Array.myIsArray([])); // true
 
 ### 使用constructor实现Array.isArray
 
-```
+```js
 Array.myIsArray = function(obj) {
 	return obj.constructor === Array;
 }
@@ -1002,14 +1002,14 @@ console.log(getType(new Date())); // -> date
 
 ### 浅拷贝
 
-```
+```js
 arr.slice();
 arr.concat();
 ```
 
 ### 深拷贝极简版
 
-```
+```js
 JSON.parse(JSON.stringify(obj))
 ```
 
@@ -1053,7 +1053,7 @@ console.log(res.target);
 
 考虑到数组和对象
 
-```
+```js
 function deepCopy(obj) {
 	let res;
 	// 判断是否是引用类型，特别注意typeof null === "object"
@@ -1076,7 +1076,7 @@ function deepCopy(obj) {
 
 上述版本执行下面这样一个测试用例：
 
-```javascript
+```js
 function deepCopy(obj) {
 	let res;
 	// 判断是否是引用类型，特别注意typeof null === "object"
@@ -1120,7 +1120,7 @@ console.log(res.target);
 - 没有 - 将当前对象作为`key`，克隆对象作为`value`进行存储
 - 继续克隆
 
-```javascript
+```js
 function deepCopy(obj, map = new Map()) {
 	let res;
 	// 判断是否是引用类型，特别注意typeof null === "object"
@@ -1159,7 +1159,7 @@ console.log(res.target);
 
 接下来，可以使用 `WeakMap`替代 `Map`。
 
-```javascript
+```js
 function deepCopy(obj, map = new WeakMap()) {
     // ...
 };
@@ -1179,7 +1179,7 @@ function deepCopy(obj, map = new WeakMap()) {
 
 如果我们使用 `Map`的话，那么对象间是存在强引用关系的：
 
-```javascript
+```js
 let obj = { name : 'ConardLi'}
 const target = {
     obj:'code秘密花园'
@@ -1191,7 +1191,7 @@ obj = null;
 
 再来看 `WeakMap`：
 
-```javascript
+```js
 let obj = { name : 'ConardLi'}
 const target = new WeakMap();
 target.set(obj,'code秘密花园');
@@ -1214,7 +1214,7 @@ obj = null;
 
 我们先使用 `while`来实现一个通用的 `forEach`遍历， `iteratee`是遍历的回调函数，它可以接收每次遍历的 `value`和 `index`两个参数：
 
-```javascript
+```js
 function forEach(array, iteratee) {
     let index = -1;
     const length = array.length;
@@ -1227,7 +1227,7 @@ function forEach(array, iteratee) {
 
 下面对我们的 `deepCopy`函数进行改写：当遍历数组时，直接使用 `forEach`进行遍历，当遍历对象时，使用 `Object.keys`取出所有的 `key`进行遍历，然后在遍历时把 `forEach`会调函数的 `value`当作 `key`使用：
 
-```javascript
+```js
 function forEach(array, iteratee) {
     let index = -1;
     const length = array.length;
@@ -1284,7 +1284,7 @@ console.log(res.target);
 
 首先，判断是否为引用类型，我们还需要考虑 `function`和 `null`两种特殊的数据类型：
 
-```javascript
+```js
 function isObject(obj) {
     const type = typeof obj;
     return obj !== null && (type === 'object' || type === 'function');
@@ -1305,7 +1305,7 @@ if (!isObject(obj)) {
 
 我们可以直接调用 `Object`原型上未被覆盖的 `toString()`方法，使用 `call`来改变 `this`指向来达到我们想要的效果。
 
-```javascript
+```js
 function getType(target) {
     return Object.prototype.toString.call(target);
 }
@@ -1315,7 +1315,7 @@ function getType(target) {
 
 下面我们抽离出一些常用的数据类型以便后面使用：
 
-```javascript
+```js
 const mapTag = '[object Map]';
 const setTag = '[object Set]';
 const arrayTag = '[object Array]';
@@ -1348,7 +1348,7 @@ const symbolTag = '[object Symbol]';
 
 下面，我们改写 `clone`函数，对可继续遍历的数据类型进行处理：
 
-```javascript
+```js
 const getType = obj => Object.prototype.toString.call(obj);
 
 const mapTag = '[object Map]';
@@ -1447,7 +1447,7 @@ console.log(res.map === target.map);
 
 `Bool`、 `Number`、 `String`、 `String`、 `Date`、 `Error`这几种类型我们都可以直接用构造函数和原始数据创建一个新对象：
 
-```javascript
+```js
 const boolTag = '[object Boolean]';
 const numberTag = '[object Number]';
 const stringTag = '[object String]';
@@ -1482,7 +1482,7 @@ function cloneNotTraverse(obj, tag) {
 
 克隆 `Symbol`类型：
 
-```javascript
+```js
 function cloneSymbol(obj) {
     return Object(Symbol.prototype.valueOf.call(obj));
 }
@@ -1490,7 +1490,7 @@ function cloneSymbol(obj) {
 
 克隆正则：
 
-```
+```js
 function cloneRegExp(obj) {
     const { source, flags } = obj;
     return new obj.constructor(source, flags);
@@ -1564,7 +1564,7 @@ function cloneRegExp(obj) {
 
 最后，我把克隆函数单独拎出来了，实际上克隆函数是没有实际应用场景的，两个对象使用一个在内存中处于同一个地址的函数也是没有任何问题的，我特意看了下 `lodash`对函数的处理：
 
-```javascript
+```js
 const isFunc = typeof value == 'function'
  if (isFunc || !cloneableTags[tag]) {
         return object ? value : {}
@@ -1583,7 +1583,7 @@ const isFunc = typeof value == 'function'
 
 分别使用正则取出函数体和函数参数，然后使用 `newFunction([arg1[,arg2[,...argN]],]functionBody)`构造函数重新构造一个新的函数：
 
-```javascript
+```js
 function cloneFunction(func) {
     // 箭头函数直接返回自身
     if(!func.prototype) return func;
@@ -1607,7 +1607,7 @@ function cloneFunction(func) {
 
 最后，我们再来执行clone6.test.js对下面的测试用例进行测试：
 
-```javascript
+```js
 const getType = obj => Object.prototype.toString.call(obj);
 
 const mapTag = '[object Map]';
@@ -1795,7 +1795,7 @@ let arr = [1, [2, [3, [4, ,5]]], 6];// -> [1, 2, 3, 4, 5, 6]
 
 面试时机智如我先说了arr自带的flat方法
 
-```
+```js
 function flat(arr) {
     return arr.flatten(Infinity);
 }
@@ -1803,7 +1803,7 @@ function flat(arr) {
 
 哈哈，又写错了，正确的应该是
 
-```
+```js
 function flat(arr) {
     return arr.flat(Infinity);
 }
@@ -1818,7 +1818,7 @@ console.log(flat(arr));
 
 我说可以用正则表达式，然后手写了
 
-```
+```js
 function flat(arr) {
     return arr.toString().replace(/[|]/g, '').split(',');
 }
@@ -1831,7 +1831,7 @@ console.log(flat(arr));
 
 赶紧解释[]表示匹配中间对应的字符，用转义符才能实现匹配
 
-```
+```js
 function flat(arr) {
     return arr.toString().split(',');
 }
@@ -1844,7 +1844,7 @@ console.log(flat(arr));
 
 其实这种时候可以JSON实现
 
-```
+```js
 function flat(arr) {
     return JSON.stringify(arr).replace(/\[|\]/g, '').split(',');
 }
@@ -1854,7 +1854,7 @@ console.log(flat(arr));
 
 使用JSON.parse还原为原先的格式
 
-```
+```js
 function flat(arr) {
     let str = '[' + JSON.stringify(arr).replace(/\[|\]/g, '').split(',') + ']';
     return JSON.parse(str);
@@ -1866,7 +1866,7 @@ console.log(flat(arr));
 ###  递归
 我终于决定使用递归的方案做了一版
 
-```
+```js
 function flat(arr) {
     let res = [];
     for (let item of arr) {
@@ -1907,7 +1907,7 @@ Cannot read property 'constructor' of undefined
 
 使用forEach实现数组遍历可破
 
-```
+```js
 function flat(arr) {
     let res = [];
     arr.forEach(function (item){
@@ -1929,7 +1929,7 @@ console.log(flat(arr));
 
 使用reduce实现
 
-```
+```js
 function flat(arr) {
     return arr.reduce((pre, cur) => {
     	return pre.concat(Array.isArray(cur) ? flat(cur) : cur);
@@ -2009,7 +2009,7 @@ console.log(unique(arr));
 
 使用includes判断
 
-```
+```js
 function unique(arr) {
     let res = [];
     for (let i = 0; i < arr.length; i++) {
@@ -2043,7 +2043,7 @@ console.log(unique(arr));
 
 使用includes判断
 
-```
+```js
 function unique (arr) {
     return arr.reduce((prev, cur) => prev.includes(cur) ? prev : [...prev, cur], []);
 }
@@ -2055,7 +2055,7 @@ console.log(unique(arr));
 
 使用indexOf判断
 
-```
+```js
 function unique (arr) {
     return arr.reduce((prev, cur) => prev.indexOf(cur) !== -1 ? prev : [...prev, cur], []);
 }
@@ -2079,7 +2079,7 @@ console.log(unique(arr));
 
 利用展开运算符简写
 
-```
+```js
 function unique (arr) {
 	return  [...new Set(arr)];
 }
@@ -2117,7 +2117,7 @@ console.log(unique(arr));
 
 使用filter实现
 
-```
+```js
 function unique(arr) {
     var obj = {};
     return arr.filter(function(item){
@@ -2181,7 +2181,7 @@ Array.prototype.myForEach = function(callback, context) {
 
 自定义函数：myFilter。
 
-```
+```js
 Array.prototype.myFilter = function(callback, context) {
     if (typeof callback !== 'function') throw ('callback参数必须是函数');
     let self = this,
@@ -2205,7 +2205,7 @@ Array.prototype.myFilter = function(callback, context) {
 
 自定义函数：myFind。
 
-```
+```js
 Array.prototype.myFind = function(callback, context) {
     if (typeof callback !== 'function') throw ('callback参数必须是函数');
     let self = this,
@@ -2230,7 +2230,7 @@ Array.prototype.myFind = function(callback, context) {
 
 自定义函数：myFindIndex。
 
-```
+```js
 Array.prototype.myFindIndex = function(callback, context) {
     if (typeof callback !== 'function') throw ('callback参数必须是函数');
     let self = this,
@@ -2253,7 +2253,7 @@ Array.prototype.myFindIndex = function(callback, context) {
 
 自定义函数：myFill。
 
-```
+```js
 Array.prototype.myFill = function(value, start = 0, end) {
     let self = this,
         len = self && self.length || 0;
@@ -2278,7 +2278,7 @@ Array.prototype.myFill = function(value, start = 0, end) {
 
 自定义函数：myMap。
 
-```
+```js
 Array.prototype.myMap = function(callback, context) {
     if (typeof callback !== 'function') throw ('callback参数必须是函数');
     let self = this,
@@ -2302,7 +2302,7 @@ Array.prototype.myMap = function(callback, context) {
 
 自定义函数：mySome。
 
-```
+```js
 Array.prototype.mySome = function(callback, context) {
     if (typeof callback !== 'function') throw ('callback参数必须是函数');
     let self = this,
@@ -2325,7 +2325,7 @@ Array.prototype.mySome = function(callback, context) {
 
 自定义函数：myEvery。
 
-```
+```js
 Array.prototype.myEvery = function(callback, context) {
     if (typeof callback !== 'function') throw ('callback参数必须是函数');
     let self = this,
@@ -2349,7 +2349,7 @@ Array.prototype.myEvery = function(callback, context) {
 
 自定义函数：myReduce。
 
-```
+```js
 Array.prototype.myReduce = function(callback, initialValue) {
     if (typeof callback !== 'function') throw ('callback参数必须是函数');
     let self = this,
@@ -2397,7 +2397,7 @@ Array.prototype.reduceToFilter = function (handler) {
 
 用了双指针，第三变量交换法
 
-```
+```js
 function revert(arr, start, end) {
 	while (start < end) {
 		let temp = arr[start];
@@ -2418,7 +2418,7 @@ console.log(arr);
 
 解构赋值，
 
-```
+```js
 function revert(arr, start, end) {
 	while (start < end) {
 		[arr[start], arr[end]] = [arr[end], arr[start]];
@@ -2435,7 +2435,7 @@ console.log(arr);
 
 利用和或者位运算
 
-```
+```js
 function revert(arr, start, end) {
 	while (start < end) {
 		arr[start] += arr[end];
@@ -2454,7 +2454,7 @@ console.log(arr);
 
 或者
 
-```
+```js
 function revert(arr, start, end) {
 	while (start < end) {
 		arr[start] ^= arr[end];
@@ -2493,7 +2493,7 @@ array.reduce(function(total, currentValue, currentIndex, arr), initialValue);
 
 基础版本
 
-```
+```js
 const arr = [12, 34, 23];
 const sum = arr.reduce((total, num) => total + num);
 console.log(sum); // 69
@@ -2501,7 +2501,7 @@ console.log(sum); // 69
 
 设定初始值求和
 
-```
+```js
 const arr = [12, 34, 23];
 const sum = arr.reduce((total, num) => total + num, 10);  // 以10为初始值求和
 console.log(sum); // 79
@@ -2665,7 +2665,7 @@ compose(
 
 或者使用reduceRight
 
-```
+```js
 function compose(...funs) {
     if (funs.length === 0) {
         return arg => arg;
@@ -2712,7 +2712,7 @@ compose(
 
  实现[['a', 'b'], ['n', 'm'], ['0', '1']] => ["an0", "an1", "am0", "am1", "bn0", "bn1", "bm0", "bm1"]
 
-```
+```js
 function backtrack(arr) {
 	return arr.reduce((prev, cur) => {
 		let list = [];
@@ -2731,7 +2731,7 @@ console.log(backtrack([['a', 'b'], ['n', 'm'], ['0', '1']]));
 
 不适用reduce也可以实现
 
-```
+```js
 function backtrack(arr) {
     let arr1 = [''];
     for(let i = 0; i < arr.length; i++) {
@@ -2779,7 +2779,7 @@ console.log(arr);
 - 3. 基准点左移一位。
 - 4. 重复2，3步骤，直到基准点为数组的开始位置。
 
-```
+```js
 function shuffle(arr) {
     let length = arr.length;
     for (let i = length - 1; i >= 0; i--) {
@@ -2806,7 +2806,7 @@ console.log(arr);
 
  实现一个 objectFlat 函数，实现如下的转换功能
 
-```
+```js
 const obj = {
     a: 1,
     b: [1, 2, { c: true }],
@@ -2892,7 +2892,7 @@ console.log(objectFlat(source));
 
 一天在面试中，面试官给了我一道手写代码题
 
-```
+```js
 /**
     * 实现函数 partialUsingArguments，调用之后满足如下条件：
     1、返回一个函数 result
@@ -2903,7 +2903,7 @@ console.log(objectFlat(source));
 
 我当时的第一版思路，将两个参数数组进行拼接，通过闭包返回结果，面试官提示如果参数为空，怎么办，我增加了args = args || [];这一句
 
-```
+```js
 function partialUsingArguments(fn, ...args) {
     args = args || [];
     return function (..._args) {
@@ -2916,7 +2916,7 @@ function partialUsingArguments(fn, ...args) {
 
 ### 偏函数ES6常规写法
 
-```
+```js
 function partialUsingArguments(fn, args) {
     return function (_args) {
         return fn(...args, ..._args);
@@ -2930,7 +2930,7 @@ function partialUsingArguments(fn, args) {
 
 ### 偏函数ES6简化写法
 
-```
+```js
 const partialUsingArguments = (fn, ...args) => (..._args) =>
 	fn(...args, ..._args);
 ```
@@ -2947,7 +2947,7 @@ const partialUsingArguments = (fn, ...args) => (..._args) =>
 
 ### 函数柯里化ES6常规写法
 
-```
+```js
 function curry(fn, ...args) {
 	const len = fn.length;
 	if (args.length >= len) {
@@ -2973,7 +2973,7 @@ console.log(multi(5, 6)(7)); // 210
 
 经过一些简化的方法
 
-```
+```js
 function curry(fn, ...args) {
 	if (args.length >= fn.length) {
     	// 判断当前函数传入的参数是否大于或等于fn需要参数的数量，如果是，直接执行fn
@@ -2998,7 +2998,7 @@ console.log(multi(5, 6)(7)); // 210
 
 ### 函数柯里化ES6简化写法
 
-```
+```js
 const curry = (fn, arr = []) => (..._args) => (
 	args => args.length === fn.length ? fn(...args) : curry(fn, args)
 )([...arr, ..._args])
@@ -3021,7 +3021,7 @@ console.log(multi(5, 6)(7)); // 210
 
 如果我们想，对一个值执行一系列操作，并打印出来，考虑以下代码：
 
-```
+```js
 // import { partial, partialRight } from 'lodash';
 const partial = (fn, ...args) => (..._args) =>
 	fn(...args, ..._args);
@@ -3053,7 +3053,7 @@ console.log(add10(pow3(double(2)))); // 74
 
 原文从lodash导入，我自己仿照partial重写了一版。无需否认，这段示例代码的确毫无意义。但是为了达成这一系列操作，我最终执行了这一长串嵌套了四层的函数调用：`console.log(add10(pow3(double(2))))`。（说实话，我的确觉得有点难以阅读了...），如果更长了，怎么办？可能有的同学会给出以下答案:
 
-```
+```js
 function mixed(x) {
 	return add10(pow3(double(2)));
 }
@@ -3087,7 +3087,7 @@ console.log(mixed(2)); // 74
 
 ### 基于栈的compose函数
 
-```
+```js
 function compose(...args) {
     return function(result) {
         const funcs = [...args];
@@ -3128,7 +3128,7 @@ compose(console.log, add10, pow3, double)(2) // 74
 
 当然，关于`compose`的更加函数式的实现如下：
 
-```
+```js
 function compose(...funcs) {
     return result => funcs
         .reverse()
@@ -3163,7 +3163,7 @@ compose(console.log, add10, pow3, double)(2) // 74
 
 考虑以下代码：
 
-```
+```js
 /* function compose(...funcs) {
     return funcs
         .reverse()
@@ -3201,7 +3201,7 @@ compose(console.log, add10, pow3, double)(2) // 74
 
 细心观察，通过将参数传递进行懒执行，从而巧妙的完成了这个任务！示例如下：
 
-```
+```js
 function compose(...funcs) {
     return funcs
         .reduce((fn1, fn2) => (...args) => fn1(fn2(...args)));
@@ -3240,7 +3240,7 @@ compose(
 
 当然上述代码最终也可以这么写：
 
-```
+```js
 function compose(...funcs) {
     return funcs
         .reduce((fn1, fn2) => (...args) => fn1(fn2(...args)));
@@ -3283,7 +3283,7 @@ compose(
 
 代码如下：
 
-```
+```js
 function compose(...funcs) {
     const [fn1, fn2, ...rest] = funcs.reverse();
 
@@ -3431,7 +3431,7 @@ function union (nums1, nums2) {
   - 传入的两个参数是同一个变量
 - 递推工作： 　- 深度比较每一个key
 
-```
+```js
 function isEqual(obj1, obj2){
     // 其中一个为值类型或null
 	if (!isObject(obj1) || !isObject(obj2)) return obj1 === obj2;
@@ -3460,7 +3460,7 @@ function isEqual(obj1, obj2){
 
 怎么进行格式转换，将data转换成result形式（手写代码）
 
-```
+```js
 const data = [
     { id: 10, parentId: 0, text: "一级菜单-1" }, 
     { id: 20, parentId: 0, text: "一级菜单-2" },
@@ -3493,7 +3493,7 @@ let result = [
 
 一开始以为只有一层子节点，打算先把有子节点的放入，再遍历有父节点的，写了一半重新理了理思路，写了以下的代码，先根据id从小到大排序，反着遍历，将子节点塞进父节点的children数组中，这是面试当场写的代码。
 
-```
+```js
 function conver(data) {
     data.sort((a, b) => a.parentId - b.parentId);
     for (let i = data.length - 1; i>= 0; i--) {
@@ -3516,7 +3516,7 @@ function conver(data) {
 }
 ```
 代码有小错，面试官放我过了，毕竟总算搞对了思路，将代码进行纠错和改进，能正常使用了
-```
+```js
 const data = [
     { id: 10, parentId: 0, text: "一级菜单-1" }, 
     { id: 20, parentId: 0, text: "一级菜单-2" },
@@ -3597,7 +3597,7 @@ console.log(convert(data));
 
 `debounce.js` 文件的代码如下：
 
-```
+```js
 var count = 1;
 var container = document.getElementById('container');
 
@@ -3641,7 +3641,7 @@ container.onmousemove = getUserAction;
 
 根据这段表述，我们可以写第一版的代码：
 
-```
+```js
 // 第一版
 function debounce(func, wait) {
     var timeout;
@@ -3654,7 +3654,7 @@ function debounce(func, wait) {
 
 如果我们要使用它，以最一开始的例子为例：
 
-```
+```js
 container.onmousemove = debounce(getUserAction, 1000);
 ```
 
@@ -3670,7 +3670,7 @@ container.onmousemove = debounce(getUserAction, 1000);
 
 如果我们在 `getUserAction` 函数中 `console.log(this)`，在不使用 `debounce` 函数的时候，`this` 的值为：
 
-```
+```js
 <div id="container"></div>
 ```
 
@@ -3680,7 +3680,7 @@ container.onmousemove = debounce(getUserAction, 1000);
 
 我们修改下代码：
 
-```
+```js
 // 第二版
 // func是用户传入需要防抖的函数
 // wait是等待时间
@@ -3720,7 +3720,7 @@ function debounce(func, wait = 50) {
 
 JavaScript 在事件处理函数中会提供事件对象 event，我们修改下 getUserAction 函数：
 
-```
+```js
 function getUserAction(e) {
     console.log(e);
     container.innerHTML = count++;
@@ -3735,7 +3735,7 @@ function getUserAction(e) {
 
 所以我们再修改一下代码：
 
-```
+```js
 // 第三版
 // func是用户传入需要防抖的函数
 // wait是等待时间
@@ -3792,7 +3792,7 @@ function debounce(func, wait = 50) {
 
 看了这个表述，是不是感觉已经可以写出代码了…… 让我们来写第一版的代码：
 
-```
+```js
 // 第一版
 // func是用户传入需要防抖的函数
 // wait是等待时间
@@ -3824,7 +3824,7 @@ setInterval(
 
 例子依然是用讲 debounce 中的例子，如果你要使用：
 
-```
+```js
 container.onmousemove = throttle(getUserAction, 1000);
 ```
 
@@ -3840,7 +3840,7 @@ container.onmousemove = throttle(getUserAction, 1000);
 
 当触发事件的时候，我们设置一个定时器，再触发事件的时候，如果定时器存在，就不执行，直到定时器执行，然后执行函数，清空定时器，这样就可以设置下个定时器。
 
-```
+```js
 // 第二版
 // func是用户传入需要防抖的函数
 // wait是等待时间
@@ -3904,7 +3904,7 @@ setInterval(
 
 babel在let定义的变量前加了道下划线，避免在块级作用域外访问到该变量，除了对变量名的转换，我们也可以通过自执行函数（闭包）来模拟块级作用域
 
-```
+```js
 (function(){
     for(var i = 0; i < 5; i ++){
     	console.log(i)  // 0 1 2 3 4
@@ -3951,7 +3951,7 @@ babel的转化，其实只实现了第2、3、5点
 
 由于ES5环境没有`block`的概念，所以是无法百分百实现`const`，只能是挂载到某个对象下，要么是全局的`window`，要么就是自定义一个`object`来当容器对于const不可修改的特性，我们通过设置writable属性来实现
 
-```
+```js
 var _const = function __const (data, value) {
 	// 把要定义的data挂载到window下，并赋值value
 	window.data = value;
@@ -4009,7 +4009,7 @@ obj = {}; / 无法赋值新对象 报错
 
 利用Object.defineProperty劫持对象的访问器,在属性值发生变化时我们可以获取变化,然后根据变化进行后续响应,在vue3.0中通过Proxy代理对象进行类似的操作。
 
-```
+```js
 // 数据
 const data = {
 	text: 'default'
@@ -4048,7 +4048,7 @@ Object.defineProperty() 的问题主要有三个：
 -  Proxy 的第二个参数可以有 13 种拦截方法，这比起 Object.defineProperty() 要更加丰富 
 -  Proxy 作为新标准受到浏览器厂商的重点关注和性能优化，相比之下 Object.defineProperty() 是一个已有的老方法，可以享受新版本红利。
 
-```
+```js
 // 数据
 const data = {
 	text: 'default'
@@ -4180,7 +4180,7 @@ if (IntersectionObserver) {
 
 ## 31.区间随机数生成器
 
-```
+```js
 function random(m, n) {
 	return Math.floor(Math.random() * (n - m)) + m;
 	// return parseInt(Math.random() * (n - m)) + m;
@@ -4195,7 +4195,7 @@ for (let i = 0; i < 10; i++) {
 
 ## 32.打印菱形
 
-```
+```js
 function printDiamond(n) {
 	for (let i = 0; i < n; i++) {
 		for (let j = 0; j <= i; j++) {
@@ -4218,7 +4218,7 @@ function printDiamond(n) {
 
 一开始以为很简单，写着写着 发现好难，还是先写只带有数字、字母的，0x什么开头的我怕是头想秃了都不会
 
-```
+```js
 function getNum(char) {
     if ('0' <= char && char <= '9') return Number(char);
     if ('a' <= char && char <= 'z') return char.charCodeAt() - 'a'.charCodeAt() + 10;
@@ -4303,7 +4303,7 @@ console.log(_parseInt("-12", 13));
 
 大佬的版本，可以参考下，让我当场写肯定不会
 
-```
+```js
 function compare(str, radix) {
     let code = str.toUpperCase().charCodeAt(0),
         num;
