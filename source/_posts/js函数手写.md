@@ -4471,7 +4471,7 @@ console.log(jsonStringify({b: undefined})); // {"b":"undefined"}
 
 先熟悉JSON.parse的用法
 
-```text
+```js
 JSON.parse(text[, reviver])
 ```
 
@@ -4479,7 +4479,7 @@ JSON.parse(text[, reviver])
 
 ### 直接调用 eval
 
-```
+```js
 function jsonParse(opt) {
     return eval('(' + opt + ')');
 }
@@ -4514,7 +4514,7 @@ if (
 
 > 核心：Function与eval有相同的字符串参数特性
 
-```text
+```js
 var func = new Function(arg1, arg2, ..., functionBody);
 ```
 
@@ -4529,7 +4529,7 @@ var json = (new Function('return ' + jsonStr))();
 
 测试结果如下
 
-```
+```js
 let jsonStr = JSON.stringify({x : 5});
 console.log((new Function('return ' + jsonStr))()); // [object Object]: {x: 5}
 jsonStr = JSON.stringify([1, "false", false]);
@@ -4598,7 +4598,7 @@ console.log(parseParam(url));
 
 也可以使用正则表达式分割，这是网上找的大佬版本
 
-```
+```js
 function parseParam(url) {
  	// 将 ? 后面的字符串取出来
     const paramsStr = /.+\?(.+)$/.exec(url)[1];
