@@ -9,455 +9,914 @@ tags:
 ---
 Git是目前世界上最先进的分布式版本控制系统，方便我们管理代码的版本，详细的介绍可以参考[廖雪峰的Git教程](https://www.liaoxuefeng.com/wiki/896043488029600)，本文总结常见的Git命令，想要熟悉这些命令，可以通过 [Learning Git Branching](https://learngitbranching.js.org/)这个网站，这是一个有趣的教程，在沙盒里执行相应的Git命令，还能看到每个Git命令的执行情况，像玩有些一样通过一系列的关卡，逐步学习 Git 的强大功能。最后增加了一个大大整理的教程，让人觉得git如此有趣。
 
+一般来说，日常使用只要记住下图6个命令，就可以了。但是熟练使用，恐怕要记住60～100个命令。
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210605174815.png)
+
+几个专用名词的译名如下。
+
+> - Workspace：工作区
+> - Index / Stage：暂存区
+> - Repository：仓库区（或本地仓库）
+> - Remote：远程仓库
+
 <!-- more -->
 
-### 配置操作
+# Git 常用命令
 
-#### 全局配置
+## 1.新建代码库
 
+### 在当前目录新建一个Git代码库
+
+```bash
+git init
 ```
+
+### 新建一个目录，将其初始化为Git代码库
+
+```bash
+git init [project-name]
+```
+
+### 下载一个项目和它的整个代码历史
+
+```bash
+git clone [url]
+```
+
+
+
+## 2.配置操作
+
+Git的设置文件为`.git/config`，它可以在用户主目录下（全局配置），也可以在项目目录下（项目配置）。
+
+### 全局配置
+
+```bash
 git config --global user.name '你的名字'
 git config --global user.email '你的邮箱'
 ```
 
-#### 当前仓库配置
+### 当前仓库配置
 
-```
+```bash
 git config --local user.name '你的名字'
 git config --local user.email '你的邮箱'
 ```
 
-#### 查看 global 配置
+### 查看 global 配置
 
-```
+```bash
 git config --global --list
 ```
 
-#### 查看当前仓库配置
+### 查看当前仓库配置
 
-```
+```bash
 git config --local --list
 ```
 
-#### 删除 global 配置
+### 删除 global 配置
 
-```
+```bash
 git config -unset --global 要删除的配置项
 ```
 
-#### 删除当前仓库配置
+### 删除当前仓库配置
 
-```
+```bash
 git config --unset --local 要删除的配置项
 ```
 
+### 编辑Git配置文件
 
-
-### 本地操作
-
-#### 查看变更情况
-
+```bash
+git config -e [--global]
 ```
+
+
+
+## 3.本地操作
+
+### 查看变更情况
+
+```bash
 git status
 ```
 
-#### 将当前目录及其子目录下所有变更都加入到暂存区
+### 将当前目录及其子目录下所有变更都加入到暂存区
 
-```
+```bash
 git add .
 ```
 
-#### 将仓库内所有变更都加入到暂存区
+### 将仓库内所有变更都加入到暂存区
 
-```
+```bash
 git add -A
 ```
 
-#### 将指定文件添加到暂存区
+### 将指定文件添加到暂存区
 
-```
+```bash
 git add 文件1 文件2 文件3
 ```
 
-#### 比较工作区和暂存区的所有差异
+### 添加每个变化前，都会要求确认
 
+对于同一个文件的多处变化，可以实现分次提交
+
+```bash
+git add -p
 ```
+
+### 删除工作区文件，并且将这次删除放入暂存区
+
+```bash
+git rm 文件1 文件2 文件3
+```
+
+### 停止追踪指定文件，但该文件会保留在工作区
+
+```bash
+git rm --cache 文件
+```
+
+### 改名文件，并且将这个改名放入暂存区
+
+```bash
+git mv [file-original] [file-renamed]
+```
+
+### 比较工作区和暂存区的所有差异
+
+```bash
 git diff
 ```
 
-#### 比较某文件工作区和暂存区的差异
+### 比较某文件工作区和暂存区的差异
 
-```
+```bash
 git diff 文件
 ```
 
-#### 比较暂存区和 HEAD 的所有差异
+### 比较暂存区和 HEAD 的所有差异
 
-```
+```bash
 git diff --cached
 ```
 
-#### 比较某文件暂存区和 HEAD 的差异
+### 比较某文件暂存区和 HEAD 的差异
 
-```
+```bash
 git diff -cached 文件
 ```
 
-#### 比较某文件工作区和 HEAD 的差异
+### 比较某文件工作区和 HEAD 的差异
 
-```
+```bash
 git diff HEAD 文件
 ```
 
-#### 创建 commit
+### 创建 commit 提交暂存区到仓库区
 
-```
+```bash
 git commit
 ```
 
-#### 将工作区指定文件恢复成和暂存区一致
+### 提交并命名
 
+```bash
+git commit -m 提交信息
 ```
+
+### 提交暂存区的指定文件到仓库区
+
+```bash
+git commit 文件1 文件2 ... -m 提交信息
+```
+
+### 提交工作区自上次commit之后的变化，直接到仓库区
+
+```bash
+git commit -a
+```
+
+### 提交时显示所有diff信息
+
+```bash
+git commit -v
+```
+
+### 将工作区指定文件恢复成和暂存区一致
+
+```bash
 git checkout 文件1 文件2 文件3
 ```
 
-#### 将暂存区指定文件恢复成和 HEAD 一致
+### 将暂存区指定文件恢复成和 HEAD 一致
 
-```
+```bash
 git reset 文件1 文件2 文件3
 ```
 
-#### 将暂存区和工作区所有文件恢复成和 HEAD 一样
+### 将暂存区和工作区所有文件恢复成和 HEAD 一样
 
-```
+```bash
 git reset --hard
 ```
 
-#### 用 difftool 比较任意两个 commit 的差异
+### 用 difftool 比较任意两个 commit 的差异
 
-```
+```bash
 git difftool 提交1 提交2
 ```
 
-#### 查看哪些文件没被 Git 管控
+### 查看哪些文件没被 Git 管控
 
-```
+```bash
 git ls-files --others
 ```
 
-#### 将未处理完的变更先保存到 stash 中
+### 将未处理完的变更先保存到 stash 中
 
-```
+```bash
 git stash
 ```
 
-#### 临时任务处理完后继续之前的工作
+### 临时任务处理完后继续之前的工作
 
 - pop 不保留 stash
-- apply 保留 stash
 
-```
+```bash
 git stash pop
 ```
 
-```
+- apply 保留 stash
+
+```bash
 git stash apply
 ```
 
-#### 查看所有 stash
+### 查看所有 stash
 
-```
+```bash
 git stash list
 ```
 
-#### 取回某次 stash 的变更
+### 取回某次 stash 的变更
 
-```
+```bash
 git stash pop stash@{数字n}
 ```
 
-#### 优雅修改最后一次 commit
+### 优雅修改最后一次 commit
 
-```
+```bash
 git add.
 git commit --amend
 ```
 
+### 使用一次新的commit，替代上一次提交
 
+如果代码没有任何新变化，则用来改写上一次commit的提交信息
 
-### 分支操作
-
-#### 查看当前工作分支及本地分支
-
+```bash
+git commit --amend -m 提交信息
 ```
+
+### 重做上一次commit，并包括指定文件的新变化
+
+```bash
+git commit --amend 文件1 文件2 ...
+```
+
+
+
+## 4.分支操作
+
+### 列出所有本地分支
+
+```bash
+git branch
+```
+
+### 查看当前工作分支及本地分支
+
+```bash
 git branch -v
 ```
 
-#### 查看本地和远端分支
+### 列出所有本地分支和远程分支
 
+```bash
+git branch -a
 ```
+
+### 查看本地和远端分支
+
+```bash
 git branch -av
 ```
 
-#### 查看远端分支
+### 查看远端分支
 
-```
+```bash
 git branch -rv
 ```
 
-#### 切换到指定分支
+### 切换到指定分支
 
-```
+```bash
 git checkout 指定分支
 ```
 
-#### 基于当前分支创建新分支
+### 基于当前分支创建新分支，但依然停留在当前分支
 
-```
+```bash
 git branch 新分支
 ```
 
-#### 基于指定分支创建新分支
+### 基于指定分支创建新分支
 
-```
+```bash
 git branch 新分支 指定分支
 ```
 
-#### 基于某个 commit 创建分支
+### 基于某个 commit 创建分支
 
-```
+```bash
 git branch 新分支 某个 commit 的 id
 ```
 
-#### 创建并切换到该分支
+### 新建一个分支，与指定的远程分支建立追踪关系
 
+```bash
+git branch --track 分支 远程分支
 ```
+
+### 建立追踪关系，在现有分支与指定的远程分支之间
+
+```bash
+git branch --set-upstream 分支 远程分支
+```
+
+### 创建并切换到该分支
+
+```bash
 git checkout -b 新分支
 ```
 
-#### 安全删除本地某分支
+### 切换到指定分支，并更新工作区
 
+```bash
+git checkout 分支
 ```
+
+### 切换到上一个分支
+
+```bash
+git checkout -
+```
+
+### 列出所有远程分支
+
+```bash
+git branch -r
+```
+
+### 安全删除本地某分支
+
+```bash
 git branch -d 要删除的分支
 ```
 
-#### 强行删除本地某分支
+### 强行删除本地某分支
 
-```
+```bash
 git branch -D 要删除的分支
 ```
 
-#### 删除已合并到 master 分支的所有本地分支
+### 删除已合并到 master 分支的所有本地分支
 
-```
+```bash
 git branch --merged master | grep -v '^\*\| master' | xargs -n 1 git branch -d
 ```
 
-#### 删除远端 origin 已不存在的所有本地分支
+### 删除远端 origin 已不存在的所有本地分支
 
-```
+```bash
 git remote prune orign
 ```
 
-#### 将 A 分支合入到当前分支中且为 merge 创建 commit
+### 删除远程分支
 
+```bash
+git push origin --delete 要删除的分支
+git branch -dr 远程分支
 ```
+
+### 将 A 分支合入到当前分支中且为 merge 创建 commit
+
+```bash
 git merge A分支
 ```
 
-#### 将 A 分支合入到 B 分支中且为 merge 创建 commit
+### 将 A 分支合入到 B 分支中且为 merge 创建 commit
 
-```
+```bash
 git merge A分支 B分支
 ```
 
-#### 将当前分支基于 B 分支做 rebase，以便将B分支合入到当前分支
+### 将当前分支基于 B 分支做 rebase，以便将B分支合入到当前分支
 
-```
+```bash
 git rebase B分支
 ```
 
-#### 将 A 分支基于 B 分支做 rebase，以便将 B 分支合入到 A 分支
+### 将 A 分支基于 B 分支做 rebase，以便将 B 分支合入到 A 分支
 
-```
+```bash
 git rebase B分支 A分支
 ```
 
+### 选择一个commit，合并进当前分支
 
-
-### 变更历史
-
-#### 当前分支各个 commit 用一行显示
-
+```bash
+git cherry-pick 某个 commit 的 id
 ```
+
+
+
+## 5.变更历史
+
+### 显示当前分支的版本历史
+
+```bash
+git log
+```
+
+### 当前分支各个 commit 用一行显示
+
+```bash
 git log --oneline
 ```
 
-#### 显示就近的 n 个 commit
+### 显示就近的 n 个 commit
 
-```
+```bash
 git log -n
 ```
 
-#### 用图示显示所有分支的历史
+### 显示commit历史，以及每次commit发生变更的文件
 
+```bash
+git log --stat
 ```
+
+### 用图示显示所有分支的历史
+
+```bash
 git log --oneline --graph --all
 ```
 
-#### 查看涉及到某文件变更的所有 commit
+### 搜索提交历史，根据关键词
 
+```bash
+git log -S 关键词
 ```
+
+### 查看涉及到某文件变更的所有 commit
+
+```bash
 git log 文件
 ```
 
-#### 某文件各行最后修改对应的 commit 以及作者
+### 某文件各行最后修改对应的 commit 以及作者
 
-```
+```bash
 git blame 文件
 ```
 
 
 
-### 标签操作
+## 6.标签操作
 
-#### 查看已有标签
+### 查看已有标签
 
-```
+```bash
 git tag
 ```
 
-#### 新建标签
+### 新建标签
 
-```
+```bash
 git tag v1.0
 ```
 
-#### 新建带备注标签
+### 新建带备注标签
 
-```
+```bash
 git tag -a v1.0 -m '前端食堂'
 ```
 
-#### 给指定的 commit 打标签
+### 给指定的 commit 打标签
 
-```
+```bash
 git tag v1.0 commitid
 ```
 
-#### 推送一个本地标签
+### 推送一个本地标签
 
-```
+```bash
 git push origin v1.0
 ```
 
-#### 推送全部未推送过的本地标签
+### 推送全部未推送过的本地标签
 
-```
+```bash
 git push origin --tags
 ```
 
-#### 删除一个本地标签
+### 删除一个本地标签
 
-```
+```bash
 git tag -d v1.0
 ```
 
-#### 删除一个远端标签
+### 删除一个远端标签
 
-```
+```bash
 git push origin :refs/tags/v1.0
 ```
 
-### 远端交互
+### 新建一个分支，指向某个tag
 
-#### 查看所有远端仓库
-
+```bash
+git checkout -b 分支 v1.0
 ```
+
+
+
+## 7.远端交互
+
+### 查看所有远端仓库
+
+```bash
 git remote -v
 ```
 
-#### 添加远端仓库
+### 添加远端仓库，并命名
 
-```
+```bash
 git remote add url
 ```
 
-#### 删除远端仓库
+### 删除远端仓库
 
-```
+```bash
 git remote remove remote的名称
 ```
 
-#### 重命名远端仓库
+### 重命名远端仓库
 
-```
+```bash
 git remote rename 旧名称 新名称
 ```
 
-#### 将远端所有分支和标签的变更都拉到本地
+### 将远端所有分支和标签的变更都拉到本地
 
-```
+```bash
 git fetch remote
 ```
 
-#### 把远端分支的变更拉到本地，且 merge 到本地分支
+### 把远端分支的变更拉到本地，且 merge 到本地分支
 
-```
+```bash
 git pull origin 分支名
 ```
 
-#### 将本地分支 push 到远端
+### 下载远程仓库的所有变动
 
+```bash
+git fetch remote的名称
 ```
+
+### 将本地分支 push 到远端
+
+```bash
 git push origin 分支名
 ```
 
-#### 删除远端分支
+### 强行推送当前分支到远程仓库，即使有冲突
 
+```bash
+git push remote的名称 --force
 ```
+
+### 推送所有分支到远程仓库
+```bash
+git push remote的名称 --all
+```
+
+### 删除远端分支
+
+```bash
 git push remote --delete 远端分支名
-```
-
-```
 git push remote :远端分支名
 ```
 
 
 
-## [git干货，花整整两天吐血整理](https://www.nowcoder.com/discuss/433766)
+## 8.撤销
 
-### 0.精髓总结 
+### 恢复暂存区的指定文件到工作区
+
+```bash
+git checkout 文件
+```
+
+### 恢复某个commit的指定文件到暂存区和工作区
+
+```bash
+git checkout 提交信息 文件
+```
+
+### 恢复暂存区的所有文件到工作区
+
+```bash
+git checkout .
+```
+
+### 重置暂存区的指定文件，与上一次commit保持一致，但工作区不变
+
+```bash
+git reset 文件
+```
+
+### 重置当前分支的指针为指定commit，同时重置暂存区，但工作区不变
+
+```bash
+git reset --hard
+```
+
+### 重置当前分支的指针为指定commit，同时重置暂存区，但工作区不变
+
+```bash
+git reset 提交信息
+```
+
+### 重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致
+
+```bash
+git reset --hard 提交信息
+```
+
+### 重置当前HEAD为指定commit，但保持暂存区和工作区不变
+
+```bash
+git reset --keep 提交信息
+```
+
+### 新建一个commit，用来撤销指定commit
+
+后者的所有变化都将被前者抵消，并且应用到当前分支
+
+```bash
+git revert 提交信息
+```
+
+### 暂时将未提交的变化移除，稍后再移入
+
+```bash
+git stash
+git stash pop
+```
+
+
+
+## 小结
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210606172913.png)
+
+**相关文章：**
+
+[《如何撤销 Git 操作？》(opens new window)](http://www.ruanyifeng.com/blog/2019/12/git-undo.html)
+
+[《git cherry-pick 教程》 (opens new window)](http://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html)复制某分支上的部分提交到另一个分支上（相对于可以选择指定提交的 rebase 操作）。
+
+
+
+# 附录一：Git变基合并
+
+## 1.说明
+
+以下 `v2` 是某个需求的开发分支， `dev`是总的开发分支，`v2` 是基于`dev`分支签出的。
+
+当完成`v2`的开发后，需要把代码合并到`dev`，我们可以使用`rebase`进行合并：
+
+```sh
+# 首先将 v2 push到远程仓库
+git add .
+git commit -m 'xxx'
+git push origin v2
+
+# 切换到 dev 拉取最新代码
+git checkout dev
+git pull origin dev
+
+# 切换到 v2
+git checkout v2
+git rebase dev # 将 v2 的所有[commit] 变基到(应用到) dev
+
+# 切换到 dev
+git checkout dev
+git merge v2  # 将 dev分支 快进合并 （此时 (HEAD -> dev, v2) [commit] 两个分支指向同一个提交）
+
+# 查看 原v2的[commit]记录 是否在dev分支的最前面（变基成功会把v2的提交记录应用到dev分支的最前面）
+git log
+
+	# 如果到这一步发现有问题，尝试使用 git --abort中止变基，如果还是有问题的可以在dev分支上使用《后悔药》操作， 再到v2分支上使用《后悔药》操作，即可使两个分支都回退到 rebase变基 之前的状态
+
+# 试运行项目是否有问题
+yarn start
+
+git status # 查看状态是否有问题
+git push origin dev # 推送到远程仓库的 dev
+```
+
+### 1.1 变基要遵守的准则
+
+**几个人同时在一个分支上进行开发和提交时，你不要中途执行变基，只有在大家都完成工作之后才可以执行变基。**
+
+### 1.2 变基的实质
+
+变基操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交。 因此，**变基操作过后的分支将不要再使用**。
+
+
+
+## 2.后悔药
+
+```sh
+# 查看HEAD指针变动记录
+git reflog
+# 记录示例(当前分支是v2):
+07c398f (HEAD -> v2, master) HEAD@{0}: checkout: moving from master to v2
+07c398f (HEAD -> v2, master) HEAD@{1}: rebase (finish): returning to refs/heads/master
+07c398f (HEAD -> v2, master) HEAD@{2}: rebase (start): checkout v2
+15a97d8 HEAD@{3}: reset: moving to 15a97d8
+07c398f (HEAD -> v2, master) HEAD@{4}: merge v2: Fast-forward
+15a97d8 HEAD@{5}: checkout: moving from v2 to master
+07c398f (HEAD -> v2, master) HEAD@{6}: rebase (finish): returning to refs/heads/v2
+07c398f (HEAD -> v2, master) HEAD@{7}: rebase (pick): C
+15a97d8 HEAD@{8}: rebase (start): checkout master # 首次rebase
+d278ecd HEAD@{9}: checkout: moving from master to v2 # rebase前的状态
+15a97d8 HEAD@{10}: commit: D
+
+# 可见，示例中最初的 rebase 操作是 HEAD@{8}，想回退到变基前的状态需让指针指向 HEAD@{9}
+git reset --hard d278ecd  # 重置当前分支的HEAD为指定[commit]，同时重置暂存区和工作区，与指定[commit]一致
+
+# 此时打印 log 查看是否回到之前的状态
+git log
+```
+
+**注意：此操作只能回退当前的分支，如其他分支也要回退，需要切换到该分支并执行上面操作。**
+
+
+
+## 3.开发期间的rebase操作
+
+### 3.1 背景
+
+有两个分支：
+
+```sh
+dev
+*v2
+```
+
+`2.4-dev` 是基于`dev`切出来的。
+
+提交记录如下：
+
+```text
+		dev
+a - b - c
+		v2
+```
+
+开发期间，两个分支同时有新的commit ：
+
+```text
+				dev
+a - b - c - d - e
+		\ - f - g
+				v2
+```
+
+当前你正在`v2`进行开发，`dev`也同时进行开发，并有重大的改变，你需要把`dev`的提交同步到`v2`。
+
+**需求： 把`dev`中新的提交同步到`v2`，且不能影响`dev`分支。**
+
+### 3.2 操作步骤
+
+1. 基于最新的 `dev` 切一个新的分支 `dev-copy`
+
+   > `dev-copy` 和 `dev` 两者的 commit ID 一致。
+
+2. 在`dev-copy`中执行rebase，将 `dev-copy` 的提交变基到 `v2`
+
+   ```sh
+   git rebase v2 # 将 dev-copy 的提交[commit] 变基到(应用到) v2
+   ```
+
+3. 删除原`v2`分支，将`dev-copy`分支名改为`v2`
+
+   ```sh
+   # 当前在 dev-copy 分支
+   git branch -d v2 # 删除分支
+   git branch -m dev-copy v2 # 重命名
+   ```
+
+### 3.3 git cherry-pick
+
+来源：[《git cherry-pick 教程》](http://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html)
+
+用于将单个或几个`[commit]`复制到另一个分支。
+
+#### 基本应用
+
+```sh
+git cherry-pick <commitHash> # 将commitHash应用于当前分支
+```
+
+上面命令就会将指定的提交`commitHash`，应用于当前分支。这会在当前分支产生一个新的提交，当然它们的**哈希值会不一样**。
+
+git cherry-pick命令的参数，不一定是提交的哈希值，分支名也是可以的，表示转移该分支的最新提交。
+
+#### 转移多个提交
+
+Cherry pick 支持一次转移多个提交。
+
+```sh
+git cherry-pick <HashA> <HashB> # A和B提交
+```
+
+上面的命令将 A 和 B 两个提交应用到当前分支。这会在当前分支生成两个对应的新提交。
+
+如果想要转移一系列的连续提交，可以使用下面的简便语法。
+
+```sh
+git cherry-pick A..B # A到B提交，不包含A
+```
+
+上面的命令可以转移从 A 到 B 的所有提交。它们必须按照正确的顺序放置：提交 A 必须早于提交 B，否则命令将失败，但不会报错。
+
+**注意，使用上面的命令，提交 A 将不会包含在 Cherry pick 中。如果要包含提交 A，可以使用下面的语法。**
+
+```sh
+git cherry-pick A^..B # A到B提交，包含A
+```
+
+
+
+# 附录二：[git干货，花整整两天吐血整理](https://www.nowcoder.com/discuss/433766)
+
+本质上就是 [Learning Git Branching](https://learngitbranching.js.org/)这个网站教程的文字版本
+
+## 0.精髓总结 
 
  **让本地开发分支跟远程实现关联，是很棒的一件事！可以省掉很多参数，利用关联性实现简写。** 
 
-```
+```sh
 git pull 等于 git fetch + git merge FETCH_HEAD
 git push  //啥都不加相当于把HEAD所在分支push到远程关联分支。 git pull //啥都不加也相当于把HEAD所在分支对应的远程分支拉到HEAD所在分支并merge git pull --rebase //啥都不加也同上
 git push <远程主机名> <本地分支名>：<远程分支名> 如果省略远程分支名，则表示将本地分支推送至与之存在“追踪关系”的远程分支（通常两者同名），如果该远程分支不存在，则会被新建：git push origin master
 ```
 
-### 1.Git中的‘HEAD’是什么？ 
+
+
+## 1.Git中的‘HEAD’是什么？ 
 
  **又名检出（checkout）位置** 
 
- **问题来源** 
+### 1.1 问题来源 
 
  git 恢复文件到初始状态的命令： 
 
-```
-$ git reset HEAD <file>
+```sh
+git reset HEAD <file>
 ```
 
  git 展示提交日志命令： 
 
-```
-$ git log commit c4f9d71863ab78cfca754c78e9f0f2bf66a2bd77 (HEAD -> master)
+```sh
+git log commit c4f9d71863ab78cfca754c78e9f0f2bf66a2bd77 (HEAD -> master)
 ```
 
  在这些命令中常常会看到HEAD这个名词，它指的是什么呢？ 
 
- **回答** 
+### 1.2  回答
 
   这要从git的分支说起， **git 中的分支，** 本质上仅仅 **是个指向 commit 对象的可变指针** 。git 是如何知道你当前在哪个分支上工作的呢？   其实答案也很简单，它保存着一个 **名为 HEAD 的特别指针** 。在 git 中， **指向你正在工作中的本地分支** ，可以将 HEAD 想象为当前分支的别名。 
 
@@ -465,15 +924,17 @@ $ git log commit c4f9d71863ab78cfca754c78e9f0f2bf66a2bd77 (HEAD -> master)
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420171338.png)
 
-### 2.合并分支的两种方法：git merge & git rebase 
 
- **git merge** 
+
+## 2.合并分支的两种方法：git merge & git rebase 
+
+### 2.1 git merge 
 
   git merge 在 Git 中合并两个分支时会产生一个特殊的提交记录，它有两个父节点。翻译成自然语言相当于：“我要把这 **两个父节点本身及它们所有的祖先** 都包含进来。” 
 
   ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420171930.png)  
 
-**git rebase** 
+### 2.2 git rebase 
 
  Rebase 实际上就是取出**一系列(整条分支)**的提交记录，**“复制”它们，然后在另外一个地方逐个的放下去**。 
 
@@ -501,13 +962,15 @@ $ git log commit c4f9d71863ab78cfca754c78e9f0f2bf66a2bd77 (HEAD -> master)
 
  **一些开发人员喜欢保留提交历史，因此更偏爱 merge。**而其他人（比如我自己）可能更喜欢干净的提交树，于是偏爱 rebase。仁者见仁，智者见智。
 
-### 3.什么是fast-forward 和no-fast-forward？ 
+
+
+## 3.什么是fast-forward 和no-fast-forward？ 
 
  从一个分支获取变更到另一个分支的方式之一是执行git merge命令。Git 有两类合并操作：**fast-forward** 和**no-fast-forward**。 
 
  这么说你可能没什么概念，我们来看看区别吧。 
 
-####  **fast-forward (--ff)** 
+###  3.1 fast-forward (--ff)
 
   如果当前分支与即将合并过来的分支相比，没有额外的提交，这种就是 fast-forward 合并。Git 很会偷懒，它会首先尝试最简单的方案，即 fast-forward 。这种合并方式不会创建新的提交，只是把另一个分支的提交记录直接合并到当前分支。 
 
@@ -515,7 +978,7 @@ $ git log commit c4f9d71863ab78cfca754c78e9f0f2bf66a2bd77 (HEAD -> master)
 
   fast-forward merge 
 
-#### **no-fast-foward (--no-ff)** 
+### 3.2 no-fast-foward (--no-ff)
 
  跟即将合并过来的分支比较，当前分支如果没有额外的提交，这固然很好，但实际情况往往不是这样！如果我们在当前分支上也提交了一些改动，那么 Git 就会执行no-fast-forward合并。 
 
@@ -527,25 +990,23 @@ $ git log commit c4f9d71863ab78cfca754c78e9f0f2bf66a2bd77 (HEAD -> master)
 
  也没毛病！现在master分支上有了我们在dev分支上做的所有变更。
 
-### 4.分离HEAD的方法: git checkout  
 
-```
+
+## 4.分离HEAD的方法: git checkout  
+
+```sh
 git checkout  提交记录的哈希值(前缀)/HEAD的相对引用  HEAD^代表HEAD的上一次提交 HEAD^^代表HEAD的上上次提交 HEAD~6代表HEAD的第前六次提交 HEAD~不加数字也代表HEAD的上一次提交  //敲黑板 HEAD^2的意思不一样，是第二个父亲，而HEAD~2的意思是父亲的父亲（爷爷）
 ```
 
-  ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420173613.png)
-
-作者：心有林夕yummy
-链接：https://www.nowcoder.com/discuss/433766?source_id=profile_create_nctrack&channel=-1
-来源：牛客网
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420173613.png)
 
 
 
-### 5.相对引用 
+## 5.相对引用 
 
  我使用相对引用最多的就是移动分支。可以直接使用 -f 选项**让分支指向另一个提交**。例如: 
 
-```
+```sh
 git branch -f master HEAD~3
 ```
 
@@ -555,26 +1016,32 @@ git branch -f master HEAD~3
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420174634.png)
 
-### 6.撤销提交的两种方法：git reset & git revert 
+
+
+## 6.撤销提交的两种方法：git reset & git revert 
 
   ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420214815.png)
 
 
  虽然在你的本地分支中使用 git reset 很方便，但是这种“改写历史”的方法对大家一起使用的远程分支是无效的哦！**想要让远程分支改写历史要怎么办呢？使用 git revert <commit> 可以撤销指定的提交**， 要撤销一串提交可以用 <commit1>..<commit2> 语法。 注意这是一个前开后闭区间，即不包括 commit1，但包括 commit2。
 
-```
+```sh
 git revert HEAD 意思是撤销HEAD指向的这个提交
 ```
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420215516.png)
 
-### 7.整理提交记录:git cherry-pick & git rebase -i
+
+
+## 7.整理提交记录:git cherry-pick & git rebase -i
 
 开发人员有时会说“我想要把这个提交放到这里, 那个提交放到刚才那个提交的后面”, 而接下来就讲的就是它的实现方式，非常清晰、灵活，还很生动。看起来挺复杂, 其实是个很简单的概念。 
 
-####  第一个命令是 git cherry-pick 
+###  7.1 第一个命令是 git cherry-pick 
 
--  git cherry-pick <提交号>... 
+```sh
+git cherry-pick <提交号>... 
+```
 
   如果你想将一些提交复制到当前所在的位置（ HEAD ）下面的话， Cherry-pick 是最直接的方式了。我个人非常喜欢  cherry-pick ，因为它特别简单。 
 
@@ -592,11 +1059,11 @@ git revert HEAD 意思是撤销HEAD指向的这个提交
 
  但是如果你不清楚你想要的提交记录的哈希值呢? 幸好 Git 帮你想到了这一点, 我们可以利用交互式的 rebase —— 如果你想从一系列的提交记录中找到想要的记录, 这就是最好的方法了 
 
-####  第二个命令是 交互式的rebase 
+###  7.2 第二个命令是 交互式的rebase 
 
  交互式 rebase 指的是使用带参数 --interactive 的 rebase 命令, 简写为 -i 
 
-```
+```sh
 git rebase -i HEAD~4
 ```
 
@@ -629,13 +1096,14 @@ git rebase -i HEAD~4
   来达到目的。 
 
   ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420221736.png)
-  
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420221755.png)
 
-### 8.添加锚点：git tag 
 
-```
+
+## 8.添加锚点：git tag 
+
+```sh
 git tag v1 c1 //打v1标签到提交c1上
 ```
 
@@ -647,13 +1115,17 @@ git tag v1 c1 //打v1标签到提交c1上
 
   ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420221817.png)
 
-### 9.**描述**离你最近的锚点（也就是标签）:git describe
+
+
+## 9.**描述**离你最近的锚点（也就是标签）:git describe
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420221836.png)
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420221847.png)
 
-### 10.拉取远程仓库：git clone 
+
+
+## 10.拉取远程仓库：git clone 
 
   ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420221917.png)
    既然你已经看过 git clone 命令了，咱们深入地看一下发生了什么。 
@@ -666,13 +1138,17 @@ git tag v1 c1 //打v1标签到提交c1上
 
  远程分支有一个命名规范 —— 它们的格式是: 
 
--  <remote name>/<branch name> 
+```sh
+<remote name>/<branch name> 
+```
 
- 因此，如果你看到一个名为 o/master 的分***么这个分支就叫 master，远程仓库的名称就是 o。 
+   因此，如果你看到一个名为 o/master 的分***么这个分支就叫 master，远程仓库的名称就是 o。 
 
  大多数的开发人员会将它们主要的远程仓库命名为 origin，并不是 o。这是因为当你用 git clone 某个仓库时，**Git 已经帮你把远程仓库的名称设置为 origin 了**
 
-### 11.git fetch 
+
+
+## 12.git fetch 
 
  git fetch 完成了仅有的但是很重要的两步: 
 
@@ -692,26 +1168,37 @@ git tag v1 c1 //打v1标签到提交c1上
 
  所以, 你可以将 git fetch 的理解为单纯的下载操作。
 
-### 12.git pull 
+
+
+## 13.git pull 
 
  既然我们已经知道了如何用 git fetch 获取远程的数据, 现在我们学习如何将这些变化更新到我们的工作当中。 
 
  其实有很多方法的 —— 当远程分支中有新的提交时，你可以像合并本地分***样来合并远程分支。也就是说就是你可以执行以下命令: 
 
--  git cherry-pick o/master 
--  git rebase o/master 
--  git merge o/master 
+- ```sh
+  git cherry-pick o/master 
+  ```
+
+- ```sh
+  git rebase o/master 
+  ```
+
+- ```sh
+  git merge o/master 
+  ```
+
 -  等等 
 
-  实际上，由于先抓取更新再合并到本地分支这个流程很常用，因此 Git 提供了一个专门的命令来完成这两个操作。它就是我们要讲的  git pull 。 
+实际上，由于先抓取更新再合并到本地分支这个流程很常用，因此 Git 提供了一个专门的命令来完成这两个操作。它就是我们要讲的  git pull 。 
 
-  ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420222633.png)
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420222633.png)
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420222647.png)
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420222654.png)
 
-```
+```sh
 git pull --rebase //我个人更喜欢这个
 ```
 
@@ -719,13 +1206,15 @@ git pull --rebase //我个人更喜欢这个
 
  **暂存，拉取，恢复暂存，合并(如果有冲突)，提交，推送** 
 
-```
+```sh
 git stash :暂存本地代码 git pull origin develop : 获取远程分支代码 git stash pop:恢复之前暂存的文件
 ```
 
-###  13.git push 
 
-  it push  负责将 **你的** 变更上传到指定的远程仓库，并在远程仓库上合并你的新提交记录。一旦  git push  完成, 你的朋友们就可以从这个远程仓库下载你分享的成果了！ 
+
+##  14.git push 
+
+git push  负责将 **你的** 变更上传到指定的远程仓库，并在远程仓库上合并你的新提交记录。一旦  git push  完成, 你的朋友们就可以从这个远程仓库下载你分享的成果了！ 
 
   ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420223050.png)
 
@@ -742,9 +1231,10 @@ git stash :暂存本地代码 git pull origin develop : 获取远程分支代码
   ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420223635.png)
 
 
-### 14.偏离的历史提交
 
-假设你周一克隆了一个仓库，然后开始研发某个新功能。到周五时，你新功能开发测试完毕，可以发布了。但是 —— 天啊！你的同事这周写了一堆代码，还改了许多你的功能中使用的 API，这些变动会导致你新开发的功能变得不可用。但是他们已经将那些提交推送到远程仓库了，因此你的工作就变成了基于[项目]()**旧版**的代码，与远程仓库最新的代码不匹配了。 
+## 15.偏离的历史提交
+
+假设你周一克隆了一个仓库，然后开始研发某个新功能。到周五时，你新功能开发测试完毕，可以发布了。但是 —— 天啊！你的同事这周写了一堆代码，还改了许多你的功能中使用的 API，这些变动会导致你新开发的功能变得不可用。但是他们已经将那些提交推送到远程仓库了，因此你的工作就变成了基于**项目旧版**的代码，与远程仓库最新的代码不匹配了。 
 
  这种情况下, git push 就不知道该如何操作了。如果你执行 git push，Git 应该让远程仓库回到星期一那天的状态吗？还是直接在新代码的基础上添加你的代码，亦或由于你的提交已经过时而直接忽略你的提交？ 
 
@@ -760,11 +1250,13 @@ git stash :暂存本地代码 git pull origin develop : 获取远程分支代码
 
   当然 —— 前面已经介绍过  **git pull 就是 fetch 和 merge 的简写，类似的 git pull --rebase 就是 fetch 和 rebase 的简写！** 
 
-  **![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420223914.png)**  
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420223914.png)
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420224028.png)
 
-### 15.远程服务器拒绝!(Remote Rejected) 
+
+
+## 16.远程服务器拒绝!(Remote Rejected) 
 
  如果你是在一个大的合作团队中工作, 很可能是master被锁定了, 需要一些Pull Request流程来合并修改。如果你直接提交(commit)到本地master, 然后试图推送(push)修改, 你将会收到这样类似的信息: 
 
@@ -784,7 +1276,9 @@ git stash :暂存本地代码 git pull origin develop : 获取远程分支代码
 
  **新建一个分支feature, 推送到远程服务器(实质上就是间接地给远程服务器新建了一个feature分支，然后变成以后推东西到这个feature分支了，这样同事之间开发互不干扰，也可以避免提交的时候跟他人发生冲突).** 然后reset你的master分支和远程服务器保持一致, 否则下次你pull并且他人的提交和你冲突的时候就会有问题.
 
-### 16.远程追踪 
+
+
+## 17.远程追踪 
 
  在前几节课程中有件事儿挺神奇的，Git 好像知道 master 与 o/master 是相关的。当然这些分支的名字是相似的，可能会让你觉得是依此将远程分支 master 和本地的 master 分支进行了关联。这种关联在以下两种情况下可以清楚地得到展示： 
 
@@ -801,7 +1295,7 @@ git stash :暂存本地代码 git pull origin develop : 获取远程分支代码
 
  这也解释了为什么会在克隆的时候会看到下面的输出： 
 
-```
+```text
 local branch "master" set to track remote branch "o/master"
 ```
 
@@ -809,9 +1303,13 @@ local branch "master" set to track remote branch "o/master"
 
  当然可以啦！你可以让任意分支跟踪 o/master, 然后该分支会像 master 分支一样得到隐含的 push 目的地以及 merge 的目标。 这意味着你可以在分支 totallyNotMaster 上执行 git push，将工作推送到远程仓库的 master 分支上。 
 
- 有两种方法设置这个属性，第一种就是通过远程分支检出一个新的分支，执行: 
+ 有两种方法设置这个属性
 
-```
+### 17.1 第一种方法
+
+通过远程分支检出一个新的分支，执行: 
+
+```sh
 git checkout -b totallyNotMaster o/master
 ```
 
@@ -823,31 +1321,33 @@ git checkout -b totallyNotMaster o/master
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420224123.png) 
 
- 第二种方法 
+### 17.2 第二种方法 
 
  另一种设置远程追踪分支的方法就是使用：git branch -u 命令，执行： 
 
-```
+```sh
 git branch -u o/master foo
 ```
 
  这样 foo 就会跟踪 o/master 了。如果当前就在 foo 分支上, 还可以省略 foo： 
 
-```
+```sh
 git branch -u o/master
 ```
 
-### 17.Git Push 的参数 
+
+
+## 18.Git Push 的参数 
 
  我们可以为 push 指定参数，语法是： 
 
-```
+```sh
 git push <remote> <place>
 ```
 
  <place> 参数是什么意思呢？我们稍后会深入其中的细节, 先看看例子, 这个命令是: 
 
-```
+```sh
 git push origin master
 ```
 
@@ -857,7 +1357,7 @@ git push origin master
 
  【注意】 
 
-```
+```sh
 git push origin side
 ```
 
@@ -877,7 +1377,7 @@ git push origin side
 
 要同时为源和目的地指定 <place> 的话，只需要用冒号 : 将二者连起来就可以了：
 
-```
+```sh
 git push origin <source>:<destination>
 ```
 
@@ -891,13 +1391,15 @@ git push origin <source>:<destination>
 
 【**不存在的分支，git会帮你新建，基于谁新建呢？本地的o/master，远程的master**】
 
-### 18.Git fetch 的参数 
 
-###  <place> 参数 
+
+## 19.Git fetch 的参数 
+
+<place> 参数 
 
  如果你像如下命令这样为 git fetch 设置 的话： 
 
-```
+```sh
 git fetch origin foo
 ```
 
@@ -919,12 +1421,19 @@ git fetch origin foo
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420224409.png)
 
-### 19.古怪的 <source> 
+
+
+## 20.古怪的 <source> 
 
  Git 有两种关于 <source> 的用法是比较诡异的，即你可以在 git push 或 git fetch 时不指定任何 source，方法就是仅保留冒号和 destination 部分，**source 部分留空**。 
 
--  git push origin :side 
-- ​    git fetch origin :bugFix    
+- ```sh
+  git push origin :side 
+  ```
+
+- ```sh
+  git fetch origin :bugFix
+  ```
 
  ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420224421.png)
 
@@ -934,7 +1443,9 @@ git fetch origin foo
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420224455.png)
 
-### 20.Git pull 参数 
+
+
+## 21.Git pull 参数 
 
  既然你已经掌握关于 git fetch 和 git push 参数的方方面面了，关于 git pull 几乎没有什么可以讲的了 :) 
 
@@ -946,7 +1457,7 @@ git fetch origin foo
 
  git pull origin foo 相当于： 
 
-```
+```sh
 git fetch origin foo; git merge o/foo
 ```
 
@@ -954,7 +1465,7 @@ git fetch origin foo; git merge o/foo
 
  git pull origin bar~1:bugFix 相当于： 
 
-```
+```sh
 git fetch origin bar~1:bugFix; git merge bugFix
 ```
 
@@ -970,7 +1481,9 @@ git fetch origin bar~1:bugFix; git merge bugFix
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420224532.png)
 
-### 21.git 本地修改被reset后怎么恢复？ 
+
+
+## 22.git 本地修改被reset后怎么恢复？ 
 
  可以使用git reflog 命令查看本地的操作记录 b7057a9 HEAD@{0}: reset: moving to b7057a9 98abc5a HEAD@{1}: commit: more stuff added to foo b7057a9 HEAD@{2}: commit (initial): initial commit 然后使用$ git reset --hard 98abc5a回到98abc5a对应的那次commit 
 
@@ -978,14 +1491,16 @@ git fetch origin bar~1:bugFix; git merge bugFix
 
  reset命令有3种方式： 1：git reset –-mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，**只保留[源码]()**，回退commit和index信息 2：git reset –-soft：回退到某个版本，**只回退了commit的信息，不会恢复到index一级。如果还要提交，直接commit即可** 3：git reset –-hard：彻底回退到某个版本，本地的[源码]()也会变为上一个版本的内容 这就是**--soft** 和 **--hard** 的区别：**--hard** 会清空工作目录和暂存区的改动,而 **--soft****则会保留工作目录的内容，并把因为保留工作目录内容所带来的新的文件差异放进暂存区(index)**。
 
-### 22.reflog 
+
+
+## 23.reflog 
 
  每个人都会犯错误，这完全没有关系！有时候你可能觉得自己把仓库搞得一团糟，只想把它删了完事。 
 
   git reflog 是个非常有用的命令，可以显示所有操作的日志。包括 merge ， reset ， revert  等，基本上包括了对分支的任何更改。 
 
   ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420224748.gif)
-  
+
 
  如果出错了，你可以根据reflog提供的信息通过重置HEAD 来撤销改动。 
 
@@ -995,7 +1510,9 @@ git fetch origin bar~1:bugFix; git merge bugFix
 
 我们可以看到，最新的操作也记录到reflog里了。
 
-### 23.其它实用命令 
+
+
+## 24.其它实用命令 
 
  ①git status 查看工作区、本地仓库、缓存（stash）的文件修改 状态 
 

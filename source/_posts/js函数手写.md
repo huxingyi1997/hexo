@@ -1780,7 +1780,7 @@ console.log(res);
 多维数组=>一维数组
 
 ```js
-let arr = [1, [2, [3, [4, ,5]]], 6];// -> [1, 2, 3, 4, 5, 6]
+let arr = [1, [2, [3, [4, ,5]]], 6]; // -> [1, 2, 3, 4, 5, 6]
 ```
 
 如何实现呢，思路非常简单：**我们要做的就是在数组中找到是数组类型的元素，然后将他们展开**。这就是实现数组拍平 `flat` 方法的关键思路。
@@ -2159,7 +2159,7 @@ console.log(unique(arr));
 
 自定义函数：myForEach。
 
-```
+```js
 Array.prototype.myForEach = function(callback, context) {
     if (typeof callback !== 'function') throw ('callback参数必须是函数');
     let self = this,
@@ -3670,7 +3670,7 @@ container.onmousemove = debounce(getUserAction, 1000);
 
 如果我们在 `getUserAction` 函数中 `console.log(this)`，在不使用 `debounce` 函数的时候，`this` 的值为：
 
-```js
+```html
 <div id="container"></div>
 ```
 
@@ -4640,7 +4640,7 @@ console.log(parseParam(url));
 
 将对象data中的数据渲染至template模板中
 
-```
+```js
 let template = '我是{{name}}，年龄{{age}}，性别{{sex}}';
 let data = {
     name: '姓名',
@@ -4651,7 +4651,7 @@ render(template, data); // 我是姓名，年龄18，性别undefined
 
 自己跟着大佬手写的代码
 
-```
+```js
 function render(template, data) {
 	// 模板字符串正则
 	const reg = /\{\{(\w+)\}\}/;
@@ -4677,7 +4677,7 @@ console.log(render(template, data)); // 我是姓名，年龄18，性别undefine
 
 递归改为迭代
 
-```
+```js
 function render(template, data) {
 	// 模板字符串正则
 	const reg = /\{\{(\w+)\}\}/;
@@ -4707,7 +4707,7 @@ console.log(render(template, data)); // 我是姓名，年龄18，性别undefine
 
 ### 中划线转驼峰
 
-```
+```js
 // 把-后面的字母替换为大写字母
 function fn(str) {
 	return str.replace(/-\w/g, function (v) {
@@ -4721,7 +4721,7 @@ console.log(fn(s1));
 
 简化代码
 
-```
+```js
 // 把-后面的字母替换为大写字母
 function fn(str) {
 	return str.replace(/-\w/g, v => v[1].toUpperCase());
@@ -4732,7 +4732,7 @@ console.log(fn(s1));
 
 或者
 
-```
+```js
 // 把-后面的字母替换为大写字母
 function fn(str) {
 	return str.replace(/-(\w)/g, (v1, v2) => v2.toUpperCase());
@@ -4777,7 +4777,7 @@ PascalCaseTest  pascalCaseTest  pascal_case_test pascal-case-test
 
 判断是哪种模式，识别之后进行拼接操作
 
-```
+```js
 function caseTransform(s) {
 	let list = new Array(4);
 	if (s.indexOf('_') != -1) {
@@ -4884,7 +4884,7 @@ console.log(caseTransform(str).join(' '));
 
 ​				最后一个参数: stringObject本身
 
-```
+```js
 let str = "abcabcabcbbccccc";
 let num = 0;
 let char = '';
@@ -4976,7 +4976,7 @@ console.log(`字符最多的是${char}，出现了${num}次`);
 
 **空间复杂度**：O(1)。我们只需要常数的空间保存若干变量。
 
-```
+```js
 var strStr = function(haystack, needle) {
     let m =  haystack.length;
     let n = needle.length;
@@ -5077,7 +5077,7 @@ KMP 之所以能够在O(m+n) 复杂度内完成查找，是因为其能在「非
 
 同时我们发现，对于匹配串的任意一个位置而言，由该位置发起的下一个匹配点位置其实与原串无关。
 
-举个 🌰，对于匹配串 abcabd 的字符 d 而言，由它发起的下一个匹配点跳转必然是字符 c 的位置。因为字符 d 位置的相同「前缀」和「后缀」字符 ab 的下一位置就是字符 c。
+举个例子，对于匹配串 abcabd 的字符 d 而言，由它发起的下一个匹配点跳转必然是字符 c 的位置。因为字符 d 位置的相同「前缀」和「后缀」字符 ab 的下一位置就是字符 c。
 
 可见从匹配串某个位置跳转下一个匹配位置这一过程是与原串无关的，我们将这一过程称为找 next 点。
 
@@ -5092,7 +5092,7 @@ KMP 之所以能够在O(m+n) 复杂度内完成查找，是因为其能在「非
 所以我们的重点在于如何在 O(m) 复杂度内处理处 next 数组。
 
 3. next 数组的构建
-接下来，我们看看 next 数组是如何在 O(m)O(m) 的复杂度内被预处理出来的。
+接下来，我们看看 next 数组是如何在 O(m)的复杂度内被预处理出来的。
 
 假设有匹配串 aaabbab，我们来看看对应的 next 是如何被构建出来的。
 
@@ -5162,7 +5162,7 @@ function calNext(needle, next) {
 
 实现思路是将数字转换为字符数组，再循环整个数组， 每三位添加一个分隔逗号，最后再合并成字符串。因为分隔符在顺序上是从后往前添加的：比如 1234567添加后是1,234,567 而不是 123,456,7 ，所以方便起见可以先把数组倒序，添加完之后再倒序回来，就是正常的顺序了。要注意的是如果数字带小数的话，要把小数部分分开处理。
 
-```swift
+```js
 function numFormat(num) {
     // 按小数点分割
     num = Number(num).toString().split('.');
@@ -5198,7 +5198,7 @@ console.log(numFormat(b)); // "673,439.4542"
 
 `toLocaleString()` 方法返回这个数字在特定语言环境下的表示字符串。
 
-```jsx
+```js
 let a = 1234567894532;
 let b = 673439.4542;
 
@@ -5217,7 +5217,7 @@ console.log(b.toLocaleString()); // "673,439.454"  （小数部分四舍五入�
 
 其中第一个 [RegExp](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/RegExp) 对象或者其字面量所匹配的内容会被第二个参数的返回值替换。
 
-```jsx
+```js
 function numFormat(num) {
     let res = num.toString().replace(/\d+/, function(n) {
         // 先提取整数部分
@@ -5243,7 +5243,7 @@ console.log(numFormat(b)); // "673,439.4542"
 
 ### 判断是否是电话号码
 
-```
+```js
 function isPhone(tel) {
 	let regx = /^1[345789]\d{9}$/;
 	return regx.test(tel);
@@ -5252,7 +5252,7 @@ function isPhone(tel) {
 
 ### 验证是否是邮箱
 
-```
+```js
 function isEmail(email) {
 	let regx = /^([a-zA-Z0-9_\-]+@([a-zA-Z0-9_\-]+\.)+([a-zA-Z]+)$/;
     return regx.test(email);
@@ -5277,7 +5277,7 @@ function isCardNo(number) {
 
 ### 字符串拆分数组
 
-```
+```js
 String.prototype.myTrim = function() {
     let arr = this.split('');
     let i = 0;
@@ -5297,7 +5297,7 @@ console.log('   ab cdd  '.myTrim());
 
 ### 正则表达式
 
-```
+```js
 String.prototype.myTrim = function() {
     return this.replace(/^\s+/, '').replace(/\s+$/, '');
 }
@@ -5307,7 +5307,7 @@ console.log('   ab cdd  '.myTrim());
 
 可以利用g后缀合并
 
-```
+```js
 String.prototype.myTrim = function() {
     return this.replace(/^\s+|\s+$/g, '');
 }
@@ -5317,7 +5317,7 @@ console.log('   ab cdd  '.myTrim());
 
 上述方法假设至少存在一个空白符，因此效率较低，效率较高的写法如下
 
-```
+```js
 String.prototype.myTrim = function() {
     return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
@@ -5769,7 +5769,7 @@ ES6中Map相对于Object对象有几个区别：
 
 为此，WeakSet非常适合处理这种情况使用WeakSet简化，注意需要在第一次运行时创建`WeakSet`，并将其与每个后续函数调用一起传递（使用内部参数_refs）。 WeakSet只能存放对象，且对象的数量或它们的遍历顺序无关紧要，因此，WeakSet比[`Set`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Set)更适合（和执行）跟踪对象引用，尤其是在涉及大量对象时。
 
-```
+```js
 // 对传入的obj对象 检查有无循环引用情况
 function execRecursively(obj) {
     // 存储前层级对象
@@ -5849,7 +5849,7 @@ console.log(execRecursively(obj5)); // true
 
 使用闭包实现单例模式，懒汉式单例模式，没有一开始就对这个类进行实例化：
 
-```
+```js
 function Singleton (name) {
 	this.name = name;
 };

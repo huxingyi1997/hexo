@@ -9,7 +9,7 @@ tags:
 ---
 一天在面试中，面试官给了我一道手写代码题
 
-```
+```js
 /**
     * 实现函数 partialUsingArguments，调用之后满足如下条件：
     1、返回一个函数 result
@@ -20,7 +20,7 @@ tags:
 
 我当时的第一版思路，将两个参数数组进行拼接，通过闭包返回结果，面试官提示如果参数为空，怎么办，我增加了args = args || [];这一句
 
-```
+```js
 function partialUsingArguments(fn, ...args) {
     args = args || [];
     return function (..._args) {
@@ -31,7 +31,7 @@ function partialUsingArguments(fn, ...args) {
 
 面试官说如果参数不是数组，是对象怎么办，提示ES6还有什么拼接方法，使用展开运算符
 
-```
+```js
 function partialUsingArguments(fn, args) {
     return function (_args) {
         return fn(...args, ..._args);
@@ -41,9 +41,17 @@ function partialUsingArguments(fn, args) {
 
 我当场问面试官，是不是函数柯里化，其实这和柯里化一样，叫作偏函数，和函数柯里化一样，都属于函数式编程的范畴，这里总结了一些函数式编程的经典案例，吃透它们吧。
 
+推荐阅读:
+
+- [《函数式编程指北》](https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/)
+- [《JavaScript轻量级函数式编程》](https://github.com/Simingchen/Functional-Light-JS)
+- [《ECMAScript 6入门》——函数式编程](https://github.com/ruanyf/es6tutorial/blob/gh-pages/docs/fp.md)或者[电子书版](https://www.bookstack.cn/read/es6-3rd/docs-fp.md)
+
 <!-- more -->
 
 ## 1.什么是函数式编程
+
+JavaScript 语言从一诞生，就具有函数式编程的烙印。它将函数作为一种独立的数据类型，与其他数据类型处于完全平等的地位。在 JavaScript 语言中，你可以采用面向对象编程，也可以采用函数式编程。有人甚至说，JavaScript 是有史以来第一种被大规模采用的函数式编程语言。 ES6 的种种新增功能，使得函数式编程变得更方便、更强大。
 
 在文章之前，先和大家讲一下对于函数式编程（*Functional Programming, aka. FP*）的理解（下文使用FP指代函数式编程）：
 
@@ -66,7 +74,7 @@ function partialUsingArguments(fn, args) {
 
 简单示例如下
 
-```
+```js
 // Closure demo
 function cube(x) {
     let z = 1;
@@ -86,7 +94,7 @@ console.log(makeCube(5)); // 100
 
 再看下图测试代码：
 
-```
+```js
 function cube(x) {
     return function wrapper(y) {
         let z = 1;
@@ -126,13 +134,13 @@ console.log(makeCube()); // 100
 
 ### ES6简化写法
 
-```
+```js
 const unary = fn => arg => fn(arg);
 ```
 
 一元函数，应用于当只想在**某个函数上传递一个参数**情况下使用。尝试考虑以下场景：
 
-```
+```js
 console.log(['1', '2', '3'].map(parseInt)); // [1, NaN, NaN]
 console.log(['1', '2', '3'].map(unary(parseInt))); // [1, 2, 3]
 ```
@@ -141,7 +149,7 @@ console.log(['1', '2', '3'].map(unary(parseInt))); // [1, 2, 3]
 
 ### ES6常规写法
 
-```
+```js
 const unary = function(fn) {
 	return function(arg) {
 		return fn(arg);
@@ -155,7 +163,7 @@ const unary = function(fn) {
 
 ### ES6简化写法
 
-```
+```js
 const identity = v => v;
 ```
 
@@ -163,7 +171,7 @@ const identity = v => v;
 
 ### ES6常规写法
 
-```
+```js
 const identity = function(v) {
 	return v;
 }
@@ -171,7 +179,7 @@ const identity = function(v) {
 
 有同学会看到identity函数会觉得莫名其妙？是干嘛的？我第一眼看到也很迷惑？但是考虑以下场景：
 
-```
+```js
 console.log([false, 1, 2, 0, '5', true].filter( identity )); // [1, 2, "5", true]
 console.log([false, 0].some( identity )); // false
 console.log([-2, 1, '3'].every( identity )); // true
@@ -187,7 +195,7 @@ console.log([-2, 1, '3'].every( identity )); // true
 
 ### ES6简化写法
 
-```
+```js
 const constant = v => () => v;
 ```
 
@@ -195,7 +203,7 @@ const constant = v => () => v;
 
 ### ES6常规写法
 
-```
+```js
 const constant = function(v) {
 	return function() {
 		return v;
@@ -205,7 +213,7 @@ const constant = function(v) {
 
 同样，这个函数...乍一看，也不知道具体有什么用。但是考虑场景如下：
 
-```
+```js
 const p1 = new Promise((resolve, reject) => {
     setTimeout(() => {
     	resolve('Hello!');
@@ -216,7 +224,7 @@ p1.then(constant('Hi')).then(console.log); // Hi!
 
 引入constant函数简化函数
 
-```
+```js
 const p1 = new Promise((resolve, reject) => {
     setTimeout(() => {
     	resolve('Hello!');
@@ -228,7 +236,7 @@ p1.then(constant('Hi')).then(console.log); // Hi!
 
 而直接传参数会出现Promise中的值穿透
 
-```
+```js
 const p1 = new Promise((resolve, reject) => {
     setTimeout(() => {
     	resolve('Hello!');
@@ -245,7 +253,7 @@ p1.then('Hi').then(console.log); // Hello!
 
 ### ES6简化写法
 
-```
+```js
 const spreadArgs = fn => argsArr => fn(...argsArr );
 const gatherArgs = fn => (...argsArr) => fn(argsArr);
 ```
@@ -254,7 +262,7 @@ const gatherArgs = fn => (...argsArr) => fn(argsArr);
 
 ### ES6常规写法
 
-```
+```js
 const spreadArgs = function(fn) {
 	return function(argsArr) {
 		return fn(...argsArr);
@@ -271,7 +279,7 @@ const gatherArgs = function(fn) {
 
 spreadArgs函数示例如下：
 
-```
+```js
 function cube(x, y, z) {
 	return x * y * z;
 }
@@ -287,7 +295,7 @@ console.log(make(spreadArgs(cube), [3, 4, 5])); // 60
 
 gatherArgs函数示例如下：
 
-```
+```js
 function combineFirstTwo([v1, v2]) {
 	return v1 + v2;
 }
@@ -301,7 +309,7 @@ console.log([1, 2, 3, 4, 5].reduce(gatherArgs(combineFirstTwo))); // 15
 
 
 
-## 7.partial & curry
+## 7.partial & curry（偏函数与柯里化）
 
 相信大家对函数柯里化应该或多或少有点了解。维基百科定义：
 
@@ -313,7 +321,7 @@ console.log([1, 2, 3, 4, 5].reduce(gatherArgs(combineFirstTwo))); // 15
 
 ### 偏函数ES6简化写法
 
-```
+```js
 const partial = (fn, ...args) => (..._args) =>
 	fn(...args, ..._args);
 ```
@@ -322,7 +330,7 @@ const partial = (fn, ...args) => (..._args) =>
 
 ### 偏函数ES6常规写法
 
-```
+```js
 function partial(fn, ...args) {
     return function (..._args) {
         return fn(...args, ..._args);
@@ -334,7 +342,7 @@ function partial(fn, ...args) {
 
 ### 函数柯里化ES6常规写法
 
-```
+```js
 function curry(fn, ...args) {
 	const len = fn.length;
 	if (args.length >= len) {
@@ -360,7 +368,7 @@ console.log(multi(5, 6)(7)); // 210
 
 经过一些简化的方法
 
-```
+```js
 function curry(fn, ...args) {
 	if (args.length >= fn.length) {
     	// 判断当前函数传入的参数是否大于或等于fn需要参数的数量，如果是，直接执行fn
@@ -385,7 +393,7 @@ console.log(multi(5, 6)(7)); // 210
 
 ### 函数柯里化ES6简化写法
 
-```
+```js
 const curry = (fn, arr = []) => (..._args) => (
 	args => args.length === fn.length ? fn(...args) : curry(fn, args)
 )([...arr, ..._args])
@@ -406,7 +414,7 @@ console.log(multi(5, 6)(7)); // 210
 
 先模拟一个ajax函数如下：
 
-```
+```js
 function ajax(url, params, callback) {
     setTimeout(() => {
         callback(
@@ -418,7 +426,7 @@ function ajax(url, params, callback) {
 
 考虑partial使用场景如下：
 
-```
+```js
 function ajax(url, params, callback) {
     setTimeout(() => {
         callback(
@@ -445,7 +453,7 @@ data: Hello! Teddy Bear
 
 考虑curry使用场景如下：
 
-```
+```js
 function ajax(url, params, callback) {
     setTimeout(() => {
         callback(
@@ -487,11 +495,13 @@ P.S. 关于函数式编程的实践，大家可以使用`lodash/fp`模块进行�
 
 
 
-## 8.compose
+## 8.compose（函数合成）
+
+函数合成（function composition）指的是，将多个函数合成一个函数。
 
 如果我们想，对一个值执行一系列操作，并打印出来，考虑以下代码：
 
-```
+```js
 // import { partial, partialRight } from 'lodash';
 const partial = (fn, ...args) => (..._args) =>
 	fn(...args, ..._args);
@@ -517,13 +527,15 @@ const pow3 = partialRight(pow, 3);
 console.log(add10(pow3(double(2)))); // 74
 ```
 
+上面代码中，`compose`就是一个函数合成器，用于将两个函数合成一个函数。
+
 备注：`partialRight`和`partial`见名知意，相当于是彼此的镜像函数。
 
 > _.partialRight: This method is like _.partial except that partially applied arguments are appended to the arguments it receives.
 
 原文从lodash导入，我自己仿照partial重写了一版。无需否认，这段示例代码的确毫无意义。但是为了达成这一系列操作，我最终执行了这一长串嵌套了四层的函数调用：`console.log(add10(pow3(double(2))))`。（说实话，我的确觉得有点难以阅读了...），如果更长了，怎么办？可能有的同学会给出以下答案:
 
-```
+```js
 function mixed(x) {
 	return add10(pow3(double(2)));
 }
@@ -557,7 +569,7 @@ console.log(mixed(2)); // 74
 
 ### 基于栈的compose函数
 
-```
+```js
 function compose(...args) {
     return function(result) {
         const funcs = [...args];
@@ -598,7 +610,7 @@ compose(console.log, add10, pow3, double)(2) // 74
 
 当然，关于`compose`的更加函数式的实现如下：
 
-```
+```js
 function compose(...funcs) {
     return result => funcs
         .reverse()
@@ -633,7 +645,7 @@ compose(console.log, add10, pow3, double)(2) // 74
 
 考虑以下代码：
 
-```
+```js
 /* function compose(...funcs) {
     return funcs
         .reverse()
@@ -671,7 +683,7 @@ compose(console.log, add10, pow3, double)(2) // 74
 
 细心观察，通过将参数传递进行懒执行，从而巧妙的完成了这个任务！示例如下：
 
-```
+```js
 function compose(...funcs) {
     return funcs
         .reduce((fn1, fn2) => (...args) => fn1(fn2(...args)));
@@ -710,7 +722,7 @@ compose(
 
 当然上述代码最终也可以这么写：
 
-```
+```js
 function compose(...funcs) {
     return funcs
         .reduce((fn1, fn2) => (...args) => fn1(fn2(...args)));
@@ -753,7 +765,7 @@ compose(
 
 代码如下：
 
-```
+```js
 function compose(...funcs) {
     const [fn1, fn2, ...rest] = funcs.reverse();
 
@@ -809,7 +821,7 @@ redux以及koa其实都是有中间件的思想，组合中间件的compose原�
 
 
 
-## 9.pipe
+## 9.pipe（管道/序列）
 
 那么学习完了`compose`，`pipe`又是什么呢？首先在刚刚学习`compose`函数时，可能有同学会觉得有点小别扭，因为`compose`从左到右传递参数的顺序刚好和调用顺序相反的！
 
@@ -817,7 +829,7 @@ redux以及koa其实都是有中间件的思想，组合中间件的compose原�
 
 回到话题，`pipe`是什么？同学们有没有使用过命令行，比如我常用的一个命令，将当前工作路径拷贝到剪切板，随时ctrl + v就可以使用了~
 
-```
+```js
 pwd | pbcopy
 ```
 
@@ -827,14 +839,14 @@ pwd | pbcopy
 
 考虑的pipe示例代码如下：
 
-```
+```js
 function pipe(...args) {
     return result => {
     const funcs = [...args];
     while(funcs.length > 0) {
-    result = funcs.shift()(result);
+    	result = funcs.shift()(result);
     }
-    return result;
+    	return result;
     };
 }
 // import { partial, partialRight } from 'lodash';
@@ -872,14 +884,14 @@ pipe(
 
 那么实际上等价于：
 
-```
+```js
 const reverseArgs = func => (...args) => func(...args.reverse());
 const pipe = reverseArgs(compose);
 ```
 
 哈我们避免了重复无意义的代码！当然无论是`compose`还是`pipe`，本质上我们都将命令式的代码转换成了声明式的代码，对一个值的操作可以理解为值在函数之间流动
 
-```
+```js
 2 --> multiply --> pow --> add --> console.log
 ```
 
@@ -889,7 +901,7 @@ const pipe = reverseArgs(compose);
 
 也可以实现关于`pipe`的更加函数式的实现如下：
 
-```
+```js
 function pipe(...funcs) {
     return result => funcs
         .reduce((result, fn) => fn(result), result);
@@ -930,7 +942,7 @@ pipe(
 
 考虑以下代码：
 
-```
+```js
 function pipe(...funcs) {
     return funcs
         .reduce((fn1, fn2) => (...args) => fn2(fn1(...args)));
@@ -973,7 +985,7 @@ pipe(
 
 代码如下：
 
-```
+```js
 function pipe(...funcs) {
     const [fn1, fn2, ...rest] = funcs;
 
@@ -1022,21 +1034,519 @@ pipe(
 
 
 
-## 10.Pointfree与声明式编程
+## 10.Functor（函子）
 
-### 10.0 前言 什么是Pointfree风格？
+### 前言 什么是函子？
 
-什么是Pointfree风格？中译过来是**无参数风格**或者**无值风格**，意即为在编写程序时不关注具体数据以及对象，而只关注的是运算过程。
+**定义**：函子是一个普通对象（在其它语言中，可能是一个类），它实现了map函数，在遍历每个对象值的时候生成一个新对象。
+
+### 10.1 实现一个函子
+
+简言之，函子是一个持有值的容器。而且函子是一个普通对象。我们就可以创建一个容器（也就是对象），让它能够持有任何传给它的值。
+
+```js
+const Container = function (value) {
+    this.value = value;
+}
+
+let testValue = new Container(1);
+// => Container {value:1}
+```
+
+我们给 Container 增加一个静态方法，它可以为我们在创建新的 Containers 时省略 new 关键字。
+
+```js
+Container.of = function (value) {
+	return new Container(value);
+}
+
+// 现在我们就可以这样来创建
+Container.of(1);
+// => Container {value:1}
+```
+
+函子需要实现 map 方法，具体的实现是，map 函数从 Container 中取出值，传入的函数把取出的值作为参数调用，并将结果放回 Container。
+
+> 为什么需要 map 函数，我们上面实现的 Container 仅仅是持有了传给它的值。但是持有值的行为几乎没有任何应用场景，而 map 函数发挥的作用就是，允许我们使用当前 Container 持有的值调用任何函数。
+
+```js
+Container.prototype.map = function (fn) {
+	return Container.of(fn(this.value));
+}
+
+// 然后我们实现一个数字的 double 操作
+let double = (x) => x + x;
+Container.of(3).map(double);
+// => Container {value: 6}
+```
+
+map返回了一传入函数的执行结果为值的 Container 实例，所以我们可以链式操作。
+
+```js
+Container.of(3).map(double).map(double).map(double);
+// => Container {value: 24}
+```
+
+完整版代码
+
+```js
+const Container = function (value) {
+    this.value = value;
+}
+
+Container.of = function (value) {
+    return new Container(value);
+}
+
+Container.prototype.map = function (fn) {
+    return Container.of(fn(this.value));
+}
+
+// 测试
+// 然后我们实现一个数字的 double 操作
+let double = (x) => x + x;
+Container.of(3).map(double).map(double).map(double);
+// => Container {value: 24}
+```
+
+使用ES6写法
+
+```js
+class Container {
+    constructor(value) {
+        this.value = value;
+    }
+
+    static of(value) {
+        return new Container(value);
+    }
+
+    map(fn) {
+        return Container.of(fn(this.value));
+    }
+}
+
+// 测试
+// 然后我们实现一个数字的 double 操作
+let double = (x) => x + x;
+Container.of(3).map(double).map(double).map(double);
+// => Container {value: 24}
+```
+
+**通过以上的实现，我们可以发现，函子就是一个实现了map契约的对象。函子是一个寻求契约的概念，该契约很简单，就是实现 map 。根据实现 map 函数的方式不同，会产生不同类型的函子，如 MayBe 、 Either**
+
+函子可以用来做什么？之前我们用tap函数来函数式的解决代码报错的调试问题，如何更加函数式的处理代码中的问题，那就需要用到下面我们说的MayBe函子
+
+### 10.2 MayBe 函子
+
+让我们先写一个upperCase函数来假设一种场景
+
+```js
+let value = 'string';
+function upperCase(value) {
+    // 为了避免报错，我们得写这么一个判断
+    if(value != null || value != undefined)
+        return value.toUpperCase();
+}
+upperCase(value);
+// => STRING
+```
+
+如上面所示，我们代码中经常需要判断一些`null`和`undefined`的情况。下面我们来看一下MayBe函子的实现。
+
+```js
+// MayBe 跟上面的 Container 很相似
+const MayBe = function (value) {
+    this.value = value;
+}
+MayBe.of = function (value) {
+    return new MayBe(value);
+}
+// 多了一个isNothing
+MayBe.prototype.isNoting = function () {
+    return this.value === null || this.value === undefined;
+}
+// 函子必定有 map,但是 map 的实现方式可能不同
+MayBe.prototype.map = function (fn) {
+    return this.isNoting() ? MayBe.of(null) : MayBe.of(fn(this.value));
+}
+
+// MayBe应用
+let value = 'string';
+function upperCase(value) {
+    // 函数无需么一个判断
+    return value.toUpperCase();
+}
+MayBe.of(value).map(upperCase);
+// => MayBe { value: 'STRING' }
+let nullValue = null;
+MayBe.of(nullValue).map(upperCase);
+// 不会报错 MayBe { value: null }
+```
+
+写成ES6形式
+
+```js
+// MayBe 跟上面的 Container 很相似
+class MayBe {
+    constructor(value) {
+        this.value = value;
+    }
+
+    static of(value) {
+        return new MayBe(value);
+    }
+    // 多了一个isNothing
+    isNoting() {
+        return this.value === null || this.value === undefined;
+    }
+    // 函子必定有 map,但是 map 的实现方式可能不同
+    map(fn) {
+        return this.isNoting() ? MayBe.of(null) : MayBe.of(fn(this.value));
+    }
+}
+
+// MayBe应用
+let value = 'string';
+function upperCase(value) {
+    // 函数无需么一个判断
+    return value.toUpperCase();
+}
+MayBe.of(value).map(upperCase);
+// => MayBe { value: 'STRING' }
+let nullValue = null;
+MayBe.of(nullValue).map(upperCase);
+// 不会报错 MayBe { value: null }
+```
+
+### 10.3 Either 函子
+
+```js
+MayBe.of("tony")
+    .map(() => undefined)
+    .map((x)f => "Mr. " + x);
+```
+
+上面的代码结果是 `MyaBe {value: null}`,这只是一个简单的例子，我们可以想一下，如果代码比较复杂，我们是不知道到底是哪一个分支在检查 undefined 和 null 值时执行失败了。这时候我们就需要 Either 函子了，它能解决分支拓展问题。
+
+```js
+const Nothing = function (value) {
+	this.value = value;
+}
+Nothing.of = function (value) {
+	return new Nothing(value);
+}
+Nothing.prototype.map = function (fn) {
+	return this;
+}
+
+const Some = function (value) {
+	this.value = value;
+}
+Some.of = function (value) {
+	return new Some(value);
+}
+Some.prototype.map = function (fn) {
+	return Some.of(fn(this.value));
+}
+
+const Either = {
+    Some,
+    Nothing
+}
+
+// 那么这里如何处理异常呢？
+// 我们定义一个字符串转换成对象的函数
+function parseJSON(str) {
+    // 对于可能出错的环节使用try-catch
+    // 正常情况使用Some函子
+    try{
+        return Either.Some.of(JSON.parse(str));
+    }catch (e) {
+        // 错误之后使用Nothing函子，并返回错误信息
+        return Either.Nothing.of({ error: e.message })
+    }
+}
+
+let eS = parseJSON('{name:xm}');
+console.log(eS);
+// Nothing { value: { error: 'Unexpected token n in JSON at position 1' } }
+let eN = parseJSON('{"name":"xm"}')
+console.log(eN);
+// Some { value: { name: 'xm' } }
+
+console.log(eN.map(x => x.name.toUpperCase()));
+// Some { value: 'XM' }
+```
+
+ES6代码
+
+```js
+class Nothing {
+    constructor(value) {
+        this.value = value;
+    }
+    static of(value) {
+        return new Nothing(value);
+    }
+    map(fn) {
+        return this;
+    }
+}
+
+class Some {
+    constructor(value) {
+        this.value = value;
+    }
+    static of(value) {
+        return new Some(value);
+    }
+    map(fn) {
+        return Some.of(fn(this.value));
+    }
+
+}
+
+const Either = {
+    Some,
+    Nothing
+}
+
+// 那么这里如何处理异常呢？
+// 我们定义一个字符串转换成对象的函数
+function parseJSON(str) {
+    // 对于可能出错的环节使用try-catch
+    // 正常情况使用Some函子
+    try {
+        return Either.Some.of(JSON.parse(str));
+    } catch (e) {
+        // 错误之后使用Nothing函子，并返回错误信息
+        return Either.Nothing.of({ error: e.message })
+    }
+}
+
+let eS = parseJSON('{name:xm}');
+console.log(eS);
+// Nothing { value: { error: 'Unexpected token n in JSON at position 1' } }
+let eN = parseJSON('{"name":"xm"}')
+console.log(eN);
+// Some { value: { name: 'xm' } }
+
+console.log(eN.map(x => x.name.toUpperCase()));
+// Some { value: 'XM' }
+```
+
+### 10.4 Pointed 函子
+
+函子只是一个实现了 map 契约的接口。Pointed 函子也是一个函子的子集，它具有实现了 of 契约的接口。 我们在 MayBe 和 Either 中也实现了 of 方法，用来在创建 Container 时不使用 new 关键字。所以 MayBe 和 Either 都可称为 Pointed 函子。
+
+- Pointed 函子是实现了 of 静态方法的函子
+
+of 方法是为了避免使用 new 来创建对象，更深层的含义是**of 方法用来把值放到上下文**
+
+- Context（把值放到容器中，使用 map 来处理值）
+
+```js
+class Container { 
+    // Point函子
+    // 作用是把值放到一个新的函子里面返回，返回的函子就是一个上下文
+    static of (value) { 
+        return new Container(value);
+    }
+    ……  
+}
+
+// 调用of的时候获得一个上下文，之后是在上下文中处理数据
+Contanier.of(2)
+    .map(x => x + 5);
+```
+
+> ES6 增加了 Array.of， 这使得数组成为了一个 Pointed 函子。
+
+`**Array.of()**` 方法创建一个具有可变数量参数的新数组实例，而不考虑参数的数量或类型。
+
+ `**Array.of()**` 和 `**Array**` 构造函数之间的区别在于处理整数参数：`**Array.of(7)**` 创建一个具有单个元素 **7** 的数组，而 **`Array(7)`** 创建一个长度为7的空数组（**注意：**这是指一个有7个空位(empty)的数组，而不是由7个`undefined`组成的数组）。
+
+```js
+Array.of(7);       // [7]
+Array.of(1, 2, 3); // [1, 2, 3]
+
+Array(7);          // [ , , , , , , ]
+Array(1, 2, 3);    // [1, 2, 3]
+```
+
+**语法**
+
+```js
+Array.of(element0[, element1[, ...[, elementN]]])
+```
+
+**参数**
+
+- element*N*
+
+  任意个参数，将按顺序成为返回数组中的元素。
+
+**返回值**
+
+新的 [`Array`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array)。
+
+**示例**
+
+```js
+Array.of(1);         // [1]
+Array.of(1, 2, 3);   // [1, 2, 3]
+Array.of(undefined); // [undefined]
+```
+
+### 10.5 Monad 函子（单子）
+
+MayBe 函子很可能会出现嵌套，如果出现嵌套后，我们想要继续操作真正的value是有困难的。必须深入到 MayBe 内部进行操作。
+
+```js
+let joinExample = MayBe.of(MayBe.of(5));
+// => MayBe { value: MayBe { value: 5 } }
+
+// 这个时候我们想让5加上4，需要深入 MayBe 函子内部
+joinExample.map((insideMayBe) => {
+    return insideMayBe.map((value) => value + 4);
+})
+// => MayBe { value: MayBe { value: 9 } }
+```
+
+我们这时就可以实现一个 join 方法来解决这个问题。
+
+```js
+// 如果通过 isNothing 的检查，就返回自身的 value
+MayBe.prototype.join = function () {
+    return this.isNoting() ? MayBe.of(null) : this.value;
+}
+
+let joinExample2 = MayBe.of(MayBe.of(5));
+// => MayBe { value: MayBe { value: 5 } }
+
+// 这个时候我们想让5加上4就很简单了。
+joinExample2.join().map((value) => value + 4);
+// => MayBe { value: 9 }
+```
+
+再延伸一下，我们扩展一个 chain 方法。
+
+```js
+MayBe.prototype.chain = function (fn) {
+	return this.map(fn).join();
+}
+```
+
+调用 chain 后就能把嵌套的 MayBe 展开了。
+
+完整代码
+
+```js
+// MayBe 跟上面的 Container 很相似
+const MayBe = function (value) {
+    this.value = value;
+}
+MayBe.of = function (value) {
+    return new MayBe(value);
+}
+// 多了一个isNothing
+MayBe.prototype.isNoting = function () {
+    return this.value === null || this.value === undefined;
+}
+// 如果通过 isNothing 的检查，就返回自身的 value
+MayBe.prototype.join = function () {
+    return this.isNoting() ? MayBe.of(null) : this.value;
+}
+// 函子必定有 map,但是 map 的实现方式可能不同
+MayBe.prototype.map = function (fn) {
+    return this.isNoting() ? MayBe.of(null) : MayBe.of(fn(this.value));
+}
+// 同时调用map和join方法
+MayBe.prototype.chain = function (fn) {
+    return this.map(fn).join();
+}
+
+// 测试代码
+let joinExample3 = MayBe.of(MayBe.of(5));
+// => MayBe { value: MayBe { value: 5 } }
+
+
+joinExample3.chain((insideMayBe) => {
+    return insideMayBe.map((value) => value + 4);
+})
+// => MayBe { value: 9 }
+```
+
+写成ES6格式
+
+```js
+// MayBe 跟上面的 Container 很相似
+const MayBe = function (value) {
+    this.value = value;
+}
+MayBe.of = function (value) {
+    return new MayBe(value);
+}
+// 多了一个isNothing
+MayBe.prototype.isNoting = function () {
+    return this.value === null || this.value === undefined;
+}
+// 如果通过 isNothing 的检查，就返回自身的 value
+MayBe.prototype.join = function () {
+    return this.isNoting() ? MayBe.of(null) : this.value;
+}
+// 函子必定有 map,但是 map 的实现方式可能不同
+MayBe.prototype.map = function (fn) {
+    return this.isNoting() ? MayBe.of(null) : MayBe.of(fn(this.value));
+}
+// 同时调用map和join方法
+MayBe.prototype.chain = function (fn) {
+    return this.map(fn).join();
+}
+
+// 测试代码
+let joinExample3 = MayBe.of(MayBe.of(5));
+// => MayBe { value: MayBe { value: 5 } }
+
+
+joinExample3.chain((insideMayBe) => {
+    return insideMayBe.map((value) => value + 4);
+})
+// => MayBe { value: 9 }
+```
+
+**Monad** 其实就是一个含有 chain 方法的函子。只有of 和 map 的 MayBe 是一个函子，含有 chain 的函子是一个 Monad。
+
+**什么时候使用Monad?**
+
+- 当一个函数返回一个函子的时候，我们就要想到monad，monad可以帮我们解决函子嵌套的问题。
+- 当我们想要返回一个函数，这个函数返回一个值，这个时候可以调用**map** 方法
+- 当我们想要去合并一个函数，但是这个函数返回一个函子，这个时候我们要用**chain** 方法
+
+
+
+## 11.Pointfree与声明式编程
+
+### 前言 什么是Pointfree风格？
+
+什么是Pointfree风格？中译过来是**无参数风格**或者**无值风格**，意即为在编写程序时不关注具体数据以及对象，而只关注的是运算过程，具体的实现是函数的组合。
+
+**Point Free：** 我们可以把数据处理的过程定义成与数据无关的合成运算，不需要用到代表数据的那个参数，只要把简单的运算步骤合成到一起，在使用这种模式之前我们需要定义一些辅助的基本运算函数。
+
+- 不需要指明处理的数据
+- 只需要合成运算过程
+- 需要定义一些辅助的基本运算函数
 
 下文将用简单的例子带大家了解Pointfree风格~
 
-### 10.1 命令式编程的问题
+### 11.1 命令式编程的问题
 
 > "告诉计算机该怎么做，详细的执行步骤"
 
 考虑以下需求：小A去水果店去买水果，他想知道水果店里有存货并且最贵的水果名称是什么？
 
-```
+```js
 const fruits = [
     { name: 'Apple', price: 4, stock: true },
     { name: 'Peach', price: 14, stock: true },
@@ -1047,7 +1557,7 @@ const fruits = [
 
 我们常见的实现方式一般如下：
 
-```
+```js
 // Ex 1
 
 const fruits = [
@@ -1069,15 +1579,15 @@ console.log(mostExpensiveFruitName); // Peach
 2. 代码自上而下，并没有组织，从阅读上需要完整的从上至下阅读，才能了解发生了什么事。
 3. 可以观察到`fruits.filter(fruit => fruit.stock);`中的`fruit`参数、`fruitsHaveStock`、`sortedDescFruits`这些都是Point，换句话说，我们的程序关注了被操作的数据！
 
-### 10.2 运用声明式编程和无值风格优化代码
+### 11.2 运用声明式编程和无值风格优化代码
 
 > "告诉计算机做什么，我们想要什么"
 
-#### 10.2.1 声明式编程风格
+#### 11.2.1 声明式编程风格
 
 上述代码用声明式的风格重写一下~
 
-```
+```js
 // Ex 2
 
 const fruits = [
@@ -1122,13 +1632,13 @@ console.log(getMostExpensiveFruitName(fruits)); // Peach
 1. 我写了一些通用工具方法`filter`、`propEq`、`compose`等等
 2. 最后compose的时候，可以明确知道数据流从 **getHaveStock -> sortByPriceDesc -> head -> getName**。而我们不需要了解这些函数的细节实现，从这些函数名称上来看，可以清晰的知道我们要对接收的数据进行的操作！
 
-#### 10.2.2 Pointfree风格，不关注数据！
+#### 11.2.2 Pointfree风格，不关注数据！
 
 但是问题来了，细心的同学应该发现了一个问题，虽然说我们改成了声明式编程的风格，但是我们还是关注了要处理的数据本身（也就是值），什么意思？
 
 比如这个函数：
 
-```
+```js
 function getHaveStock(list) {
 	return filter(propEq('stock', true))(list);
 }
@@ -1138,7 +1648,7 @@ function getHaveStock(list) {
 
 于是我们可以改写如下：
 
-```
+```js
 const getHaveStock = filter(propEq('stock', true));
 ```
 
@@ -1148,7 +1658,7 @@ const getHaveStock = filter(propEq('stock', true));
 
 这位同学说的有道理！请继续往下看~
 
-### 10.3 Ramda
+### 11.3 Ramda
 
 > 一款实用的，专门为函数式编程风格而设计的JavaScript函数式编程库
 
@@ -1156,7 +1666,7 @@ const getHaveStock = filter(propEq('stock', true));
 
 所以，我们使用**ramda**改写一下~
 
-```
+```js
 // Ex 3
 const { filter, propEq, sort, prop, compose, head } = require('ramda');
 const haveStock = propEq('stock', true);
@@ -1190,9 +1700,9 @@ Pointfree风格的确需要一定的时间才能习惯，但是也不能一概�
 
 
 
-## 11.递归
+## 12.递归
 
-### 11.0 前言：什么是递归
+### 前言：什么是递归
 
 > 递归和迭代是一枚硬币的两面，在不可变的条件下，递归提供了一种更具表现力、强大且优秀的迭代替代方法
 
@@ -1207,7 +1717,7 @@ Pointfree风格的确需要一定的时间才能习惯，但是也不能一概�
 
 而在Haskell这种纯函数编程语言里，原本是没有循环结构的，递归是天然代替循环的，比如求和函数（当然，Haskell有原生的sum方法支持）实现，如下所示：
 
-```
+```haskell
 sum' :: Num a => [a] -> a
 sum' []  = 0
 sum' (x:xs) = x + sum' xs
@@ -1215,7 +1725,7 @@ sum' (x:xs) = x + sum' xs
 
 再看阶乘函数的Haskell实现，如下所示：
 
-```
+```haskell
 factorial :: (Integral a) => a -> a  
 factorial 0 = 1  
 factorial n = n * factorial (n - 1)
@@ -1229,19 +1739,19 @@ factorial n = n * factorial (n - 1)
 
 （同学们莫慌，下文将用JavaScript举例，毕竟它才是我目前的恰饭工具哈哈）
 
-### 11.1 求和的几种姿势
+### 12.1 求和的几种姿势
 
 考虑给一个数组求和：
 
-```
+```js
 const nums = [1, 2, 3, 4, 5];
 ```
 
-#### 11.1.1 命令式
+#### 12.1.1 命令式
 
 命令式的开发思维，会很自然写出以下代码：
 
-```
+```js
 const nums = [1, 2, 3, 4, 5];
 let total = 0;
 for(let i = 0; i < nums.length; i++) {
@@ -1251,11 +1761,11 @@ for(let i = 0; i < nums.length; i++) {
 console.log(total); // 15
 ```
 
-#### 11.1.2 声明式
+#### 12.1.2 声明式
 
 更进一步，学了点函数式编程，会写出以下代码：
 
-```
+```js
 const nums = [1, 2, 3, 4, 5];
 const add = (x, y) => x + y;
 const sum = (...nums) => nums.reduce(add, 0);
@@ -1263,11 +1773,11 @@ const sum = (...nums) => nums.reduce(add, 0);
 console.log(sum(...nums)); // 15
 ```
 
-### 11.2 递归
+### 12.2 递归
 
 了解递归的同学，写出来以下代码：
 
-```
+```js
 const nums = [1, 2, 3, 4, 5];
 function getTotal(sum, num, ...nums) {
     if (nums.length === 0) {
@@ -1286,7 +1796,7 @@ console.log(getTotal(...nums)); // 15
 
 于是我写了个函数，测试一下Chrome浏览器支持递归的深度是多少？
 
-```
+```js
 const nums = [1, 2, 3, 4, 5];
 function getTotal(sum, num, ...nums) {
     if (nums.length === 0) {
@@ -1330,15 +1840,13 @@ Safari宝宝表现如何呢？
 
 貌似比Chrome好一丢丢，不过也没什么很大的区别...
 
-
-
 那这样让我们如何愉快地使用递归呀？
 
-### 11.3 递归的几种优化方式
+### 12.3 递归的几种优化方式
 
 如上文所述，递归虽然优雅，但是常常会遇到栈溢出的情况，那么这种问题怎么优化呢？以下三种优化方式：
 
-#### 11.3.1 PTC（Proper Tail Calls 适当的尾调用）
+#### 12.3.1 PTC（Proper Tail Calls 适当的尾调用）
 
 ES6的尾调用优化只在严格模式下开启，正常模式是无效的。
 
@@ -1348,11 +1856,19 @@ ES6的尾调用优化只在严格模式下开启，正常模式是无效的。
 
 尾调用是执行时不会造成栈膨胀的函数。尾调用是执行`return`之前要做的最后一个操作，而这个被调用函数的返回值由调用它的函数返回。调用函数不能是[生成器函数。](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)
 
+例如
+
+```js
+function f(x){
+    return g(x);
+}
+```
+
 如果你研究编译器理论，那么可以看看[ECMA规范中的正式定义。](http://www.ecma-international.org/ecma-262/6.0/index.html#sec-isintailposition)
 
 PTC一定要运行在严格模式下，文件开始声明`"use strict";`
 
-```
+```js
 const nums = [1, 2, 3, 4, 5];
 
 function getTotal_PTC(sum, num, ...nums) {
@@ -1369,7 +1885,7 @@ console.log(getTotal_PTC(...nums)); // 15
 
 PTC版的递归其实和上文写的递归只有些微写法上的区别：
 
-```
+```js
 // 正常递归
 return sum + getTotal(num, ...nums);
 // PTC版的递归
@@ -1398,11 +1914,11 @@ Safari宝宝果然优秀，对其有所支持！跑了一段时间，未见溢�
 
 尾调用的优化请参考[JavaScript中的递归、PTC、TCO和STC](https://juejin.cn/post/6844903522610348045)
 
-#### 11.3.2 CPS（Continuation Passing Style）
+#### 12.3.2 CPS（Continuation Passing Style）
 
 在其他语言中，有一个叫做 [Thread-local storage](https://en.wikipedia.org/wiki/Thread-local_storage) 的东西，然而在 Javascript 中，并不存在多线程这种概念（相对而言，Web Worker 等与主进程并不冲突），于是 CLS ，Continuation-local Storage，一个类似于 TLS，得名于函数式编程中的 Continuation-passing style，旨在链式函数调用过程中维护一个持久的数据。
 
-```
+```js
 const nums = [1, 2, 3, 4, 5];
 
 const getTotal_CPS = (function() {
@@ -1437,11 +1953,11 @@ Chrome浏览器测试如下图：
 
 更多CPS相关调用可以阅读：[什么是 CLS？在浏览器和 Node.js 中实现 CLS](https://juejin.cn/post/6844904201101770766)和[Javascript与CLS（Continuation-local Storage）](https://juejin.cn/post/6844904051872628749)
 
-#### 11.3.3 Trampoline（蹦床函数）
+#### 12.3.3 Trampoline（蹦床函数）
 
 Trampoline（蹦床函数）的基本原理是，使用蹦床展平调用，而不是深度嵌套的递归调用。
 
-```
+```js
 const nums = [1, 2, 3, 4, 5];
 
 function getTotal_f(sum, num, ...nums) {
@@ -1488,6 +2004,34 @@ Chrome测试如下：
 - 编写迭代循环之前，反思是不是可以用递归更好的表述！
 - 编写递归之前，反思是不是没有必要使用递归？
 
+
+
 ## 总结
+
+使用函数式编程最大的好处在于其能提高我们代码的可读性。
+
+编程中有下面这种说法：
+
+> 你不理解的代码，实际上就是不值得信任的代码。你不信任的代码，实际上就是你不理解的代码。
+
+所谓的理解实际上是指不执行，仅仅读一下，你就能知道某段代码到底要做什么。
+
+已 `map` 和 `for` 为例来说： 看到 `map` 就算我们不去细读其中的代码，也能想到这里想做的是对原始的值进行一定的转换并返回一个新的值； 看到 `for`，不去进一步的阅读其中的代码，你并不能很快的知晓这段代码要做什么。
+
+当然可读性与对熟练程度也强相关。印象还很深，最初接触 `map` 时，我并没有马上感觉到它很好，我还是会觉得别扭，但是后来很多情况下就会首选使用 `map` 。
+
+类似诗词中的语码那样，我们需要熟悉函数式编程中的一些概念，才能更好的理解函数式语句。这种熟悉需要一定的成本，所以在很多人看来，函数式编程和可读性存在下面这张图这样的关系：
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210605153710.png)函数式编程与可读性的关系
+
+一些函数式编程中的概念学习成本不高，而且能极大的提高代码的可读性，比如 `map`,`filter` ，所以大部分人在刚刚开始接触函数式编程会觉得其还挺好的，但是比如对`reduce`,`compose`,`transduce`，刚开始接触就会觉得不熟悉，不好理解，也就觉得可读性低。不过觉得不好理解还是不熟悉造成的，多看多联系，你会发现无论是书写还是阅读都变得更为自然起来。
+
+这里我们简单介绍一下 `imperative` 和 `declarative`
+
+- 指令式编程（imperative）关注告诉计算机如何一步步的做某件事情，这也是大多数人习惯的代码风格；
+- 声明式编程（declarative）则关注每一步的输出，函数式编程则从本质上更具声明式特点。
+- 声明式编程比指令式编程要容易理解。计算机擅长指令式，而我们擅长声明式。
+
+如果我们合理的使用了函数式编程，我们的代码主体可能就会变成一个个「独立且拥有合适名称的纯函数」，若干「纯函数的组合」，「集中处理的副作用」。想要了解整体代码逻辑，只需去阅读函数组合在语意上做了什么事情，副作用做了什么，想要了解具体某个纯函数做了什么时，可以单独去查看其定义，而不用去关心其它的函数。
 
 学习函数式编程并不是让自己看起来有多么聪明，也不是为了迷惑队友（哈哈），也不是单纯为了学习而学习。它的实际意义在于，给函数调用穿上语义化的衣服，让实际的应用代码最终更可读友好，利于维护~ 当然与此同时，也会训练自己写出声明式的代码，虽然道阻且长，但总有一天我要学会它们。
