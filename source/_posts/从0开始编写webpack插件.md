@@ -41,7 +41,7 @@ OK，相信现在你已经该对 `webpack` 的运行机制有个初步的理解�
 
 我们知道，在我们通常使用别人的插件时往往是像如下方式使用的：
 
-```javascript
+```js
 module.exports = {
   entry: '',
   output: {},
@@ -54,7 +54,7 @@ module.exports = {
 
 从上面代码中我们可以看到，使用插件时往往都是 `new XXXPlugin()` ，那么换句话说一个插件就是一个类，使用该插件就是 `new` 一个该插件的实例，并且把插件所需要的配置参数传给该类的构造函数。那么我们就可以写出编写插件的第一步，如下：
 
-```javascript
+```js
 class XXXPlugin {
   // 在构造函数中获取用户给该插件传入的配置
   constructor(options) {
@@ -68,7 +68,7 @@ module.exports = XXXPlugin;
 
 接着，通过阅读 `webpack` 源码[webpack.js:46行](https://github.com/webpack/webpack/blob/master/lib/webpack.js##L46)我们知道：
 
-```javascript
+```js
 if (options.plugins && Array.isArray(options.plugins)) {
   for (const plugin of options.plugins) {
     if (typeof plugin === "function") {
@@ -82,7 +82,7 @@ if (options.plugins && Array.isArray(options.plugins)) {
 
 当 `webpack` 内部在调用插件时会调用插件实例的 `apply` 方法，并为其传入 `compiler` 对象，OK，那么编写插件的第二步就来了，给插件类添加 `apply` 方法：
 
-```javascript
+```js
 class XXXPlugin {
   // 在构造函数中获取用户给该插件传入的配置
   constructor(options) {
@@ -179,7 +179,7 @@ module.exports = XXXPlugin;
 
 如下：
 
-```javascript
+```js
 class XXXPlugin {
   // 在构造函数中获取用户给该插件传入的配置
   constructor(options) {
@@ -202,7 +202,7 @@ module.exports = XXXPlugin;
 
 当我们监听 `Compiler` 对象事件中的 `compilation` 事件时，此时可以在回调函数中再次监听 `compilation` 对象里的事件，如下：
 
-```javascript
+```js
 class XXXPlugin {
   // 在构造函数中获取用户给该插件传入的配置
   constructor(options) {
@@ -229,7 +229,7 @@ module.exports = XXXPlugin;
 
 有一些事件使用了异步钩子 `AsyncHook` ，此时在监听这些事件的时候我们就需要使用 `tapAsync` 或 `tapPromise` ，并且还需要额外传入一个 `callback` 回调函数，在插件运行结束时，必须调用这个回调函数，如下：
 
-```javascript
+```js
 class XXXPlugin {
   // 在构造函数中获取用户给该插件传入的配置
   constructor(options) {
@@ -261,7 +261,7 @@ OK，以上就是编写一个 `webpack` 插件所有需要用到的东西，接�
 
 定义 `ZipPlugin` 插件：
 
-```javascript
+```js
 const {
   RawSource
 } = require("webpack-sources");
@@ -301,7 +301,7 @@ module.exports = ZipPlugin;
 
 使用 `ZipPlugin` 插件：
 
-```javascript
+```js
 const ZipPlugin = require('./src/plugins/ZipPlugin');
 
 module.exports = {

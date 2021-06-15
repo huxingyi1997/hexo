@@ -140,7 +140,7 @@ export default {
 
 然后命令行执行：
 
-```js
+```bash
 rollup -c
 ```
 
@@ -421,7 +421,7 @@ export default {
 
 首先，安装：
 
-```js
+```bash
 npm i -D @rollup/plugin-babel
 ```
 
