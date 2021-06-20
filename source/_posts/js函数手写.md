@@ -5475,7 +5475,7 @@ console.log(a);
 
 Set是ES6提供给我们的构造函数，能够造出一种新的存储数据的结构，只有属性值，成员值唯一（不重复）。手写全部方法有点难，只有部分常用的add、has、delete一定要写出来,引用类型测试错误，估计也不会挖那么深
 
-```
+```js
 class MySet{
 	constructor(iterator = []) {
 		// 判断构造的初始数据是否是可迭代对象
@@ -5624,129 +5624,131 @@ class MySet{
 
 map也是ES6提供给我们的构造函数，能够造出一种新的存储数据的结构。本质上是键值对的集合。key对应value，key和value唯一，任何值都可以当属性。自己的手写版问题和Set类似。
 
-    class MyMap {
-        constructor(iterator = []) {
-            // 判断构造的初始数据是否是可迭代对象
-            if (typeof iterator[Symbol.iterator] !== 'function') {
-                throw new Error(`你提供的${iterator}不是一个可迭代的对象`);
-            }
-            // 存储数据
-            this.items = {};
-            // 长度;
-            this.size = 0;
-            // 循环可迭代对象，将结果加入到MySet中
-            for (const item of iterator) {
-                // item也是一个可迭代的对象
-                if (typeof item[Symbol.iterator] !== "function") {
-                    throw new Error(`你提供的${item}不是一个可迭代的对象`)
-                }
-                const iterator = item[Symbol.iterator]();
-                const key = iterator.next().value;
-                const value = iterator.next().value;
-                this.set(key, value);
-            }
+```js
+class MyMap {
+    constructor(iterator = []) {
+        // 判断构造的初始数据是否是可迭代对象
+        if (typeof iterator[Symbol.iterator] !== 'function') {
+            throw new Error(`你提供的${iterator}不是一个可迭代的对象`);
         }
-        // 设置MyMap对象中键的值。返回该MyMap对象。
-        set(key, value) {
-            if (!this.items.hasOwnProperty(key)) {
-                this.size++;
+        // 存储数据
+        this.items = {};
+        // 长度;
+        this.size = 0;
+        // 循环可迭代对象，将结果加入到MySet中
+        for (const item of iterator) {
+            // item也是一个可迭代的对象
+            if (typeof item[Symbol.iterator] !== "function") {
+                throw new Error(`你提供的${item}不是一个可迭代的对象`)
             }
-            this.items[key] = value;
-            return this;
-        }
-        // 返回一个布尔值，表示MyMap实例是否包含键对应的值
-        has(key) {
-            return this.items.hasOwnProperty(key);
-        }
-        // 返回键对应的值，如果不存在，则返回undefined。
-        get(key) {
-            if (this.items.hasOwnProperty(key)) {
-                return this.items[key];
-            } else {
-                return undefined;
-            }
-        }
-        // 如果MyMap对象中存在该元素，则移除它并返回 true；否则如果该元素不存在则返回 false
-        delete(key) {
-            if (this.items.hasOwnProperty(key)) {
-                delete this.items[key];
-                this.size--;
-                return true;
-            } else {
-                return false;
-            }
-        }
-        // 移除MyMap对象内的所有元素。
-        clear() {
-            this.items = {};
-            this.size = 0;
-        }
-        // 返回一个新的迭代器对象，该对象包含MyMap对象中的按插入顺序排列的所有元素的值。
-        keys() {
-            let keys = [];
-            for (let key in this.items) {
-                if (this.items.hasOwnProperty(key)) {
-                    keys.push(key);
-                }
-            }
-            return keys;
-        }
-        // 返回一个新的迭代器对象，该对象包含MyMap对象中的按插入顺序排列的所有元素的值。
-        values() {
-            let values = [];
-            for (let key in this.items) {
-                if (this.items.hasOwnProperty(key)) {
-                    values.push(this.items[key]);
-                }
-            }
-            return values;
-        }
-        // 返回一个新的迭代器对象，该对象包含Set对象中的按插入顺序排列的所有元素的值的[value, value]数组。为了使这个方法和Map对象保持相似， 每个值的键和值相等。
-        entries() {
-            let entries = [];
-            for (let key in this.items) {
-                if (this.items.hasOwnProperty(key)) {
-                    entries.push([key, this.items[key]]);
-                }
-            }
-            return entries;
-        }
-        // 遍历，返回一个新的迭代器对象，该对象包含MyMap对象中的按插入顺序排列的所有元素的值。
-        *[Symbol.iterator]() {
-            for (const key in this.items) {
-                yield [this.items[key], key];
-            }
-        }
-        // 按照插入顺序，为MyMap对象中的每一个值调用一次callBackFn。如果提供了thisArg参数，回调中的this会是这个参数。
-        forEach(callBackFn, thisArgs = this) {
-            for (const key in this.items) {
-                callBackFn.call(thisArgs, this.items[key], key, this.items);
-            }
+            const iterator = item[Symbol.iterator]();
+            const key = iterator.next().value;
+            const value = iterator.next().value;
+            this.set(key, value);
         }
     }
-    
-    let myMap = new MyMap();
-    
-    let keyObj = {};
-    let keyFunc = function() {};
-    let keyString = 'a string';
-    
-    // 添加键
-    myMap.set(keyString, "和键'a string'关联的值");
-    myMap.set(keyObj, "和键keyObj关联的值");
-    myMap.set(keyFunc, "和键keyFunc关联的值");
-    console.log(myMap);
-    console.log(myMap.size); // 3
-    
-    // 读取值
-    console.log(myMap.get(keyString));    // "和键'a string'关联的值"
-    console.log(myMap.get(keyObj));       // "和键keyObj关联的值"
-    console.log(myMap.get(keyFunc));      // "和键keyFunc关联的值"
-    
-    console.log(myMap.get('a string'));   // "和键'a string'关联的值"
-                             // 因为keyString === 'a string'
-    console.log(myMap.get({}));           // undefined, 因为keyObj !== {}
-    console.log(myMap.get(function() {})); // undefined, 因为keyFunc !== function () {}
+    // 设置MyMap对象中键的值。返回该MyMap对象。
+    set(key, value) {
+        if (!this.items.hasOwnProperty(key)) {
+            this.size++;
+        }
+        this.items[key] = value;
+        return this;
+    }
+    // 返回一个布尔值，表示MyMap实例是否包含键对应的值
+    has(key) {
+        return this.items.hasOwnProperty(key);
+    }
+    // 返回键对应的值，如果不存在，则返回undefined。
+    get(key) {
+        if (this.items.hasOwnProperty(key)) {
+            return this.items[key];
+        } else {
+            return undefined;
+        }
+    }
+    // 如果MyMap对象中存在该元素，则移除它并返回 true；否则如果该元素不存在则返回 false
+    delete(key) {
+        if (this.items.hasOwnProperty(key)) {
+            delete this.items[key];
+            this.size--;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    // 移除MyMap对象内的所有元素。
+    clear() {
+        this.items = {};
+        this.size = 0;
+    }
+    // 返回一个新的迭代器对象，该对象包含MyMap对象中的按插入顺序排列的所有元素的值。
+    keys() {
+        let keys = [];
+        for (let key in this.items) {
+            if (this.items.hasOwnProperty(key)) {
+                keys.push(key);
+            }
+        }
+        return keys;
+    }
+    // 返回一个新的迭代器对象，该对象包含MyMap对象中的按插入顺序排列的所有元素的值。
+    values() {
+        let values = [];
+        for (let key in this.items) {
+            if (this.items.hasOwnProperty(key)) {
+                values.push(this.items[key]);
+            }
+        }
+        return values;
+    }
+    // 返回一个新的迭代器对象，该对象包含Set对象中的按插入顺序排列的所有元素的值的[value, value]数组。为了使这个方法和Map对象保持相似， 每个值的键和值相等。
+    entries() {
+        let entries = [];
+        for (let key in this.items) {
+            if (this.items.hasOwnProperty(key)) {
+                entries.push([key, this.items[key]]);
+            }
+        }
+        return entries;
+    }
+    // 遍历，返回一个新的迭代器对象，该对象包含MyMap对象中的按插入顺序排列的所有元素的值。
+    *[Symbol.iterator]() {
+        for (const key in this.items) {
+            yield [this.items[key], key];
+        }
+    }
+    // 按照插入顺序，为MyMap对象中的每一个值调用一次callBackFn。如果提供了thisArg参数，回调中的this会是这个参数。
+    forEach(callBackFn, thisArgs = this) {
+        for (const key in this.items) {
+            callBackFn.call(thisArgs, this.items[key], key, this.items);
+        }
+    }
+}
+
+let myMap = new MyMap();
+
+let keyObj = {};
+let keyFunc = function() {};
+let keyString = 'a string';
+
+// 添加键
+myMap.set(keyString, "和键'a string'关联的值");
+myMap.set(keyObj, "和键keyObj关联的值");
+myMap.set(keyFunc, "和键keyFunc关联的值");
+console.log(myMap);
+console.log(myMap.size); // 3
+
+// 读取值
+console.log(myMap.get(keyString));    // "和键'a string'关联的值"
+console.log(myMap.get(keyObj));       // "和键keyObj关联的值"
+console.log(myMap.get(keyFunc));      // "和键keyFunc关联的值"
+
+console.log(myMap.get('a string'));   // "和键'a string'关联的值"
+                         // 因为keyString === 'a string'
+console.log(myMap.get({}));           // undefined, 因为keyObj !== {}
+console.log(myMap.get(function() {})); // undefined, 因为keyFunc !== function () {}
+```
 
 除了上述问题，还有最重要的一个问题，Map 和 Object 是有区别，虽然两者都是键/值对的对象 ；
 
@@ -5850,7 +5852,7 @@ console.log(execRecursively(obj6)); // false
 
 在合适的时候才创建对象，并且只创建唯一的一个。在单例模式下创建对象和管理单例的职责被分布在两个不同的方法中，这两个方法组合起来才具有单例模式的威力。
 
-使用闭包实现单例模式，懒汉式单例模式，没有一开始就对这个类进行实例化：
+使用闭包实现单例模式，我写的这个又被称为懒汉式单例模式，没有一开始就对这个类进行实例化：
 
 ```js
 function Singleton (name) {
@@ -5924,7 +5926,7 @@ console.log(a === b);   //true
 
 发布者的基本操作首先是增加订阅者，然后是通知订阅者，最后是移除订阅者。
 
-```
+```js
 // 观察者
 class Observer {
     /**
@@ -6014,7 +6016,7 @@ Vue 框架是热门的渐进式 JavaScript框架。在 Vue 中，当我们修改
 
 > 下面实现订阅者 `Dep`：
 
-```
+```js
 // 定义订阅者类Dep
 class Dep {
 	// 使用栈存储目标对象
@@ -6058,7 +6060,7 @@ class Dep {
 
 > 下面实现观察者 `Watcher`：
 
-```
+```js
 // 定义观察者类Watcher
 class Watcher {
     // 创建过程
@@ -6083,7 +6085,7 @@ class Watcher {
 
 > 首先我们需要实现一个方法，这个方法会对需要监听的数据对象进行遍历、给它的属性加上定制的 `getter` 和 `setter` 函数。这样但凡这个对象的某个属性发生了改变，就会触发 `setter` 函数，进而通知到订阅者。这个 `setter` 函数，就是我们的监听器：
 
-```
+```js
 // reactive方法遍历并包装对象属性
 function reactive(obj) {
 	// 若obj是一个对象，则遍历它
@@ -6124,7 +6126,7 @@ function defineReactive(obj, key, value) {
 
 将上诉三段代码整合进行测试
 
-```
+```js
 // 定义订阅者类Dep
 class Dep {
 	// 使用栈存储目标对象
@@ -6237,7 +6239,7 @@ setTimeout(() => {
 
 改用proxy，优势是不用遍历每个属性，需要深层遍历了
 
-```
+```js
 // 定义订阅者类Dep
 class Dep {
 	// 使用栈存储目标对象
@@ -6343,7 +6345,7 @@ setTimeout(() => {
 
 原题目实现vue里的reactive函数。
 
-```
+```js
 / 实现
 function reactive(obj){
     // ...res
@@ -6364,7 +6366,7 @@ obj1.b = 4; // {a:3,b:4} 'b'
 
 大佬提供的Object.defineProperty版本
 
-```
+```js
 function reactive(obj) {
 	// 代理对象
 	const proxyObj = {};
@@ -6418,7 +6420,7 @@ obj1.b = 4; // {a:3,b:4} 'b'
 
 自己改用Proxy做了一版
 
-```
+```js
 function reactive(obj) {
 	// 订阅事件
 	const subs = [];
