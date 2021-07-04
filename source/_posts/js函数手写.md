@@ -981,15 +981,15 @@ function getType(obj) {
 }
 
 // 调用
-console.log(getType(null)); // -> null
-console.log(getType(undefined)); // -> undefined
-console.log(getType({})); // -> object
-console.log(getType([])); // -> array
-console.log(getType(123)); // -> number
-console.log(getType(true)); // -> boolean
-console.log(getType('123')); // -> string
-console.log(getType(/123/)); // -> regexp
-console.log(getType(new Date())); // -> date
+console.log(getType(null)); // null
+console.log(getType(undefined)); // undefined
+console.log(getType({})); // object
+console.log(getType([])); // array
+console.log(getType(123)); // number
+console.log(getType(true)); // boolean
+console.log(getType('123')); // string
+console.log(getType(/123/)); // regexp
+console.log(getType(new Date())); // date
 ```
 
 
@@ -1010,7 +1010,7 @@ arr.concat();
 ### 深拷贝极简版
 
 ```js
-JSON.parse(JSON.stringify(obj))
+JSON.parse(JSON.stringify(obj));
 ```
 
 估计这个api能覆盖大多数的应用场景，没错，谈到深拷贝，我第一个想到的也是它。但是实际上，对于某些严格的场景来说，这个方法是有巨大的坑的。问题如下：
@@ -1290,16 +1290,16 @@ function isObject(obj) {
     return obj !== null && (type === 'object' || type === 'function');
 }
 if (!isObject(obj)) {
-        return obj;
-    }
-    // ...
+    return obj;
+}
+// ...
 ```
 
 #### 获取数据类型
 
 我们可以使用 `toString`来获取准确的引用类型：
 
-> 每一个引用类型都有 `toString`方法，默认情况下， `toString()`方法被每个 `Object`对象继承。如果此方法在自定义对象中未被覆盖，t `oString()`返回 `"[object type]"`，其中type是对象的类型。
+> 每一个引用类型都有 `toString`方法，默认情况下， `toString()`方法被每个 `Object`对象继承。如果此方法在自定义对象中未被覆盖， `toString()`返回 `"[object type]"`，其中type是对象的类型。
 
 注意，上面提到了如果此方法在自定义对象中未被覆盖， `toString`才会达到预想的效果，事实上，大部分引用类型比如 `Array、Date、RegExp`等都重写了 `toString`方法。
 
@@ -3196,7 +3196,7 @@ function double(x) {
 
 const add10 = partial(add, 10);
 const pow3 = partialRight(pow, 3);
-compose(console.log, add10, pow3, double)(2) // 74
+compose(console.log, add10, pow3, double)(2); // 74
 ```
 
 细心观察，通过将参数传递进行懒执行，从而巧妙的完成了这个任务！示例如下：
@@ -3973,7 +3973,6 @@ var _const = function __const (data, value) {
 				return value;
 			}
 		}
-		
 	})
 }
 // 测试
@@ -3996,7 +3995,7 @@ console.log(obj);
 // 可以正常给obj的属性赋值
 obj.b = 2;
 console.log(obj);
-obj = {}; / 无法赋值新对象 报错
+obj = {}; // 无法赋值新对象 报错
 ```
 
 参考资料：[如何在 ES5 环境下实现一个const ？](https://juejin.im/post/6844903848008482824)
@@ -4090,7 +4089,7 @@ input.addEventLisener('keyup', function(e) {
   <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2014/08/01/00/08/pier-407252_1280.jpg" alt="">
   <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2014/12/15/17/16/pier-569314_1280.jpg" alt="">
   <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2010/12/13/10/09/abstract-2384_1280.jpg" alt="">
-  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/10/24/11/09/drop-of-water-1004250_1280.jpg"
+  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/10/24/11/09/drop-of-water-1004250_1280.jpg" alt="">
 ```
 
 通过图片`offsetTop`和`window`的`innerHeight`，`scrollTop`判断图片是否位于可视区域。
@@ -6490,7 +6489,7 @@ obj1.b = 4; // {a:3,b:4} 'b'
 
 在Vue中，有时候 A 组件和 B 组件中间隔了很远，看似没什么关系，但我们希望它们之间能够通信。这种情况下除了求助于 `Vuex` 之外，我们还可以通过 `Event Bus` 来实现我们的需求。整个调用过程中，没有出现具体的发布者和订阅者（比如上面的`PrdPublisher`和`DeveloperObserver`），全程只有`bus`这个东西一个人在疯狂刷存在感。这就是全局事件总线的特点——所有事件的发布/订阅操作，必须经由事件中心，禁止一切“私下交易”！
 
-```
+```js
 class EventEmitter {
 	constructor() {
 		// 存储事件监听器及回调函数
@@ -6624,7 +6623,7 @@ console.log(ee); // 此时可以看到ee.listeners已经变成空对象了，再
 
 我们现在的需求是，希望鼠标点击每个 a 标签，都可以弹出“我是xxx”这样的提示。比如点击第一个 a 标签，弹出“我是链接1号”这样的提示。这意味着我们至少要安装 `6` 个监听函数给 `6` 个不同的的元素(一般我们会用循环，代码如下所示），如果我们的 `a` 标签进一步增多，那么性能的开销会更大。
 
-```
+```js
 // 假如不用代理模式，我们将循环安装监听函数
 // 所有a标签节点
 const aNodes = document.getElementById('father').getElementsByTagName('a');
@@ -6645,7 +6644,7 @@ for (let i = 0; i < aNodes.length; i++) {
 
 用代理模式实现多个子元素的事件监听，代码会简单很多：
 
-```
+```js
 // 获取父元素
 const father = document.getElementId('father');
 
@@ -6775,7 +6774,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -6826,7 +6825,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -6933,7 +6932,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -7015,7 +7014,7 @@ p1.then(function(value) {
 
 无论当前 Promise 是成功还是失败，调用finally之后都会执行 finally 中传入的函数，并且将值原封不动的往下传。
 
-```
+```js
 class MyPromise {
 	// 构造方法接收一个回调
 	constructor(fn) {
@@ -7051,7 +7050,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -7150,7 +7149,7 @@ p1.then(function(value) {
 
 而`Promise.reject()`方法返回一个带有拒绝原因的Promise对象。
 
-```
+```js
 class MyPromise {
 	// 构造方法接收一个回调
 	constructor(fn) {
@@ -7186,7 +7185,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -7296,7 +7295,7 @@ Promise.all() 它接收一个promise对象组成的数组作为参数，并返�
 当数组中所有的对象都resolve时，新对象状态变为fulfilled，所有对象的resolve的value依次添加组成一个新的数组，并以新的数组作为新对象resolve的value。
 当数组中有一个对象reject时，新对象状态变为rejected，并以当前对象reject的reason作为新对象reject的reason。
 
-```
+```js
 class MyPromise {
 	// 构造方法接收一个回调
 	constructor(fn) {
@@ -7332,7 +7331,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -7459,7 +7458,7 @@ Promise.race() 它同样接收一个promise对象组成的数组作为参数，�
 
 与Promise.all()不同，它是在数组中有一个对象（最早改变状态）resolve或reject时，就改变自身的状态，并执行响应的回调。
 
-```
+```js
 class MyPromise {
 	// 构造方法接收一个回调
 	constructor(fn) {
@@ -7495,7 +7494,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -7642,7 +7641,7 @@ MyPromise.race([promise1, promise2]).then((value) => {
 
 重要的一点是，他不论接受入参的promise本身的状态，会返回所有promise的结果，但这一点`Promise.all`做不到，如果你需要知道所有入参的异步操作的所有结果，或者需要知道这些异步操作是否全部结束，应该使用`promise.allSettled()`。
 
-```
+```js
 class MyPromise {
 	// 构造方法接收一个回调
 	constructor(fn) {
@@ -7678,7 +7677,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -7853,7 +7852,7 @@ Promise.any() 是 ES2021 新增的特性，它接收一个 Promise 可迭代对�
 只要其中的一个 promise 成功，就返回那个已经成功的 promise
  如果可迭代对象中没有一个 promise 成功（即所有的 promises 都失败/拒绝），就返回一个失败的 promise 和 AggregateError 类型的实例，它是 Error 的一个子类，用于把单一的错误集合在一起
 
-```
+```js
 class MyPromise {
 	// 构造方法接收一个回调
 	constructor(fn) {
@@ -7889,7 +7888,7 @@ class MyPromise {
     			this.onRejectedCallbacks.forEach(callback => callback(reason));
     		}
     	}
-        //执行时可能会发生异常
+        // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
@@ -8124,7 +8123,7 @@ MyPromise.any(promises2).then((value) => {
 
 了解了属性和方法之后，根据 AJAX 的步骤，手写最简单的 GET 请求。
 
-```
+```js
 function ajax(url, method = 'get', param = {}) {
 	// 创建 XMLHttpRequest 对象
 	let xhr = new XMLHttpRequest();
@@ -8192,7 +8191,7 @@ function ajax(url, method = 'get', param = {}) {
 
 ### 使用Promise
 
-```
+```js
 function sleep(time) {
 	return new Promise(function(resolve) {
 		setTimeout(resolve, time);
@@ -8207,7 +8206,7 @@ sleep(1000).then(() => {
 
 ### 使用生成器Generator
 
-```
+```js
 function* sleepGenerator(time){
 	yield new Promise(function(resolve, reject) {
 		setTimeout(resolve, time);
@@ -8222,7 +8221,7 @@ sleepGenerator(1000).next().value.then(() => {
 
 ### 使用async/await
 
-```
+```js
 function sleep(time) {
 	return new Promise(function(resolve) {
 		setTimeout(resolve, time);
@@ -8240,7 +8239,7 @@ output(1000);
 
 ### ES5
 
-```
+```js
 function sleep(callback, time) {
 	if (typeof(callback) === 'function') {
 		setTimeout(callback, time);
@@ -8257,7 +8256,7 @@ sleep(output, 1000);
 
 手写f函数
 
-```
+```js
 setTimeout(() => console.log('hi'), 500);
 const sleep = f(setTimeout);
 sleep(500).then(() => console.log('hi'));
@@ -8265,7 +8264,7 @@ sleep(500).then(() => console.log('hi'));
 
 即实现高阶函数
 
-```
+```js
 function f(fn) {
     return function(...args) {
         return new Promise(function(resolve) {
@@ -8283,7 +8282,7 @@ sleep(500).then(() => console.log('hi'));
 
 使用`promise + async await`实现异步循环打印
 
-```
+```js
 function sleep(time, value) {
 	return new Promise(function (resolve, reject) {
 		setTimeout(function() {
@@ -8306,7 +8305,7 @@ start();
 
 JS中，如果需要一系列的等待，就需要进行 setTimeout 嵌套，或者 setTimeout 时间进行倍数增长，代码可读性非常低。可以利用async/await，实现setTimeout的同步
 
-```
+```js
 function sleep(ms) {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
@@ -8338,7 +8337,7 @@ console.log("end");
 
 promisify函数，实现
 
-```
+```js
 fs.readFile('1.txt', (err, data) => {
 });
 
@@ -8351,7 +8350,7 @@ newReadFile('1.txt')
 
 把代码进行实现拆解
 
-```
+```js
 // 接受一个函数作为输入参数
 function promisify(fn) {
 	// 返回一个闭包函数
@@ -8373,7 +8372,7 @@ function promisify(fn) {
 
 或者写成一下方便理解：
 
-```
+```js
 // 接受一个函数作为输入参数
 function promisify(fn) {
 	// 返回一个闭包函数
@@ -8397,7 +8396,7 @@ function promisify(fn) {
 
   实现一个延时执行队列，  要求分别在 1,3,4 秒后打印出 "1", "2",   “  3"
 
-```
+```js
 new Queue()
     .task(1000, () => { 
         console.log(1) 
@@ -8413,7 +8412,7 @@ new Queue()
 
 ### 累加计时
 
-```
+```js
 class Queue {
 	constructor() {
 		// 事件队列
@@ -8524,7 +8523,7 @@ q.stop(); // 可以随时终止任务
 
 ### 使用async/await
 
-```
+```js
 class Queue{
     constructor(){
     	// 事件队列
@@ -8572,13 +8571,15 @@ q.task(1000, () => {
 q.stop(); // 可以随时终止任务
 ```
 
+
+
 ## 60.setTimeout实现setInterval
 
 ### setTimeout实现setInterval
 
 `setInterval` 需要不停循环调用，这让我们想到了递归调用自身，通过 setTimeout 执行完成再递归执行，达到仿真 setInterval 的效果，先不考虑`clearInterval` 的存在
 
-```
+```js
 function mySetInterval(callback, time) {
 	function fn() {
 		// 执行回调函数
@@ -8602,7 +8603,7 @@ mySetInterval(() => {
 
 ### setInterval实现setTimeout
 
-```
+```js
 function mySetTimeout(callback, time) {
 	// 定时器命名
 	let timer = setInterval(function(){
@@ -8633,7 +8634,7 @@ myClearTimeout(timer);
 
 ### promise实现fetch
 
-```
+```js
 function ajax(url, method = 'get', param = {}) {
     return new Promise((resolve, reject) => {
         // 创建 XMLHttpRequest 对象
@@ -8672,11 +8673,9 @@ function myFetch(url) {
 }
 ```
 
-
-
 ### 给fetch添加一个超时控制
 
-```
+```js
 function ajax(url, method = 'get', param = {}) {
     return new Promise((resolve, reject) => {
         // 创建 XMLHttpRequest 对象
@@ -8853,7 +8852,7 @@ console.log(iterator.next());
 
 > 核心：传递给我一个`Generator`函数，把函数中的内容基于`Iterator`迭代器的特点一步步的实现
 
-```
+```js
 // 接收一个Generator函数作为输入
 function asyncToGenerator(generatorFunc) {
 	// return一个function，和async保持一致
@@ -8936,7 +8935,7 @@ const result = asyncToGenerator(myGenerator)();
 
 > `Generator`函数的执行必须靠执行器，所以才有了`co`模块，而`async`函数自带执行器。也就是说，`async`函数的执行，与普通函数一模一样，只要一行
 
-```text
+```js
 asyncReadFile();
 ```
 
@@ -8962,7 +8961,7 @@ asyncReadFile();
 
 ### 实现异步加法
 
-```
+```js
 // 解决方案
 // 1. promisify 实现promise版本的加法
 const promiseAdd = (a, b) => new Promise((resolve, reject) => {
@@ -9014,21 +9013,23 @@ async function parallelSum(...args) {
 
 初始代码如下
 
-    function sleep(time) {
-    	return new Promise(function(resolve) {
-    		console.log(`wait ${time}s`)
-    		setTimeout(function() {
-    			console.log('execute');
-    			resolve();
-    		}, time * 100);
-    	})
-    }
-    
-    const arr = [3, 4, 5];
+```js
+function sleep(time) {
+	return new Promise(function(resolve) {
+		console.log(`wait ${time}s`)
+		setTimeout(function() {
+			console.log('execute');
+			resolve();
+		}, time * 100);
+	})
+}
+
+const arr = [3, 4, 5];
+```
 
 一个封装的延迟函数，然后一个装有 3,4,5 的数组，需求就是在开始执行时依次等待 3, 4, 5 秒，并在之后打印对应输出
 
-```
+```sh
 wait 3s // 等待3s
 
 execute
@@ -9042,7 +9043,7 @@ execute
 
 #### async/await
 
-```
+```js
 function sleep(time) {
 	return new Promise(function(resolve) {
 		console.log(`wait ${time / 10}s`)
@@ -9064,7 +9065,7 @@ const arr = [3, 4, 5];
 
 #### reduce
 
-```
+```js
 function sleep(time) {
 	return new Promise(function(resolve) {
 		console.log(`wait ${time / 10}s`)
@@ -9089,7 +9090,7 @@ arr.reduce((promise, time) => {
 
 不使用Promise.all，但本质上很接近其实现，准确来说更接近Promise.allSettled的实现，将rejected的结果转换为null，返回输出数组
 
-```
+```js
 execter([
     Promise.resolve(1),
     Promise.reject(2),
@@ -9101,7 +9102,7 @@ execter([
 
 实现execter函数
 
-```
+```js
 function execter(arr) {
 	// 返回一个Prommise
 	return new Promise((resolve) => {
@@ -9200,7 +9201,7 @@ limit(2, [1000, 1000, 1000, 1000], timeout).then((res) => {
 
 进入正题，要求的代码实现
 
-```
+```js
 // JS实现一个带并发限制的异步调度器Scheduler，保证同时运行的任务最多有两个。完善代码中Scheduler类，使得以下程序能正确输出
 class Scheduler {
     add(promiseCreator) { ... }
@@ -9225,7 +9226,7 @@ addTask(400, '4');
 
 不控制并发的情况下的执行顺序应该是
 
-```
+```sh
 3
 4
 2
@@ -9234,7 +9235,7 @@ addTask(400, '4');
 
 控制并发为2后的执行结果是
 
-```
+```sh
 2
 3
 1
@@ -9277,7 +9278,7 @@ addTask(400, '4');
 
 代码如下：
 
-```
+```js
 // JS实现一个带并发限制的异步调度器Scheduler，保证同时运行的任务最多有两个。完善代码中Scheduler类，使得以下程序能正确输出
 class Scheduler {
 	constructor() {
@@ -9353,7 +9354,7 @@ addTask(400, '4');
 每个请求结束的时候都要判断队列是否为空
 假设请求的 API 返回一个 Promise（当然不是的话也可以转换）
 
-```
+```js
 /**
  * 通过promise 实现一个并发限制类
  * 两个要点：一个执行器，一个拦截器
@@ -9416,7 +9417,7 @@ class Plimit {
 
 我们在需要保证代码在多个异步处理之后执行,我们通常会使用
 
-```
+```js
 Promise.all(promises: []).then(fun: function);
 ```
 
@@ -9428,7 +9429,7 @@ Promise.all可以保证，promises数组中所有promise对象都达到resolve�
 
 #### 内容
 
-```
+```js
 // promise并发限制
 class Plimit{
 	constructor(limit, fn) {
@@ -9505,7 +9506,7 @@ plimit.start(URLS);
 
 从上面可以看出，思路如下：定义一个 PromisePool 对象，初始化一个 pool 作为并发池，然后先循环把并发池塞满，不断地调用 setTask 然后通过自己自定义的任务函数(任务函数可以是网络请求封装的 promise 对象，或者是其他的)，而且每个任务是一个Promise对象包装的，执行完就 pop 出连接池， 任务push 进并发池 pool 中。
 
-```
+```js
 // 利用Promise.race方法来获得并发池中某任务完成的信号
 let race = Promise.race(this.queue);
 return this.run(race);

@@ -40,7 +40,7 @@ rollup最大的亮点就是Tree-shaking，即可以静态分析代码中的 impo
 
 所以当开发应用时可以优先选择`webpack`，但是`rollup`对于代码的`Tree-shaking`和`ES6`模块有着算法优势上的支持，若你项目只需要打包出一个简单的`bundle`包，并是基于`ES6`模块开发的，可以考虑使用`rollup`。
 
-其实`webpack`从`2.0`开始就已经支持`Tree-shaking`，并在使用`babel-loader`的情况下还可以支持`es6 module`的打包。实际上，`rollup`已经在渐渐地失去了当初的优势了。但是它并没有被抛弃，反而因其简单的`API`、使用方式被许多库开发者青睐，如`React`、`Vue`等，都是使用`rollup`作为构建工具的。
+其实`webpack`从`2.0`开始就已经支持`Tree-shaking`，并在使用`babel-loader`的情况下还可以支持`es6 module`的打包，从`4.0`开始开启生产环境就会自动启动这个优化功能。实际上，`rollup`已经在渐渐地失去了当初的优势了。但是它并没有被抛弃，反而因其简单的`API`、使用方式被许多库开发者青睐，如`Vue`、`React`等，都是使用`rollup`作为构建工具的。
 
 
 
