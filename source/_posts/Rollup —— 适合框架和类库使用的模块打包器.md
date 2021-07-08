@@ -1148,10 +1148,10 @@ require("fs").writeFile("converted.js.map", map.toString());
 ### 6.3 rollup 源码结构
 
 ```
-│  bundle.js // Bundle 打包器，在打包过程中会生成一个 bundle 实例，用于收集其他模块的代码，最后再将收集的代码打包到一起。
-│  external-module.js // ExternalModule 外部模块，例如引入了 'path' 模块，就会生成一个 ExternalModule 实例。
-│  module.js // Module 模块，开发者自己写的代码文件，都是 module 实例。例如有 'foo.js' 文件，它就对应了一个 module 实例。
-│  rollup.js // rollup 函数，一切的开始，调用它进行打包。
+├─ bundle.js // Bundle 打包器，在打包过程中会生成一个 bundle 实例，用于收集其他模块的代码，最后再将收集的代码打包到一起。
+├─ external-module.js // ExternalModule 外部模块，例如引入了 'path' 模块，就会生成一个 ExternalModule 实例。
+├─ module.js // Module 模块，开发者自己写的代码文件，都是 module 实例。例如有 'foo.js' 文件，它就对应了一个 module 实例。
+├─ rollup.js // rollup 函数，一切的开始，调用它进行打包。
 │
 ├─ast // ast 目录，包含了和 AST 相关的类和函数
 │      analyse.js // 主要用于分析 AST 节点的作用域和依赖项。

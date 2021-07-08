@@ -308,7 +308,7 @@ export function isLineBreak(ch: number): boolean {
 }
 ```
 
-根据 ES 规范，换行符一共有 4 个，虽然平常我们只实用前两个，但对有些语言来说，后两个也是需要的。
+根据 ES 规范，换行符一共有 4 个，虽然平常我们只使用前两个，但对有些语言来说，后两个也是需要的。
 
 判断是不是空格：
 
@@ -821,7 +821,7 @@ TS 在扫描到 <<<<<<< 后（正常的代码不太可能出现），会将这�
 
 有的人可能会说除号也可以通过扫描后面有没有新的除号（因为正则表达式肯定是一对除号）判断它是不是正则，这是不对的：
 
-```javascript
+```typescript
 var a = 1 / 2 / 3 // 虽然出现了两个除号，但不是正则
 ```
 
@@ -955,10 +955,10 @@ TypeScript 中，节点有约 100 种，它们都继承 “Node” 接口：
 
 ```typescript
  export interface Node extends TextRange {
-        kind: SyntaxKind;
-        flags: NodeFlags;
-        parent: Node;
-        //  ...(略)
+     kind: SyntaxKind;
+     flags: NodeFlags;
+     parent: Node;
+     //  ...(略)
 }
 ```
 
@@ -968,23 +968,23 @@ TypeScript 将表示标记种类的枚举和表示节点种类的枚举合并成
 
 ```typescript
 export const enum SyntaxKind {
-        // ...(略)
-       TemplateSpan,
-        SemicolonClassElement,
-        // Element
-        Block,
-        EmptyStatement,
-        VariableStatement,
-        ExpressionStatement,
-        IfStatement,
-        DoStatement,
-        WhileStatement,
-        ForStatement,
-        ForInStatement,
-        ForOfStatement,
-        ContinueStatement,
-        BreakStatement,
-        // ...(略)
+    // ...(略)
+    TemplateSpan,
+    SemicolonClassElement,
+    // Element
+    Block,
+    EmptyStatement,
+    VariableStatement,
+    ExpressionStatement,
+    IfStatement,
+    DoStatement,
+    WhileStatement,
+    ForStatement,
+    ForInStatement,
+    ForOfStatement,
+    ContinueStatement,
+    BreakStatement,
+    // ...(略)
 }
 ```
 
@@ -1249,7 +1249,7 @@ forEachChild 函数只会遍历节点的直接子节点，如果用户需要递�
 
 要解析一份源码，输入当然是源码内容（字符串），同时还提供路径（用于报错）、语言版本（比如ES3 和 ES5 在有些细节不同）。
 
-createSourceFile 是负责将源码解析为语法树的入口函数，用户可以直接调用：比如 ts.createSourceFile(‘<stdio>’, 'var xld;')。
+createSourceFile 是负责将源码解析为语法树的入口函数，用户可以直接调用：比如 ts.createSourceFile(‘\<stdio>’, 'var xld;')。
 
 ```typescript
 export function createSourceFile(fileName: string, sourceText: string, languageVersion: ScriptTarget, setParentNodes = false, scriptKind?: ScriptKind): SourceFile {
@@ -1259,8 +1259,7 @@ export function createSourceFile(fileName: string, sourceText: string, languageV
     perfLogger.logStartParseSourceFile(fileName);
     if (languageVersion === ScriptTarget.JSON) {
         result = Parser.parseSourceFile(fileName, sourceText, languageVersion, /*syntaxCursor*/ undefined, setParentNodes, ScriptKind.JSON);
-    }
-    else {
+    } else {
         result = Parser.parseSourceFile(fileName, sourceText, languageVersion, /*syntaxCursor*/ undefined, setParentNodes, scriptKind);
     }
     perfLogger.logStopParseSourceFile();
@@ -2091,7 +2090,7 @@ export type FlowNode =
 
 为了帮助验证到此为止的知识点是否都已掌握，这里准备了一些题目：
 
-\1. 解释以下术语：
+1. 解释以下术语：
 
 - Token
 - Node
@@ -2104,6 +2103,6 @@ export type FlowNode =
 - fullStart
 - Trivial
 
-\2. 阐述编译器从源文件到符号的流程步骤
+2. 阐述编译器从源文件到符号的流程步骤
 
-\3. 猜测编译器在生成符号后的操作内容
+3. 猜测编译器在生成符号后的操作内容
