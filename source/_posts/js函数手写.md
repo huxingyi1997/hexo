@@ -195,24 +195,24 @@ Function.prototype.myCall = function(context) {
 
 ```js
 /*
-* context为函数运行时要使用的this值 默认将context指向window 注意仅在非严格模式下会有这种行为
-* args 为一个数组或者类数组对象，是调用函数时的参数列表
-*/
+ * context为函数运行时要使用的this值 默认将context指向window 注意仅在非严格模式下会有这种行为
+ * args 为一个数组或者类数组对象，是调用函数时的参数列表
+ */
 Function.prototype.myCall = function (context = window, ...args) {
-	// 用于防止 Function.prototype.myCall() 直接调用
-	if (this === Function.prototype) return undefined;
-	// context = context || window;
+    // 用于防止 Function.prototype.myCall() 直接调用
+    if (this === Function.prototype) return undefined;
+    // context = context || window;
     // 为了防止原来的属性被覆盖，用Symbol去创建一个独一无二的值
-	let fn = Symbol();
+    let fn = Symbol();
     // 这里this指向调用myCall的函数
-	context[fn] = this;
+    context[fn] = this;
     // 重点代码，利用this指向，调用myCall的函数,并接收返回值
-	let result = context[fn](...args);
+    let result = context[fn](...args);
     // 最后删除这个临时属性
-	delete context[fn];
+    delete context[fn];
     // 返回结果
-	return result;
-}
+    return result;
+};
 ```
 
 
@@ -265,11 +265,11 @@ Function.prototype.apply2 = function(context, arr) {
 
 ```js
 /*
-* context为函数运行时要使用的this值 默认将context指向window 注意仅在非严格模式下会有这种行为
-* args 为一个数组或者类数组对象，是调用函数时的参数列表
-*/
+ * context为函数运行时要使用的this值 默认将context指向window 注意仅在非严格模式下会有这种行为
+ * args 为一个数组或者类数组对象，是调用函数时的参数列表
+ */
 Function.prototype.myApply = function (context = window, args) {
-	// 用于防止 Function.prototype.myApply() 直接调用
+    // 用于防止 Function.prototype.myApply() 直接调用
     if (this === Function.prototype) return undefined;
     // context = context || window;
     // 为了防止原来的属性被覆盖，用Symbol去创建一个独一无二的值
@@ -282,7 +282,7 @@ Function.prototype.myApply = function (context = window, args) {
     delete context[fn];
     // 返回结果
     return result;
-}
+};
 ```
 
 
@@ -360,9 +360,9 @@ Function.prototype.myBind = function (context = window, ...args) {
 
 ```js
 /*
-* context为函数运行时要使用的this值 默认将context指向window 注意仅在非严格模式下会有这种行为
-* args 为一个数组或者类数组对象，是调用函数时的参数列表
-*/
+ * context为函数运行时要使用的this值 默认将context指向window 注意仅在非严格模式下会有这种行为
+ * args 为一个数组或者类数组对象，是调用函数时的参数列表
+ */
 Function.prototype.myBind = function (context = window, ...args) {
     // 为了防止原来的属性被覆盖，用Symbol去创建一个独一无二的值
     let fn = Symbol();
@@ -375,9 +375,9 @@ Function.prototype.myBind = function (context = window, ...args) {
         // 重点代码，执行函数
         context[fn](...args);
         // 最后删除这个临时属性
-        delete context[fn];   
-    }
-}
+        delete context[fn];
+    };
+};
 ```
 
 ### 扩展
@@ -551,10 +551,11 @@ Object.create()方法创建一个新对象，使用现有的对象来提供新�
 ```js
 // 模拟 Object.create
 function create (proto) {
-    // 新建一个函数
+    // 新建一个构造函数
     function F() {}
+    // 继承对象原型
     F.prototype = proto;
-
+	// 返回一个改构建函数实力
     return new F();
 }
 ```
@@ -759,8 +760,6 @@ student.prototype = Object.create(person.prototype);
 
 缺点：包含引用类型的属性值始终都会共享相应的值，这点跟原型链继承一样。
 
-
-
 又搞错了
 
 写成了
@@ -816,9 +815,7 @@ student.prototype = person.prototype;
 
 缺点：这种继承方法父类原型和子类原型是同一个对象，无法区分子类真正是由谁构造。
 
-我的错误跟上面的一样，
-
-
+我的错误跟上面的一样，不再赘述
 
 
 
