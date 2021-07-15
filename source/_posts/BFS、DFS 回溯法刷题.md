@@ -271,7 +271,7 @@ function dfs(candidates, len, residue, begin, path, res) {
 }
 ```
 
-#### 46.[全排列](https://leetcode-cn.com/problems/permutations/)
+#### 46. [全排列](https://leetcode-cn.com/problems/permutations/)
 
 给定一个 **没有重复** 数字的序列，返回其所有可能的全排列。
 
@@ -334,7 +334,7 @@ var permute = function(nums) {
 };
 ```
 
-#### 47.[全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
+#### 47. [全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
 
 给定一个可包含重复数字的序列 `nums` ，**按任意顺序** 返回所有不重复的全排列。
 
@@ -411,7 +411,7 @@ var permuteUnique = function(nums) {
 };
 ```
 
-#### 51.[N 皇后](https://leetcode-cn.com/problems/n-queens/)
+#### 51. [N 皇后](https://leetcode-cn.com/problems/n-queens/)
 
 **n 皇后问题** 研究的是如何将 `n` 个皇后放置在 `n×n` 的棋盘上，并且使皇后彼此之间不能相互攻击。
 
@@ -508,7 +508,7 @@ var solveNQueens = function(n) {
 };
 ```
 
-#### 52.[N皇后 II](https://leetcode-cn.com/problems/n-queens-ii/)
+#### 52. [N皇后 II](https://leetcode-cn.com/problems/n-queens-ii/)
 
 **n 皇后问题** 研究的是如何将 `n` 个皇后放置在 `n×n` 的棋盘上，并且使皇后彼此之间不能相互攻击。
 
@@ -824,7 +824,7 @@ var exist = function(board, word) {
 };
 ```
 
-#### 200.[岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+#### 200. [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 
 给你一个由 `'1'`（陆地）和 `'0'`（水）组成的的二维网格，请你计算网格中岛屿的数量。
 
@@ -876,30 +876,27 @@ var numIslands = function(grid) {
     let col = grid[0].length;
     let res = 0;
     // DFS，将连在一起的几个 ‘1’全部转为‘0’
-    function DFS(grid,r,c){
-        grid[r][c]='0';
-        if(r-1>=0&&grid[r-1][c] =='1') DFS(grid,r-1,c);
-        if(r+1<row&&grid[r+1][c] =='1') DFS(grid,r+1,c);
-        if(c-1>=0&&grid[r][c-1] =='1') DFS(grid,r,c-1);
-        if(c+1<col&&grid[r][c+1] =='1') DFS(grid,r,c+1);
+    function DFS(grid, r, c){
+        grid[r][c] = '0';
+        if(r - 1 >= 0 && grid[r - 1][c] === '1') DFS(grid, r - 1, c);
+        if(r + 1 < row && grid[r + 1][c] === '1') DFS(grid, r + 1, c);
+        if(c - 1 >= 0 && grid[r][c - 1] === '1') DFS(grid, r, c - 1);
+        if(c + 1 < col && grid[r][c + 1] ==='1') DFS(grid, r, c + 1);
     }
 
-    for(let i = 0;i<row;++i){
-        for(let j = 0;j<col;++j){
- 
-            if(grid[i][j] == '1'){
-
+    for(let i = 0; i < row; i++){
+        for(let j = 0; j < col; j++){
+            if(grid[i][j] === '1'){
                 res++;
-
-                DFS(grid,i,j)
+                DFS(grid, i, j);
             }
         }
     }
-    return res
+    return res;
 };
 ```
 
-BFS
+BFS广度优先
 
 ```javascript
 /**
@@ -907,33 +904,33 @@ BFS
  * @return {number}
  */
 var numIslands = function(grid) {
-    if (grid.length == 0) return 0;
+    if (grid.length === 0) return 0;
     let lenx = grid.length;
     let leny = grid[0].length;
     let num_islands = 0;
     for(let i = 0; i < lenx; i++) {
         for(let j = 0; j < leny; j++){
-            if (grid[i][j] == 1) {
+            if (grid[i][j] === 1) {
                num_islands++;
                grid[i][j] = 0;
                neighbors = new Array();
                neighbors.push([i, j]);
-               while (neighbors.length != 0){
+               while (neighbors.length !== 0){
                    let x = neighbors[0][0];
                    let y = neighbors[0][1];
-                   if (x - 1 >= 0 && grid[x - 1][y] == 1) {
+                   if (x - 1 >= 0 && grid[x - 1][y] === 1) {
                         neighbors.push([x - 1, y]);
                         grid[x - 1][y] = 0;
                     }
-                    if (x + 1 < lenx && grid[x + 1][y] == 1) {
+                    if (x + 1 < lenx && grid[x + 1][y] === 1) {
                         neighbors.push([x + 1, y]);
                         grid[x + 1][y] = 0;
                     }
-                    if (y - 1 >= 0 && grid[x][y - 1] == 1) {
+                    if (y - 1 >= 0 && grid[x][y - 1] === 1) {
                         neighbors.push([x, y - 1]);
                         grid[x][y - 1] = 0;
                     }
-                    if (y + 1 < leny && grid[x][y + 1] == 1) {
+                    if (y + 1 < leny && grid[x][y + 1] === 1) {
                         neighbors.push([x, y + 1]);
                         grid[x][y + 1] = 0;
                     }
@@ -945,6 +942,98 @@ var numIslands = function(grid) {
     return num_islands;
 };
 ```
+
+#### [207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
+
+你这个学期必须选修 `numCourses` 门课程，记为 `0` 到 `numCourses - 1` 。
+
+在选修某些课程之前需要一些先修课程。 先修课程按数组 `prerequisites` 给出，其中 `prerequisites[i] = [ai, bi]` ，表示如果要学习课程 `ai` 则 **必须** 先学习课程 `bi` 。
+
+- 例如，先修课程对 `[0, 1]` 表示：想要学习课程 `0` ，你需要先完成课程 `1` 。
+
+请你判断是否可能完成所有课程的学习？如果可以，返回 `true` ；否则，返回 `false` 。
+
+ **示例 1：**
+
+```
+输入：numCourses = 2, prerequisites = [[1,0]]
+输出：true
+解释：总共有 2 门课程。学习课程 1 之前，你需要完成课程 0 。这是可能的。
+```
+
+**示例 2：**
+
+```
+输入：numCourses = 2, prerequisites = [[1,0],[0,1]]
+输出：false
+解释：总共有 2 门课程。学习课程 1 之前，你需要先完成课程 0 ；并且学习课程 0 之前，你还应先完成课程 1 。这是不可能的。
+```
+
+ **提示：**
+
+- `1 <= numCourses <= 105`
+- `0 <= prerequisites.length <= 5000`
+- `prerequisites[i].length == 2`
+- `0 <= ai, bi < numCourses`
+- `prerequisites[i]` 中的所有课程对 **互不相同**
+
+邻接表+BFS
+
+```javascript
+/**
+ * @param {number} numCourses
+ * @param {number[][]} prerequisites
+ * @return {boolean}
+ */
+var canFinish = function(numCourses, prerequisites) {
+    const inDegree = new Array(numCourses).fill(0);
+    // 邻接表
+    let graph = {};
+    for (let i = 0; i < prerequisites.length; i++) {
+        // 计算课对应的入度
+        inDegree[prerequisites[i][0]]++;
+        // 当前课已经存在于邻接表
+        if (graph[prerequisites[i][1]]) {
+            // 对应的数组新推入依赖它的课
+            graph[prerequisites[i][1]].push(prerequisites[i][0]);
+        } else { // 当前课不存在于邻接表
+            // 推入依赖它的课
+            graph[prerequisites[i][1]] = [prerequisites[i][0]];
+        }
+    }
+    // BFS需要的队列
+    const queue = [];
+    // 初始推入所有入度0的课
+    for (let i = 0; i < inDegree.length; i++) {
+        if (inDegree[i] === 0) queue.push(i);
+    }
+    while(queue.length ) {
+        // 可选的课，出栈
+        const select = queue.shift();
+        // 获取这门课对应的后续课
+        const toEnQueue = graph[select];
+        // 确实有后续课
+        if (toEnQueue && toEnQueue.length) {
+            for (let i in toEnQueue) {
+                // 依赖它的后续课的入度-1
+                inDegree[toEnQueue[i]]--;
+                // 如果因此减为0，入列
+                if (inDegree[toEnQueue[i]] === 0) {
+                    // 这门课入列
+                    queue.push(toEnQueue[i]);
+                }
+            }
+        }
+    }
+    for (let i in inDegree) {
+        // 还有课的入度不为0
+        if (inDegree[i] !== 0) return false;
+    }
+    return true;
+}; 
+```
+
+
 
 #### 寻找和为定值的多个数
 
