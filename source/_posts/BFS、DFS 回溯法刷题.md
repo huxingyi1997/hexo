@@ -1033,7 +1033,223 @@ var canFinish = function(numCourses, prerequisites) {
 }; 
 ```
 
+#### [301. 删除无效的括号](https://leetcode-cn.com/problems/remove-invalid-parentheses/)
 
+给你一个由若干括号和字母组成的字符串 `s` ，删除最小数量的无效括号，使得输入的字符串有效。
+
+返回所有可能的结果。答案可以按 **任意顺序** 返回。
+
+ **示例 1：**
+
+```
+输入：s = "()())()"
+输出：["(())()","()()()"]
+```
+
+**示例 2：**
+
+```
+输入：s = "(a)())()"
+输出：["(a())()","(a)()()"]
+```
+
+**示例 3：**
+
+```
+输入：s = ")("
+输出：[""]
+```
+
+**提示：**
+
+- `1 <= s.length <= 25`
+- `s` 由小写英文字母以及括号 `'('` 和 `')'` 组成
+- `s` 中至多含 `20` 个括号
+
+回溯法/DFS/暴力
+需要解决几个关键点。
+
+第一，怎么判断括号是否匹配？
+
+[20 题](https://leetcode.wang/leetCode-20-Valid Parentheses.html) 的时候做过括号匹配的问题，除了使用栈，我们也可以用一个计数器 count，遇到左括号进行加 1 ，遇到右括号进行减 1，如果最后计数器是 0，说明括号是匹配的。
+
+第二，如果用暴力的方法，怎么列举所有情况？
+
+要列举所有的情况，每个括号无非是两种状态，在或者不在，字母的话就只有「在」一种情况。我们可以通过回溯法或者说是 DFS 。可以参考下边的图。
+
+对于 (a)())， 如下图，蓝色表示在，橙色表示不在，下边是第一个字符在的情况。
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210716080758.jpeg)
+
+下边是第一个字符不在的情况。
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210716080814.jpeg)
+
+我们要做的就是从第一个字符开始，通过深度优先遍历的顺序，遍历到最后一个字符后判断当前路径上的字符串是否合法。
+
+对于代码的话，我们可以一边遍历，一边记录当前 count 的情况，也就是左右括号的情况。到最后一个字符后，只需要判断 count 是否为 0 即可。
+
+第三，怎么保证删掉最少的括号？
+
+这个方法很多，说一下我的。假设我们用 res 数组保存最终的结果，当新的字符串要加入的时候，我们判断一下新加入的字符串的长度和数组中第一个元素长度的关系。
+
+如果新加入的字符串的长度大于数组中第一个元素的长度，我们就清空数组，然后再将新字符串加入。
+
+如果新加入的字符串的长度小于数组中第一个元素的长度，那么当前字符串抛弃掉。
+
+如果新加入的字符串的长度等于数组中第一个元素的长度，将新字符串加入到 res 中。
+
+第四，重复的情况怎么办？
+
+简单粗暴一些，最后通过 set 去重即可。
+
+上边四个问题解决后，就可以写代码了。
+
+因为我们考虑的是删除最少的括号数，我们可以在深度优先遍历之前记录需要删除的左括号的个数和右括号的个数，遍历过程中如果删除的超过了需要删除的括号个数，就可以直接结束。
+
+```javascript
+/**
+ * @param {string} s
+ * @return {string[]}
+ */
+var removeInvalidParentheses = function (s) {
+    let res = [''];
+    removeInvalidParenthesesHelper(s, 0, s.length, 0, '', res);
+    // 去重
+    return [...new Set(res)];
+};
+
+/**
+ * 
+ * @param {string 原字符串} s 
+ * @param {number 当前考虑的字符下标} start 
+ * @param {number s 的长度} end 
+ * @param {number 记录左括号和右括号的情况} count 
+ * @param {string 遍历的路径字符串} temp 
+ * @param {string[] 保存最终的结果} res 
+ */
+function removeInvalidParenthesesHelper(s, start, end, count, temp, res) {
+    // 当前右括号多了, 后边无论是什么都不可能是合法字符串了, 直接结束
+    if (count < 0) {
+        return;
+    }
+    // 到达结尾
+    if (start === end) {
+        if (count === 0) {
+            let max = res[0].length;
+            if (temp.length > max) {
+                // 清空之前的
+                res.length = 0;
+                // 将当前的加入
+                res.push(temp);
+            } else if (temp.length === max) {
+                res.push(temp);
+            }
+        }
+        return;
+    }
+    // 添加当前字符
+    if (s[start] === '(') {
+        removeInvalidParenthesesHelper(
+            s,
+            start + 1,
+            end,
+            count + 1,
+            temp + '(',
+            res
+        );
+    } else if (s[start] === ')') {
+        removeInvalidParenthesesHelper(
+            s,
+            start + 1,
+            end,
+            count - 1,
+            temp + ')',
+            res
+        );
+    } else {
+        removeInvalidParenthesesHelper(
+            s,
+            start + 1,
+            end,
+            count,
+            temp + s.charAt(start),
+            res
+        );
+    }
+
+    // 不添加当前字符
+    if (s[start] === '(' || s[start] === ')') {
+        removeInvalidParenthesesHelper(s, start + 1, end, count, temp, res);
+    }
+}
+```
+
+BFS
+
+思想很简单，先判断整个字符串是否合法， 如果合法的话就将其加入到结果中。否则的话，进行下一步。
+
+只删掉 1 个括号，考虑所有的删除情况，然后判断剩下的字符串是否合法，如果合法的话就将其加入到结果中。否则的话，进行下一步。
+
+只删掉 2 个括号，考虑所有的删除情况，然后判断剩下的字符串是否合法，如果合法的话就将其加入到结果中。否则的话，进行下一步。
+
+只删掉 3 个括号，考虑所有的删除情况，然后判断剩下的字符串是否合法，如果合法的话就将其加入到结果中。否则的话，进行下一步。
+
+...
+
+因为我们考虑删除最少的括号数，如果上边某一步出现了合法情况，后边的步骤就不用进行了。
+
+同样要解决重复的问题，除了解法一在最后返回前用 set 去重。这里我们也可以在过程中使用一个 set ，在加入队列之前判断一下是否重复。
+
+```javascript
+/**
+ * @param {string} s
+ * @return {string[]}
+ */
+var removeInvalidParentheses = function (s) {
+    let res = [];
+    let queue = [];
+
+    queue.push([s, 0]);
+    
+    while (queue.length > 0) {
+        s = queue.shift();
+        if (isVaild(s[0])) {
+            res.push(s[0]);
+        } else if (res.length == 0) {
+            let removei = s[1];
+            s = s[0];
+            for (; removei < s.length; removei++) {
+                if (
+                //保证是连续括号的第一个
+                (s[removei] == '(' || s[removei] === ')') &&
+                (removei === 0 || s[removei - 1] != s[removei])
+                ) {
+                    let nexts = s.substring(0, removei) + s.substring(removei + 1);
+                    //此时删除位置的下标 removei 就是下次删除位置的开始
+                    queue.push([nexts, removei]);
+                }
+            }
+        }
+    }
+    return res;
+};
+
+function isVaild(s) {
+    let count = 0;
+    for (let i = 0; i < s.length; i++) {
+        if (s[i] === '(') {
+            count++;
+        } else if (s[i] === ')') {
+            count--;
+        }
+        if (count < 0) {
+            return false;
+        }
+    }
+    return count === 0;
+}
+```
 
 #### 寻找和为定值的多个数
 
