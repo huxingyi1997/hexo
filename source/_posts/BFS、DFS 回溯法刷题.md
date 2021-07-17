@@ -1251,6 +1251,201 @@ function isVaild(s) {
 }
 ```
 
+#### [399. 除法求值](https://leetcode-cn.com/problems/evaluate-division/)
+
+给你一个变量对数组 `equations` 和一个实数值数组 `values` 作为已知条件，其中 `equations[i] = [Ai, Bi]` 和 `values[i]` 共同表示等式 `Ai / Bi = values[i]` 。每个 `Ai` 或 `Bi` 是一个表示单个变量的字符串。
+
+另有一些以数组 `queries` 表示的问题，其中 `queries[j] = [Cj, Dj]` 表示第 `j` 个问题，请你根据已知条件找出 `Cj / Dj = ?` 的结果作为答案。
+
+返回 **所有问题的答案** 。如果存在某个无法确定的答案，则用 `-1.0` 替代这个答案。如果问题中出现了给定的已知条件中没有出现的字符串，也需要用 `-1.0` 替代这个答案。
+
+**注意：**输入总是有效的。你可以假设除法运算中不会出现除数为 0 的情况，且不存在任何矛盾的结果。
+
+**示例 1：**
+
+```
+输入：equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+输出：[6.00000,0.50000,-1.00000,1.00000,-1.00000]
+解释：
+条件：a / b = 2.0, b / c = 3.0
+问题：a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ?
+结果：[6.0, 0.5, -1.0, 1.0, -1.0 ]
+```
+
+**示例 2：**
+
+```
+输入：equations = [["a","b"],["b","c"],["bc","cd"]], values = [1.5,2.5,5.0], queries = [["a","c"],["c","b"],["bc","cd"],["cd","bc"]]
+输出：[3.75000,0.40000,5.00000,0.20000]
+```
+
+**示例 3：**
+
+```
+输入：equations = [["a","b"]], values = [0.5], queries = [["a","b"],["b","a"],["a","c"],["x","y"]]
+输出：[0.50000,2.00000,-1.00000,-1.00000]
+```
+
+**提示：**
+
+- `1 <= equations.length <= 20`
+- `equations[i].length == 2`
+- `1 <= Ai.length, Bi.length <= 5`
+- `values.length == equations.length`
+- `0.0 < values[i] <= 20.0`
+- `1 <= queries.length <= 20`
+- `queries[i].length == 2`
+- `1 <= Cj.length, Dj.length <= 5`
+- `Ai, Bi, Cj, Dj` 由小写英文字母与数字组成
+
+并查集
+
+```javascript
+/**
+ * @param {string[][]} equations
+ * @param {number[]} values
+ * @param {string[][]} queries
+ * @return {number[]}
+ * 并查集
+ */
+var calcEquation = function(equations, values, queries) {
+    // 父集 存储变量之间的映射关系
+    let parentMap = new Map();
+    // 存储各个变量之间的比例关系
+    let valueMap = new Map();
+    // 遍历每个等式，构造并查集
+    for (let i = 0; i < equations.length; i++) {
+        // 预处理
+        // 本身未有的数，设为自己的根节点
+        if (!parentMap.has(equations[i][0])) {
+            parentMap.set(equations[i][0], equations[i][0]);
+        }
+        if (!parentMap.has(equations[i][1])) {
+            parentMap.set(equations[i][1], equations[i][1]);
+        }
+        // 本身未有的数，权重初始化为1
+        if (!valueMap.has(equations[i][0])) {
+            valueMap.set(equations[i][0], 1);
+        }
+        if (!valueMap.has(equations[i][1])) {
+            valueMap.set(equations[i][1], 1);
+        }
+        // 家里并查集
+        union(parentMap, valueMap, equations[i][0], equations[i][1], values[i]);
+    }
+    // 结果
+    const result = [];
+    // 根据问题进行查询
+    for (let i = 0; i < queries.length; i++) {
+        // 查找两数
+        let tmp1 = find(parentMap, valueMap, queries[i][0]);
+        let tmp2 = find(parentMap, valueMap, queries[i][1]);
+        // 未找到两数之一
+        if (!tmp1 || !tmp2) {
+            result.push(-1.0);
+            continue;
+        }
+        if (tmp1.index === tmp2.index) {
+            // 在同一个并查集中
+            result.push(tmp1.value / tmp2.value);
+        } else {
+            // 不在同一个并查集中
+            result.push(-1.0);
+        }
+    }
+    return result;
+};
+// 合并index1和index2对应的集
+function union(parentMap, valueMap, index1, index2, value) {
+    let tmp1 = find(parentMap, valueMap, index1);
+    let tmp2 = find(parentMap, valueMap, index2);
+    parentMap.set(tmp1.index, tmp2.index);
+    valueMap.set(tmp1.index, (value * tmp2.value) / tmp1.value);
+}
+
+function find(parentMap, valueMap, index) {
+    let value = 1;
+    while (parentMap.get(index) && parentMap.get(index) !== index) {
+        value *= valueMap.get(index);
+        index = parentMap.get(index);
+    }
+    if (!parentMap.get(index)) {
+        return null;
+    }
+    return {
+        index,
+        value
+    };
+}
+```
+
+DFS
+
+```javascript
+/**
+ * @param {string[][]} equations
+ * @param {number[]} values
+ * @param {string[][]} queries
+ * @return {number[]}
+ * 深度优先遍历
+ */
+ var calcEquation = function(equations, values, queries) {
+    // 结果
+    let res = [];
+    // 已经访问过
+    let already = [];
+    // 判断是否访问过
+    let visited = new Array(values.length).fill(false);
+    // 遍历所有等式
+    for(let item of equations){
+        // 没有访问过该数
+        if(already.indexOf(item[0]) === -1) already.push(item[0]);
+        if(already.indexOf(item[1]) === -1) already.push(item[1]);
+    }
+    for (let item of queries) {
+        // 找不到其中的数
+        if (already.indexOf(item[0]) === -1 || already.indexOf(item[1]) === -1)
+            res.push(-1.0);
+        // 相等的数
+        else if (item[0] === item[1])
+            res.push(1.0);
+        else {
+            // let visited=new Array(values.length).fill(false);
+            res.push(backtracking(visited, 0, item[0], item[1])[0]);
+        }
+    }
+    return res;
+    function backtracking(visited, i, head, tail){
+        let ans = [1.0, false];
+        if (i === values.length) return [-1.0, false];
+        for(let j = 0, len = values.length; j < len; j++){
+            if (equations[j][0] === tail && equations[j][1] === head){
+                ans[0] *= 1 / values[j];
+                return [ans[0], true];
+            }
+            if((equations[j][0] !== head && equations[j][1] !== head) || visited[j]) continue;
+
+            visited[j] = true;
+            let store = ans[0];
+            ans[0] *= equations[j][0] === head ? values[j] : 1 / values[j];
+            if(equations[j][1] === tail){
+                 visited[j] = false;
+                 return [ans[0], true];
+            }
+            let [a, f] = equations[j][0] === head ? backtracking(visited, i + 1, equations[j][1], tail): backtracking(visited,i+1,equations[j][0],tail);
+            if(f){
+                ans[0] *= a;
+                visited[j] = false;
+                return [ans[0], true];
+            }
+            ans[0] = store;
+            visited[j] = false;
+        }
+        return [-1.0, false];
+    }
+}
+```
+
 #### 寻找和为定值的多个数
 
 题目描述

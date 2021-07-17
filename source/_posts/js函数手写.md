@@ -567,9 +567,9 @@ var p = {name:'smyhvae'};
 var obj1 = Object.create(p);  //此方法创建的对象，是用原型链连接的
 console.log(obj1.__proto__ === p);
 var obj2 = Object.create(p.prototype);  //此方法创建的对象，是用原型链连接的
-console.log(obj2); // VM3968:4 Uncaught TypeError: Object prototype may only be an Object or null: undefined
+console.log(obj2); /* VM3968:4 Uncaught TypeError: Object prototype may only be an Object or null: undefined
     at Function.create (<anonymous>)
-    at <anonymous>:4:19
+    at <anonymous>:4:19 */
 ```
 
 或者
@@ -612,7 +612,7 @@ function student() {
 }
 ```
 
-先写了一下继承后上述prototype和__proto__的关系
+先写了一下继承后上述prototype和\__proto__的关系
 
 ```js
 student.prototype.__proto__ === person.prototype
@@ -1177,7 +1177,7 @@ function deepCopy(obj, map = new WeakMap()) {
 如果我们使用 `Map`的话，那么对象间是存在强引用关系的：
 
 ```js
-let obj = { name : 'ConardLi'}
+let obj = { name : 'ConardLi' }
 const target = {
     obj:'code秘密花园'
 }
@@ -1189,9 +1189,9 @@ obj = null;
 再来看 `WeakMap`：
 
 ```js
-let obj = { name : 'ConardLi'}
+let obj = { name : 'ConardLi' }
 const target = new WeakMap();
-target.set(obj,'code秘密花园');
+target.set(obj, 'code秘密花园');
 obj = null;
 ```
 
@@ -1205,7 +1205,7 @@ obj = null;
 
 ### 性能优化（可以跳过，实在有点偏）
 
-在上面的代码中，我们遍历数组和对象都使用了 `forin`这种方式，实际上 `forin`在遍历时效率是非常低的，常见的三种循环 `for、while、forin`的执行效率中，`while`的效率是最好的，所以，我们可以想办法把 `forin`遍历改变为 `while`遍历。
+在上面的代码中，我们遍历数组和对象都使用了 `forin`这种方式，实际上 `for in`在遍历时效率是非常低的，常见的三种循环 `for、while、forin`的执行效率中，`while`的效率是最好的，所以，我们可以想办法把 `forin`遍历改变为 `while`遍历。
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210424085011.jpeg)
 
@@ -1341,7 +1341,7 @@ const symbolTag = '[object Symbol]';
 
 有序这几种类型还需要继续进行递归，我们首先需要获取它们的初始化数据，例如上面的 `[]`和 `{}`，我们可以通过拿到 `constructor`的方式来通用的获取。
 
-例如：`consttarget={}`就是 `consttarget=newObject()`的语法糖。另外这种方法还有一个好处：因为我们还使用了原对象的构造方法，所以它可以保留对象原型上的数据，如果直接使用普通的 `{}`，那么原型必然是丢失了的。
+例如：`const target = {}`就是 `const target = new Object()`的语法糖。另外这种方法还有一个好处：因为我们还使用了原对象的构造方法，所以它可以保留对象原型上的数据，如果直接使用普通的 `{}`，那么原型必然是丢失了的。
 
 下面，我们改写 `clone`函数，对可继续遍历的数据类型进行处理：
 
@@ -1562,7 +1562,7 @@ function cloneRegExp(obj) {
 最后，我把克隆函数单独拎出来了，实际上克隆函数是没有实际应用场景的，两个对象使用一个在内存中处于同一个地址的函数也是没有任何问题的，我特意看了下 `lodash`对函数的处理：
 
 ```js
-const isFunc = typeof value == 'function'
+const isFunc = typeof value === 'function'
  if (isFunc || !cloneableTags[tag]) {
         return object ? value : {}
  }
@@ -1578,7 +1578,7 @@ const isFunc = typeof value == 'function'
 
 我们可以使用正则来处理普通函数：
 
-分别使用正则取出函数体和函数参数，然后使用 `newFunction([arg1[,arg2[,...argN]],]functionBody)`构造函数重新构造一个新的函数：
+分别使用正则取出函数体和函数参数，然后使用 `new Function([arg1[, arg2[, ...argN]], ]functionBody)`构造函数重新构造一个新的函数：
 
 ```js
 function cloneFunction(func) {
@@ -1955,7 +1955,7 @@ console.log(arr);
 
 ## 12.数组去重
 
-尽可能总结全，不过实战很可能会忘掉大部分
+尽可能总结全，不过实战很可能会忘掉大部分，特别要注意NaN和{}
 
 ### 双层 for 循环
 
@@ -1979,14 +1979,16 @@ function unique(arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, NaN, "NaN", 0, "a", {…}, {…}] // NaN、{}没有去重
+// [1, "true", true, 15, false, undefined, null, NaN, NaN, "NaN", 0, "a", {…}, {…}]
 ```
+
+NaN、{}没有去重
 
 ### 利用indexOf或者includes去重
 
 > 新建一个空的结果数组，`for` 循环原数组，判断结果数组是否存在当前元素，如果有相同的值则跳过，不相同则`push`进数组Object
 
-使用indexOf判断
+#### 使用indexOf判断
 
 ```js
 function unique(arr) {
@@ -2001,10 +2003,12 @@ function unique(arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, NaN, "NaN", 0, "a", {…}, {…}]  // NaN、{}没有去重
+// [1, "true", true, 15, false, undefined, null, NaN, NaN, "NaN", 0, "a", {…}, {…}]
 ```
 
-使用includes判断
+NaN、{}没有去重
+
+#### 使用includes判断
 
 ```js
 function unique(arr) {
@@ -2019,10 +2023,12 @@ function unique(arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}]  // {}没有去重
+// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}]
 ```
 
-### Array.filter() 加 indexOf
+ {}没有去重
+
+### Array.filter() + indexOf
 
 > 思想: 利用`indexOf`检测元素在数组中第一次出现的位置是否和元素现在的位置相等，如果不等则说明该元素是重复元素
 
@@ -2033,12 +2039,14 @@ function unique (arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, "NaN", 0, "a", {…}, {…}] // {}没有去重, NaN消失
+// [1, "true", true, 15, false, undefined, null, "NaN", 0, "a", {…}, {…}]
 ```
 
-### Array.reduce() 加 indexOf/includes
+ {}没有去重, NaN消失
 
-使用includes判断
+### Array.reduce() + indexOf/includes
+
+#### 使用includes判断
 
 ```js
 function unique (arr) {
@@ -2047,10 +2055,12 @@ function unique (arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}] // {}没有去重
+// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}]
 ```
 
-使用indexOf判断
+{}没有去重
+
+#### 使用indexOf判断
 
 ```js
 function unique (arr) {
@@ -2059,8 +2069,10 @@ function unique (arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, NaN, "NaN", 0, "a", {…}, {…}] // NaN和{}没有去重
+// [1, "true", true, 15, false, undefined, null, NaN, NaN, "NaN", 0, "a", {…}, {…}]
 ```
+
+NaN和{}没有去重
 
 ### 利用ES6 Set去重
 
@@ -2071,10 +2083,12 @@ function unique (arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}] // {}没有去重
+// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}]
 ```
 
-利用展开运算符简写
+{}没有去重
+
+#### 利用展开运算符简写
 
 ```js
 function unique (arr) {
@@ -2083,8 +2097,10 @@ function unique (arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}] // {}没有去重
+// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}]
 ```
+
+同样{}没有去重
 
 ### 利用Map数据结构去重
 
@@ -2105,8 +2121,10 @@ function unique (arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}] // {}没有去重
+// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}]
 ```
+
+{}没有去重
 
 ### 利用hasOwnProperty
 
@@ -2124,16 +2142,16 @@ function unique(arr) {
 
 let arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 console.log(unique(arr));
-// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}] // NaN和{}去重
+// [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}]
 ```
 
-这是最完美的一种去重了，更详细的可以参考冴羽大大的[JavaScript专题之数组去重](https://juejin.cn/post/6844903482093387783)
+同时实现NaN和{}去重，这也是最完美的一种去重了，更详细的可以参考冴羽大大的[JavaScript专题之数组去重](https://juejin.cn/post/6844903482093387783)
 
 
 
 ## 13.手写数组ES5常见方法
 
-这个之前写过了
+这个之前写过了，这里复习一下写法
 
 ### 参数说明
 
@@ -3493,7 +3511,7 @@ let result = [
 ```js
 function conver(data) {
     data.sort((a, b) => a.parentId - b.parentId);
-    for (let i = data.length - 1; i>= 0; i--) {
+    for (let i = data.length - 1; i >= 0; i--) {
         for (let j = i - 1; j >= 0; j--) {
             if (findParent(data[i], data[j])) {
                 data.slice(i, 1);
@@ -3523,7 +3541,7 @@ const data = [
 ];
 function convert(data) {
     data.sort((a, b) => a.parentId - b.parentId);
-    for (let i = data.length - 1; i>= 0; i--) {
+    for (let i = data.length - 1; i >= 0; i--) {
     	if (data[i].parentId === 0) break;
         for (let j = i - 1; j >= 0; j--) {
             if (findParent(i, j)) {
@@ -3811,7 +3829,7 @@ function throttle (func, wait = 50) {
 // 使用方法：定时器
 setInterval(
     throttle(() => {
-        console.log(1)
+        console.log(1);
     }, 500),
     1
 );
@@ -3870,7 +3888,7 @@ function throttle(func, wait = 50) {
 // 使用方法：定时器
 setInterval(
     throttle(() => {
-        console.log(1)
+        console.log(1);
     }, 500),
     1
 )
@@ -3942,7 +3960,7 @@ babel的转化，其实只实现了第2、3、5点
 |     set      | 一个给属性提供 setter 的方法，如果没有 setter 则为 undefined。当属性值修改时，触发执行该方法 | undefined |
 |   writable   | 当且仅当该属性的writable为true时，value才能被赋值运算符改变。默认为 false |   false   |
 |  enumerable  | enumerable定义了对象的属性是否可以在 for...in 循环和 Object.keys() 中被枚举 |   false   |
-| Configurable | configurable特性表示对象的属性是否可以被删除，以及除value和writable特性外的其他特性是否可以被修改 |   false   |
+| configurable | configurable特性表示对象的属性是否可以被删除，以及除value和writable特性外的其他特性是否可以被修改 |   false   |
 
 ### 在ES5环境下实现const
 
@@ -5111,14 +5129,14 @@ var strStr = function(haystack, needle) {
     // 计算next数组
     calNext(needle, next);
     for (let i = 0; i < n; i++) {
-        while (k > -1 && needle[k + 1] != haystack[i]) {
+        while (k > -1 && needle[k + 1] !== haystack[i]) {
             // 有部分匹配，往前回溯
             k = next[k];
         }
-        if (needle[k + 1] == haystack[i]) {
+        if (needle[k + 1] === haystack[i]) {
             k++;
         }
-        if (k == p - 1) {
+        if (k === p - 1) {
             // 说明k移动到needle的最末端，返回相应的位置
             return i - p + 1;
         }
@@ -5130,11 +5148,11 @@ var strStr = function(haystack, needle) {
 function calNext(needle, next) {
     // 构造过程 j = 1，p = -1 开始
     for (let j = 1, p = -1; j < needle.length; j++) {
-        while (p > -1 && needle[p + 1] != needle[j]) {
+        while (p > -1 && needle[p + 1] !== needle[j]) {
             // 如果下一位不同，往前回溯
             p = next[p];
         }
-        if (needle[p + 1] == needle[j]) {
+        if (needle[p + 1] === needle[j]) {
             // 如果下一位相同，更新相同的最大前缀和最大后缀长
             p++;
         }
@@ -5840,7 +5858,7 @@ console.log(execRecursively(obj5)); // true
 console.log(execRecursively(obj6)); // false
 ```
 
-第6个case目前报错
+第6个case目前正在思考算不算循环引用。
 
 
 
@@ -6342,7 +6360,7 @@ setTimeout(() => {
 原题目实现vue里的reactive函数。
 
 ```js
-/ 实现
+// 实现
 function reactive(obj){
     // ...res
 }
@@ -6410,8 +6428,8 @@ obj1.subscribe((newState, key) => {
 });
 
 // 监测值发生变化
-obj1.a = 3; // {a:3,b:2} 'a'
-obj1.b = 4; // {a:3,b:4} 'b'
+obj1.a = 3; // {a: 3, b: 2} 'a'
+obj1.b = 4; // {a: 3, b: 4} 'b'
 ```
 
 自己改用Proxy做了一版
@@ -6456,8 +6474,8 @@ obj1.subscribe((newState, key) => {
 });
 
 // 监测值发生变化
-obj1.a = 3; // {a:3,b:2} 'a'
-obj1.b = 4; // {a:3,b:4} 'b'
+obj1.a = 3; // {a: 3, b: 2} 'a'
+obj1.b = 4; // {a: 3, b: 4} 'b'
 ```
 
 
