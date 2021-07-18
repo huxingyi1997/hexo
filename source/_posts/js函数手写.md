@@ -901,14 +901,18 @@ function myInstanceof(target, origin){
     let oP  = origin.prototype;
     // 取 target 的隐式原型
     proto = target.__proto__;
-    while(true) {           // 无线循环的写法（也可以使 for(;;) ）
-        if(proto === null){    // 找到最顶层
+    // 无线循环的写法（也可以使 for(;;) ）
+    while (true) {
+        // 找到最顶层
+        if (proto === null) {
             return false;
         }
-        if(proto === oP){       // 严格相等
+        // 严格相等
+        if(proto === oP){
             return true;
         }
-        proto = proto.__proto__;  //没找到继续向上一层原型链查找
+        // 没找到继续向上一层原型链查找
+        proto = proto.__proto__;
     }
 }
 ```
@@ -8385,7 +8389,7 @@ function promisify(fn) {
 }
 ```
 
-或者写成一下方便理解：
+或者写成以下形式方便理解：
 
 ```js
 // 接受一个函数作为输入参数
@@ -8419,7 +8423,6 @@ new Queue()
     .task(2000, () => { 
         console.log(2) 
     }) 
-    .task(1000, () => { 
         console.log(3) 
     }) 
     .start()
@@ -8793,7 +8796,7 @@ while(!now.done) {
 
 > 可以看出，`for...of...`其实就是`iterator`循环调用换了种写法。在ES6中我们之所以能够开心地用`for...of...`遍历各种各种的集合，全靠迭代器模式在背后给力。
 
-ps：此处推荐阅读[迭代协议 (opens new window)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols)，相信大家读过后会对迭代器在ES6中的实现有更深的理解。
+ps：此处推荐阅读[迭代协议](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols)，相信大家读过后会对迭代器在ES6中的实现有更深的理解。
 
 ### 手写实现迭代器生成函数
 
@@ -9016,10 +9019,10 @@ async function parallelSum(...args) {
 // 测试
 (async () => {
     console.log('Running...');
-    const res1 = await serialSum(1, 2, 3, 4, 5, 8, 9, 10, 11, 12)
-    console.log(res1)
-    const res2 = await parallelSum(1, 2, 3, 4, 5, 8, 9, 10, 11, 12)
-    console.log(res2)
+    const res1 = await serialSum(1, 2, 3, 4, 5, 8, 9, 10, 11, 12);
+    console.log(res1);
+    const res2 = await parallelSum(1, 2, 3, 4, 5, 8, 9, 10, 11, 12);
+    console.log(res2);
     console.log('Done');
 })()
 ```
@@ -9061,7 +9064,7 @@ execute
 ```js
 function sleep(time) {
 	return new Promise(function(resolve) {
-		console.log(`wait ${time / 10}s`)
+		console.log(`wait ${time / 10}s`);
 		setTimeout(function() {
 			console.log('execute');
 			resolve();
@@ -9083,7 +9086,7 @@ const arr = [3, 4, 5];
 ```js
 function sleep(time) {
 	return new Promise(function(resolve) {
-		console.log(`wait ${time / 10}s`)
+		console.log(`wait ${time / 10}s`);
 		setTimeout(function() {
 			console.log('execute');
 			resolve();
@@ -9149,7 +9152,7 @@ execter([
     Promise.reject(2),
     Promise.resolve(3)
 ]).then(res => {
-	console.log(res); // [1,null,3]
+	console.log(res); // [1, null, 3]
 })
 ```
 
@@ -9515,7 +9518,7 @@ var requestFn = url => {
         console.log('外部逻辑', res);
     })
 }
-const plimit = new Plimit(5, requestFn); //并发数为5
+const plimit = new Plimit(5, requestFn); // 并发数为5
 plimit.start(URLS);
 ```
 
