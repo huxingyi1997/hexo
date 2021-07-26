@@ -10,7 +10,7 @@ tags:
 ---
 在群里有人发了个搞笑图片，图片上包含这两个题目
 
-```
+```javascript
 [] + {} /* [object Object] */
 {} + [] /* 0/
 ```
@@ -33,26 +33,25 @@ tags:
 
 [] + {} 中，[]会通过隐式转换规则，调用toString方法转换为 "" ，同理{}转换为[object Object], 相加得出字符串拼接结果 [object Object]
 
-```
+```javascript
 var arr = new Array;
 arr.toString() // ""
 var obj = new Object;
-obj.toString() // [object Object]
+obj.toString() // "[object Object]"
 ```
 
 而 {} + []为什么结果会是0呢？
 在js中{}代表复合语句，在一些js解释器会将开头的 {} 看作一个代码块，而不是一个Object（在es6以前只有函数作用域与全局作用域，还没有块级作用域）而这里的{}只是空符号，不表明任何意思。这里的+[]是一个隐式转换，所以参与运算的只有+[]，在这里将[]转换成了number类型，所以得出结果为0。
 
-```
-{};
- +[] //[].toString() == "";  +"" == 0
+```javascript
+{} + []; // [].toString() == "";  +"" == 0
 ```
 
 ### 2.类型转换的分类
 
 按照转换方式分类，将值从一种类型转换成另一种类型，有两种情况，显示强制类型转换和隐式强制类型转换。
 
-```dart
+```javascript
 var a = 66;
 var b = a + ''; // 隐式强制类型转换
 var c = String(a); // 显式强制类型转换
@@ -83,7 +82,7 @@ var c = String(a); // 显式强制类型转换
 
 如果对象有自己的 toString() 方法，字符串化时就会调用该方法并使用其返回值；
 
-```swift
+```javascript
 var a = [1, 2, 3];
 a.toString(); // "1,2,3"
 ```
@@ -93,7 +92,7 @@ a.toString(); // "1,2,3"
 对大多数简单的值都可以使用`JSON.stingify(...)`字符串化。
  JSON.stringify(..) 在对象中遇到 undefined、function 和 symbol 时会自动将其忽略，在数组中则会返回 null
 
-```jsx
+```javascript
 var a = {
     name: 'Tina',
     age: 20,
@@ -131,9 +130,9 @@ JSON.stringify(a);
 replacer表示要字符化的属性
  space用于美化输出
 
-```bash
-var a = {b: 1, c: 2, d: 3}
-JSON.stringify(a, ['b', 'd']) //  "{"b":1,"d":3}"
+```javascript
+var a = {b: 1, c: 2, d: 3};
+JSON.stringify(a, ['b', 'd']); //  "{"b":1,"d":3}"
 ```
 
 #### 3.2 ToNumber： 非数字值到数字值 `Number(value)`
@@ -164,10 +163,10 @@ JavaScript 中的值可以分为以下两类：
 
 ##### 假值对象
 
-```jsx
-var a = new Boolean(false)
-var b = new Number(0)
-var c = new String("")
+```javascript
+var a = new Boolean(false);
+var b = new Number(0);
+var c = new String("");
 ```
 
 虽然 JavaScript 代码中会出现假值对象，但它实际上并不属于 JavaScript 语
@@ -185,7 +184,7 @@ var c = new String("")
 - `.toString()`
 - `+`（比较少用）
 
-```swift
+```javascript
 var a = 42;
 var b = a.toString();
 
@@ -195,14 +194,14 @@ var d = +c
 
 日期显式转换为数字
 
-```jsx
+```javascript
 var d = +new Date; // 可直接转换为时间戳， 不建议这么用，知道可以这么用就可以了
 var timestamp = Date.now();  // 获取时间戳
 ```
 
 ~运算符, 字位操作“非”
 
-```jsx
+```javascript
 var a = 'hello world'
 console.log(~a.indexOf('aaa')) // 0
 console.log(~a.indexOf('he')) // -1
@@ -210,7 +209,7 @@ console.log(~a.indexOf('he')) // -1
 
 #### 4.2 字符串和数字之间的隐式强制类型转换
 
-```csharp
+```javascript
 var a = [1,2];
 var b = [3,4];
 a + b; // "1,23,4"
@@ -230,7 +229,7 @@ a和b都不是字符串，但是它们都被强制转换成字符串并拼接。
 解析允许存在非数字的字符，从左到右，遇到非字符就停止
  转换不允许存在非数字字符， 否则返回NaN
 
-```jsx
+```javascript
 var a = "14";
 Number(a); // 14
 parseInt(a); // 14
@@ -244,7 +243,7 @@ parseInt(b); // 14
 
 常用方法是 `!!`, 为第二个`!`会将结果反转回原值
 
-```swift
+```javascript
 var a = "0";
 var b = [];
 var c = {};
@@ -264,9 +263,9 @@ var g;
 
 #### 4.5 布尔值到数字到隐式转换
 
-```cpp
-1 + false // 1
-1 + true // 2
+```javascript
+1 + false; // 1
+1 + true; // 2
 ```
 
 #### 4.6 || 和 &&

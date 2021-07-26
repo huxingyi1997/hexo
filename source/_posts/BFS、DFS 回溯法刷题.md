@@ -16,7 +16,7 @@ tags:
 
 ### BFS、DFS 回溯法
 
-#### [17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+#### 17. [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
 
 给定一个仅包含数字 `2-9` 的字符串，返回所有它能表示的字母组合。答案可以按 **任意顺序** 返回。
 
@@ -74,8 +74,8 @@ var letterCombinations = function(digits) {
     let res = [];
     let aux = [];
     let len = digits.length;
-    let backTrack = function (index) {
-        if (index >= len) {
+    function backTrack (index) {
+        if (index === len) {
             res.push([...aux].join(''));
             return;
         }
@@ -92,7 +92,7 @@ var letterCombinations = function(digits) {
 };
 ```
 
-#### [22. 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
+#### 22. [括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
 
 数字 `n` 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 **有效的** 括号组合。 
 
@@ -154,7 +154,7 @@ function trackback (left, right, track, res){
 };
 ```
 
-#### [39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
+#### 39. [组合总和](https://leetcode-cn.com/problems/combination-sum/)
 
 给定一个**无重复元素**的数组 `candidates` 和一个目标数 `target` ，找出 `candidates` 中所有可以使数字和为 `target` 的组合。
 
@@ -380,7 +380,7 @@ var permuteUnique = function(nums) {
 
     function dfs (path) {
         // 个数选够了
-        if (path.length == len) {
+        if (path.length === len) {
             // path的拷贝 加入解集
             res.push([...path]);
             // 结束当前递归 结束当前分支
@@ -390,7 +390,7 @@ var permuteUnique = function(nums) {
         // 枚举出所有的选择
         for (let i = 0; i < len; i++) {
             // 避免产生重复的排列
-            if (nums[i - 1] == nums[i] && i - 1 >= 0 && !used[i - 1]) continue;
+            if (nums[i - 1] === nums[i] && i - 1 >= 0 && !used[i - 1]) continue;
             // 这个数使用过了，跳过。
             if (used[i]) continue;
             // make a choice
@@ -452,7 +452,7 @@ var solveNQueens = function(n) {
     return res;
 
     function backtrack(n, tmp) {
-        if (tmp.length == n) {
+        if (tmp.length === n) {
             let arr = [];
             for (let i = 0; i < n; i++) {
                 arr[i] = ".".repeat(tmp[i]) + "Q" + ".".repeat(n - tmp[i] - 1);
@@ -471,7 +471,7 @@ var solveNQueens = function(n) {
         let i = arr.length;
         for (let x = 0; x < i; x++) {
             let y = arr[x];
-            if  (y == j || x + y == i + j || x - y == i - j) return false;
+            if  (y === j || x + y === i + j || x - y === i - j) return false;
         }
         return true;
     }
@@ -558,9 +558,9 @@ var totalNQueens = function(n) {
             if (isValid(tmp, j)) {
                 // 记录当前选择
                 tmp.push(j);
-                //继续下一次递归
+                // 继续下一次递归
                 backtrack(n, tmp);
-                //撤销当前选择
+                // 撤销当前选择
                 tmp.pop();
             }
         }
@@ -578,7 +578,7 @@ var totalNQueens = function(n) {
 };
 ```
 
-#### [78. 子集](https://leetcode-cn.com/problems/subsets/)
+#### 78. [子集](https://leetcode-cn.com/problems/subsets/)
 
 给你一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
 
@@ -648,7 +648,7 @@ var subsets = function(nums) {
 // 数学归纳法
 var subsets = function(nums) {
     // base case，返回一个空集
-    if (nums.length == 0) return [[]];
+    if (nums.length === 0) return [[]];
     let n = nums.pop();
     // 先递归算出前面元素的所有子集
     let res = subsets(nums);
@@ -671,7 +671,7 @@ var subsets = function(nums) {
  */
 // 数学归纳法
 var subsets = function(nums) {
-    let res=[[]];
+    let res = [[]];
     for(let i = 0; i < nums.length; i++){
         for(let j = 0, len = res.length; j < len; j++){
             res.push(res[j].concat(nums[i]));
@@ -681,7 +681,7 @@ var subsets = function(nums) {
 };
 ```
 
-#### [79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
+#### 79. [单词搜索](https://leetcode-cn.com/problems/word-search/)
 
 给定一个 `m x n` 二维字符网格 `board` 和一个字符串单词 `word` 。如果 `word` 存在于网格中，返回 `true` ；否则，返回 `false` 。
 
@@ -943,7 +943,7 @@ var numIslands = function(grid) {
 };
 ```
 
-#### [207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
+#### 207. [课程表](https://leetcode-cn.com/problems/course-schedule/)
 
 你这个学期必须选修 `numCourses` 门课程，记为 `0` 到 `numCourses - 1` 。
 
@@ -975,7 +975,7 @@ var numIslands = function(grid) {
 - `0 <= prerequisites.length <= 5000`
 - `prerequisites[i].length == 2`
 - `0 <= ai, bi < numCourses`
-- `prerequisites[i]` 中的所有课程对 **互不相同**
+- `prerequisites[i]` 中的所有课程对**互不相同**
 
 邻接表+BFS
 
@@ -1007,7 +1007,7 @@ var canFinish = function(numCourses, prerequisites) {
     for (let i = 0; i < inDegree.length; i++) {
         if (inDegree[i] === 0) queue.push(i);
     }
-    while(queue.length ) {
+    while(queue.length) {
         // 可选的课，出栈
         const select = queue.shift();
         // 获取这门课对应的后续课
@@ -1033,7 +1033,7 @@ var canFinish = function(numCourses, prerequisites) {
 }; 
 ```
 
-#### [301. 删除无效的括号](https://leetcode-cn.com/problems/remove-invalid-parentheses/)
+#### 301. [删除无效的括号](https://leetcode-cn.com/problems/remove-invalid-parentheses/)
 
 给你一个由若干括号和字母组成的字符串 `s` ，删除最小数量的无效括号，使得输入的字符串有效。
 
@@ -1251,7 +1251,7 @@ function isVaild(s) {
 }
 ```
 
-#### [399. 除法求值](https://leetcode-cn.com/problems/evaluate-division/)
+#### 399. [除法求值](https://leetcode-cn.com/problems/evaluate-division/)
 
 给你一个变量对数组 `equations` 和一个实数值数组 `values` 作为已知条件，其中 `equations[i] = [Ai, Bi]` 和 `values[i]` 共同表示等式 `Ai / Bi = values[i]` 。每个 `Ai` 或 `Bi` 是一个表示单个变量的字符串。
 

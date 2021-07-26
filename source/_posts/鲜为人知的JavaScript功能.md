@@ -20,17 +20,13 @@ js一门很容易入门但是很难精通的语言。我很认同这句话。这
 
 js有一元运算符。你可能已经见过了，像 void(0) 或者 void0 。它只有一个目的 - 在右边评估表达式并返回undefined。使用0只是一种惯例。不一定要使用0.它可以是任何有效的表达式，如
 
-```
+```javascript
 void <expression>
 ```
 
 它仍然返回undefined。
 
-
-
-![img](https://user-gold-cdn.xitu.io/2018/12/15/167b085e3fe5215f?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
-
-
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210724172728.webp)
 
 为什么要这样子返回undefined，直接返回undefined不好么？看起来这个特性很多余，不是么？
 
@@ -38,11 +34,13 @@ void <expression>
 
 好吧，事实证明，在ES5之前，你实际上可以在大多数浏览器中为undefined重新分配值。类似这样
 
-```
-undefined =“abc”
+```javascript
+undefined = “abc”
 ```
 
 使用void的话会始终保持返回正确的undefined。
+
+
 
 ## 2.构造函数的括号是可选的
 
@@ -50,7 +48,9 @@ undefined =“abc”
 
 下面的代码样式都被认为是有效的JS语法，并且会给你完全相同的结果！
 
-![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420095442.webp)
+<img src="https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420095442.webp" alt="img" style="zoom:50%;" />
+
+
 
 ## 3.IIFE的括号可以被跳过
 
@@ -78,11 +78,13 @@ void操作符告诉解析器这段代码是函数表达式。因此，我们可�
 
 我们添加这些括号只是为了更好的代码可读性。
 
+
+
 ## 4.with 声明
 
 你知道js有with声明块？with一直是js的关键词。语法如下：
 
-```
+```javascript
 with (object)
    statement 
 // for multiple statements add a block
@@ -105,6 +107,8 @@ with块看起来很酷对不对？甚至比object destructuring还好。
 
 通常不鼓励使用with语句，因为它已被弃用。 在严格模式下完全禁止。 事实证明，with块会增加语言中的一些性能和安全性问题。Bummer
 
+
+
 ## 5.构造函数
 
 function语句并不是定义新函数的唯一方法；你可以使用【Function（）】这个构造函数和new运算符动态定义函数。
@@ -116,6 +120,8 @@ function语句并不是定义新函数的唯一方法；你可以使用【Functi
 ### 有趣的事实
 
 在js，Function构造函数是所有构造函数的构造函数。也包括Object的构造函数。并且Function构造函数的构造函数就是它自身。因此，调用object.constructor.constructor...足够多次后，在js中，最终会在任何对象返回Function构造函数。
+
+
 
 ## 6.Function 的属性
 
@@ -141,6 +147,8 @@ function语句并不是定义新函数的唯一方法；你可以使用【Functi
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420100256.webp)
 
+
+
 ## 7.Arguments属性
 
 我相信大多数人都知道函数中的参数对象。 它是一个像对象一样的数组（译者：emmm），在所有函数中都能访问到。它具有在调用函数时传递的参数列表，也有其他一些有趣的属性。
@@ -152,6 +160,8 @@ function语句并不是定义新函数的唯一方法；你可以使用【Functi
 
 注意：虽然ES5禁止在严格模式下使用callee和caller，但在许多编译库中仍然常见。 所以，值得学习它们。
 
+
+
 ## 8.标记模版字面量
 
 除非你是井底之蛙，你一定听说过模版字面量。模版字面量时es6的一个很酷的补充。然而，你听说过Tagged模版字面量么（Tagged Template Literals）？
@@ -162,11 +172,13 @@ Tagged模板字面量允许您通过向模板字面量添加自定义标记来�
 
 在下面的示例中，我们的自定义标记 - highlight，解释模板文字的值，并使用
 
-```
+```javascript
 <mark>
 ```
 
 元素将解释的值包装在结果字符串中，以突出显示。
+
+
 
 ## 9.Getter & Setter
 
@@ -180,11 +192,13 @@ Tagged模板字面量允许您通过向模板字面量添加自定义标记来�
 
 Getters和Setters不是es5的特性，它们是一直都存在的特性。es5只是添加了语法糖。
 
+
+
 ## 10.逗号操作符
 
 JavaScript有一个逗号运算符。 它允许我们在一行中编写由逗号分隔的多个表达式，并返回最后一个表达式的结果
 
-```
+```javascript
 // syntax
 let result = expression1, expression2,... expressionN
 ```
@@ -193,13 +207,13 @@ let result = expression1, expression2,... expressionN
 
 你可能在循环里面使用过了
 
-```
+```javascript
 for (var a = 0, b = 10; a <= 10; a++, b--)
 ```
 
 它可以帮助我们把语句写在一行
 
-```
+```javascript
 function getNextValue() {
     return counter++, console.log(counter), counter
 }
@@ -207,9 +221,11 @@ function getNextValue() {
 
 或者写lamda表达式
 
-```
+```javascript
 const getSquare = x => (console.log (x), x * x)
 ```
+
+
 
 ## 11.+ 加操作符
 
@@ -220,6 +236,8 @@ const getSquare = x => (console.log (x), x * x)
 Plus运算符也适用于负，八进制，十六进制，指数值。 更重要的是，它甚至可以将Date或Moment.js对象转换为时间戳！
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420101418.webp)
+
+
 
 ## 12.!! Bang Bang 操作符
 
@@ -232,6 +250,8 @@ Plus运算符也适用于负，八进制，十六进制，指数值。 更重要
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420102334.webp)
 
+
+
 ## 13.~ 位运算作符
 
 来看一个没人关注的位运算操作符。我们什么时候用它呢？
@@ -240,7 +260,7 @@ Plus运算符也适用于负，八进制，十六进制，指数值。 更重要
 
 当与数字一起使用时，Tilde运算符有效，像这样
 
-```
+```javascript
 ~N => -（N + 1）。
 ```
 
@@ -251,6 +271,8 @@ Plus运算符也适用于负，八进制，十六进制，指数值。 更重要
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210420102007.webp)
 
 注意：ES6和ES7分别在String＆Array中添加了一个新的.includes（）方法。当然，它比位运算运算符更清晰，以检查项目是否存在于Array或String中。
+
+
 
 ## 14.标签语句
 

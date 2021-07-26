@@ -1566,10 +1566,10 @@ function cloneRegExp(obj) {
 最后，我把克隆函数单独拎出来了，实际上克隆函数是没有实际应用场景的，两个对象使用一个在内存中处于同一个地址的函数也是没有任何问题的，我特意看了下 `lodash`对函数的处理：
 
 ```js
-const isFunc = typeof value === 'function'
- if (isFunc || !cloneableTags[tag]) {
-        return object ? value : {}
- }
+const isFunc = typeof value === 'function';
+if (isFunc || !cloneableTags[tag]) {
+    return object ? value : {};
+}
 ```
 
 可见这里如果发现是函数的话就会直接返回了，没有做特殊的处理，但是我发现不少面试官还是热衷于问这个问题的，而且据我了解能写出来的少之又少。。。
@@ -1912,8 +1912,8 @@ Cannot read property 'constructor' of undefined
 function flat(arr) {
     let res = [];
     arr.forEach(function (item){
-        if (item.constructor == Array) {
-        // if (instanceof(item) == Array) {
+        if (item.constructor === Array) {
+        // if (instanceof(item) === Array) {
             res.push(...flat(item));
         } else {
             res.push(item);
@@ -2140,7 +2140,7 @@ console.log(unique(arr));
 function unique(arr) {
     var obj = {};
     return arr.filter(function(item){
-    	return obj,hasOwnProperty(typeof item + item) ? false : (obj[typeof iten + item] = true);
+    	return obj,hasOwnProperty(typeof item + item) ? false : (obj[typeof item + item] = true);
     })
 }
 
@@ -5482,9 +5482,9 @@ function A(name, age) {
 let a = new A('poetry',22);
 console.log(a);
 /*
-    age: 22
-    name: "poetry"
-*/
+ * age: 22
+ * name: "poetry"
+ */
 ```
 
 
@@ -8297,6 +8297,21 @@ const sleep = f(setTimeout);
 sleep(500).then(() => console.log('hi'));
 ```
 
+或者简化成为
+
+```js
+function f(fn) {
+    return function(...args) {
+        return new Promise(function(resolve) {
+        	fn(resolve, ...args);
+        })
+    }
+}
+
+const sleep = f(setTimeout);
+sleep(500).then(() => console.log('hi'));
+```
+
 ### 变种题2 异步循环打印
 
 使用`promise + async await`实现异步循环打印
@@ -8413,7 +8428,7 @@ function promisify(fn) {
 
 ## 59.实现延时执行队列
 
-  实现一个延时执行队列，  要求分别在 1,3,4 秒后打印出 "1", "2",   “  3"
+  实现一个延时执行队列，  要求分别在 1,3,4 秒后打印出 "1", "2", "3"
 
 ```js
 new Queue()
@@ -8615,9 +8630,7 @@ mySetInterval(() => {
 }, 1000)
 ```
 
-`clearInterval` 的用法是 `clearInterval(id)`。而这个 `id` 是 `setInterval`的返回值，通过这个 `id` 值就能够清除指定的定时器。具体实现请参考[用setTimeout和clearTimeout简单实现setInterval与clearInterval](https://juejin.cn/post/6844903839934447629)
-
-和[你会用 setInterval, setTimeout 互相实现吗？](https://juejin.cn/post/6844903887749513223)
+`clearInterval` 的用法是 `clearInterval(id)`。而这个 `id` 是 `setInterval`的返回值，通过这个 `id` 值就能够清除指定的定时器。具体实现请参考[用setTimeout和clearTimeout简单实现setInterval与clearInterval](https://juejin.cn/post/6844903839934447629)和[你会用 setInterval, setTimeout 互相实现吗？](https://juejin.cn/post/6844903887749513223)
 
 ### setInterval实现setTimeout
 
@@ -8844,7 +8857,7 @@ function iteratorGenerator(list) {
             return {
                 done: done,
                 value: value
-            }
+            };
         }
     }
 }

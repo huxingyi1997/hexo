@@ -13,13 +13,13 @@ javascript基本知识，建议有一定基础，再阅读过《JavaScript高级
 
 <!-- more -->
 
-# 1.原型链
+## 1.原型链
 
-## 1.1 构造函数创建对象
+### 1.1 构造函数创建对象
 
 我们先使用构造函数创建一个对象：
 
-```
+```javascript
 function Person() {
 	...
 }
@@ -30,11 +30,11 @@ console.log(person.name) // Kevin
 
 在这个例子中，Person 就是一个构造函数，我们使用 new 创建了一个实例对象 person。
 
-## 1.2 prototype
+### 1.2 prototype
 
 每个构造函数都有一个 prototype 属性 ，比如：
 
-```
+```javascript
 function Person() {
 	
 }
@@ -61,13 +61,13 @@ console.log(person2.name) // Kevin
 
 那么我们该怎么表示实例与实例原型，也就是 person 和 Person.prototype 之间的关系呢，这时候我们就要讲到第二个属性：
 
-## 1.3 __proto__
+### 1.3 \__proto__
 
-这是每一个JavaScript对象(除了 null )都具有的一个属性，叫__proto__，这个属性会指向该对象的原型。
+这是每一个JavaScript对象(除了 null )都具有的一个属性，叫\__proto__，这个属性会指向该对象的原型。
 
 为了证明这一点,我们可以在Firefox或者Chrome中控制台输入：
 
-```
+```javascript
 function Person() {
 	
 }
@@ -81,13 +81,13 @@ console.log(person.__proto__ === Person.prototype); // true
 
 既然实例对象和构造函数都可以指向原型，那么原型是否有属性指向构造函数或者实例呢？
 
-## 1.4 constructor
+### 1.4 constructor
 
 指向实例倒是没有，因为同一个构造函数可以生成多个实例，但是原型指向构造函数倒是有的，这就要讲到第三个属性：constructor，每个原型都有一个 constructor 属性指向关联的构造函数。
 
 为了验证这一点，我们可以尝试：
 
-```
+```javascript
 function Person() {
 
 }
@@ -100,28 +100,28 @@ console.log(Person === Person.prototype.constructor); // true
 
 综上我们已经得出：
 
-```
+```javascript
 function Person() {
 
 }
 
 var person = new Person();
 
-console.log(person.__proto__ == Person.prototype) // true
-console.log(Person.prototype.constructor == Person) // true
+console.log(person.__proto__ === Person.prototype) // true
+console.log(Person.prototype.constructor === Person) // true
 // 顺便学习一个ES5的方法,可以获得对象的原型
 console.log(Object.getPrototypeOf(person) === Person.prototype) // true
 ```
 
 了解了构造函数、实例原型、和实例之间的关系，接下来我们讲讲实例和原型的关系：
 
-## 1.5 实例与原型
+### 1.5 实例与原型
 
 当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止。
 
 举个例子：
 
-```
+```javascript
 function Person() {
 
 }
@@ -139,15 +139,15 @@ console.log(person.name) // Kevin
 
 在这个例子中，我们给实例对象 person 添加了 name 属性，当我们打印 person.name 的时候，结果自然为 Daisy。
 
-但是当我们删除了 person 的 name 属性时，读取 person.name，从 person 对象中找不到 name 属性就会从 person 的原型也就是 person.__proto__ ，也就是 Person.prototype中查找，幸运的是我们找到了 name 属性，结果为 Kevin。
+但是当我们删除了 person 的 name 属性时，读取 person.name，从 person 对象中找不到 name 属性就会从 person 的原型也就是 person.\__proto__ ，也就是 Person.prototype中查找，幸运的是我们找到了 name 属性，结果为 Kevin。
 
 但是万一还没有找到呢？原型的原型又是什么呢？
 
-## 1.6 原型的原型
+### 1.6 原型的原型
 
 在前面，我们已经讲了原型也是一个对象，既然是对象，我们就可以用最原始的方式创建它，那就是：
 
-```
+```javascript
 var obj = new Object();
 obj.name = 'Kevin'
 console.log(obj.name) // Kevin
@@ -157,13 +157,13 @@ console.log(obj.name) // Kevin
 
 ![原型的原型关系图](https://github.com/mqyqingfeng/Blog/raw/master/Images/prototype4.png)
 
-## 1.7 原型链
+### 1.7 原型链
 
 那 Object.prototype 的原型呢？
 
 null，我们可以打印：
 
-```
+```javascript
 console.log(Object.prototype.__proto__ === null) // true
 ```
 
@@ -173,7 +173,7 @@ console.log(Object.prototype.__proto__ === null) // true
 
 > null 表示“没有对象”，即该处不应该有值。
 
-所以 Object.prototype.__proto__ 的值为 null 就是 Object.prototype 没有原型，表达了同一个意思。
+所以 Object.prototype.\__proto__ 的值为 null 就是 Object.prototype 没有原型，表达了同一个意思。
 
 所以查找属性的时候查到 Object.prototype 就可以停止查找了。
 
@@ -183,15 +183,15 @@ console.log(Object.prototype.__proto__ === null) // true
 
 顺便还要说一下，图中由相互关联的原型组成的链状结构就是原型链，也就是蓝色的这条线。
 
-## 补充
+### 补充
 
 最后，补充三点大家可能不会注意的地方：
 
-### constructor
+#### constructor
 
 首先是 constructor 属性，我们看个例子：
 
-```
+```javascript
 function Person() {
 
 }
@@ -202,13 +202,13 @@ console.log(person.constructor === Person); // true
 
 当获取 person.constructor 时，其实 person 中并没有 constructor 属性,当不能读取到constructor 属性时，会从 person 的原型也就是 Person.prototype 中读取，正好原型中有该属性，所以：
 
-```
+```javascript
 person.constructor === Person.prototype.constructor
 ```
 
-### __proto__
+#### \__proto__
 
-其次是 __proto__ ，绝大部分浏览器都支持这个非标准的方法访问原型，然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，与其说是一个属性，不如说是一个 getter/setter，当使用 obj.__proto__ 时，可以理解成返回了 Object.getPrototypeOf(obj)。
+其次是 \__proto__ ，绝大部分浏览器都支持这个非标准的方法访问原型，然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，与其说是一个属性，不如说是一个 getter/setter，当使用 obj.__proto__ 时，可以理解成返回了 Object.getPrototypeOf(obj)。
 
 ### 真的是继承吗？
 
@@ -218,11 +218,11 @@ person.constructor === Person.prototype.constructor
 
 
 
-# 2.继承
+## 2.继承
 
-## 2.1 原型链继承
+### 2.1 原型链继承
 
-```
+```javascript
 function Parent () {
     this.name = 'kevin';
 }
@@ -246,7 +246,7 @@ console.log(child1.getName()) // kevin
 
 1.引用类型的属性被所有实例共享，举个例子：
 
-```
+```javascript
 function Parent () {
     this.names = ['kevin', 'daisy'];
 }
@@ -264,9 +264,9 @@ console.log(child2.names); // ["kevin", "daisy", "yayu"]
 
 2.在创建 Child 的实例时，不能向Parent传参
 
-## 2.2 借用构造函数(经典继承)
+### 2.2 借用构造函数(经典继承)
 
-```
+```javascript
 function Parent () {
     this.names = ['kevin', 'daisy'];
 }
@@ -291,7 +291,7 @@ console.log(child2.names); // ["kevin", "daisy"]
 
 举个例子：
 
-```
+```javascript
 function Parent (name) {
     this.name = name;
 }
@@ -310,11 +310,11 @@ console.log(child2.name); // daisy
 
 方法都在构造函数中定义每个子类实例不能共享父函数，浪费内存，开销较大。不能继承父类原型。
 
-## 2.3 组合继承
+### 2.3 组合继承
 
 原型链继承和经典继承双剑合璧。
 
-```
+```javascript
 function Parent (name) {
     this.name = name;
     this.colors = ['red', 'blue', 'green'];
@@ -353,9 +353,9 @@ console.log(child2.colors); // ["red", "blue", "green"]
 
 缺点：Parent的构造函数会多执行了一次
 
-## 2.4 原型式继承
+### 2.4 原型式继承
 
-```
+```javascript
 function createObj(o) {
     function F(){}
     F.prototype = o;
@@ -367,7 +367,7 @@ function createObj(o) {
 
 缺点：包含引用类型的属性值始终都会共享相应的值，这点跟原型链继承一样。
 
-```
+```javascript
 var person = {
     name: 'kevin',
     friends: ['daisy', 'kelly']
@@ -385,11 +385,11 @@ console.log(person2.friends); // ["daisy", "kelly", "taylor"]
 
 注意：修改`person1.name`的值，`person2.name`的值并未发生改变，并不是因为`person1`和`person2`有独立的 name 值，而是因为`person1.name = 'person1'`，给`person1`添加了 name 值，并非修改了原型上的 name 值。
 
-## 2.5 寄生式继承
+### 2.5 寄生式继承
 
 创建一个仅用于封装继承过程的函数，该函数在内部以某种形式来做增强对象，最后返回对象。
 
-```
+```javascript
 function createObj (o) {
     var clone = Object.create(o);
     clone.sayName = function () {
@@ -401,18 +401,18 @@ function createObj (o) {
 
 缺点：跟借用构造函数模式一样，每次创建对象都会创建一遍方法。
 
-## 2.6 寄生组合式继承
+### 2.6 寄生组合式继承
 
 为了方便大家阅读，在这里重复一下组合继承的代码：
 
-```
+```javascript
 function Parent (name) {
     this.name = name;
     this.colors = ['red', 'blue', 'green'];
 }
 
 Parent.prototype.getName = function () {
-    console.log(this.name)
+    console.log(this.name);
 }
 
 function Child (name, age) {
@@ -429,19 +429,19 @@ console.log(child1);
 
 一次是设置子类型实例的原型的时候：
 
-```
+```javascript
 Child.prototype = new Parent();
 ```
 
 一次在创建子类型实例的时候：
 
-```
+```javascript
 var child1 = new Child('kevin', '18');
 ```
 
 回想下 new 的模拟实现，其实在这句中，我们会执行：
 
-```
+```javascript
 Parent.call(this, name);
 ```
 
@@ -455,7 +455,7 @@ Parent.call(this, name);
 
 看看如何实现：
 
-```
+```javascript
 function Parent (name) {
     this.name = name;
     this.colors = ['red', 'blue', 'green'];
@@ -480,7 +480,7 @@ console.log(child1);
 
 最后我们封装一下这个继承方法：
 
-```
+```javascript
 function object(o) {
     function F() {}
     F.prototype = o;
@@ -3901,7 +3901,7 @@ check阶段专门用来执行`setImmediate()`方法的回调，当poll阶段进�
 
 那么合适使用这个方法比较合适呢？下面有一个例子：
 
-```text
+```javascript
 const server = net.createServer(() => {}).listen(8080);
 
 server.on('listening', () => {});
@@ -3974,22 +3974,22 @@ Promise 必须为以下三种状态之一：等待态（Pending）、执行态�
 
 先从 Promise 执行结果看一下，有如下一段代码：
 
-```
-    new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve({ test: 1 })
-            resolve({ test: 2 })
-            reject({ test: 2 })
-        }, 1000)
-    }).then((data) => {
-        console.log('result1', data)
-    },(data1)=>{
-        console.log('result2',data1)
-    }).then((data) => {
-        console.log('result3', data)
-    })
-    //result1 { test: 1 }
-    //result3 undefined
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve({ test: 1 })
+        resolve({ test: 2 })
+        reject({ test: 2 })
+    }, 1000)
+}).then((data) => {
+    console.log('result1', data)
+},(data1)=>{
+    console.log('result2',data1)
+}).then((data) => {
+    console.log('result3', data)
+})
+//result1 { test: 1 }
+//result3 undefined
 ```
 
 显然这里输出了不同的 data。由此可以看出几点：
@@ -4000,57 +4000,57 @@ Promise 必须为以下三种状态之一：等待态（Pending）、执行态�
 
 基于以上几点，我们先写个基于 [PromiseA+](https://promisesaplus.com/) 规范的只含 resolve 方法的 Promise 模型:
 
-```
-    function Promise(fn){ 
-        let state = 'pending';
-        let value = null;
-        const callbacks = [];
+```javascript
+function Promise(fn){ 
+    let state = 'pending';
+    let value = null;
+    const callbacks = [];
 
-        this.then = function (onFulfilled){
-            return new Promise((resolve, reject)=>{
-                handle({ //桥梁，将新 Promise 的 resolve 方法，放到前一个 promise 的回调对象中
-                    onFulfilled, 
-                    resolve
-                })
+    this.then = function (onFulfilled){
+        return new Promise((resolve, reject)=>{
+            handle({ //桥梁，将新 Promise 的 resolve 方法，放到前一个 promise 的回调对象中
+                onFulfilled, 
+                resolve
             })
+        })
+    }
+
+    function handle(callback){
+        if(state === 'pending'){
+            callbacks.push(callback)
+            return;
         }
 
-        function handle(callback){
-            if(state === 'pending'){
-                callbacks.push(callback)
+        if(state === 'fulfilled'){
+            if(!callback.onFulfilled){
+                callback.resolve(value)
                 return;
             }
-            
-            if(state === 'fulfilled'){
-                if(!callback.onFulfilled){
-                    callback.resolve(value)
-                    return;
-                }
-                const ret = callback.onFulfilled(value) //处理回调
-                callback.resolve(ret) //处理下一个 promise 的resolve
-            }
+            const ret = callback.onFulfilled(value) //处理回调
+            callback.resolve(ret) //处理下一个 promise 的resolve
         }
-        function resolve(newValue){
-            const fn = ()=>{
-                if(state !== 'pending')return
-
-                state = 'fulfilled';
-                value = newValue
-                handelCb()
-            }
-            
-            setTimeout(fn,0) //基于 PromiseA+ 规范
-        }
-        
-        function handelCb(){
-            while(callbacks.length) {
-                const fulfiledFn = callbacks.shift();
-                handle(fulfiledFn);
-            };
-        }
-        
-        fn(resolve)
     }
+    function resolve(newValue){
+        const fn = ()=>{
+            if(state !== 'pending')return
+
+            state = 'fulfilled';
+            value = newValue
+            handelCb()
+        }
+
+        setTimeout(fn,0) //基于 PromiseA+ 规范
+    }
+
+    function handelCb(){
+        while(callbacks.length) {
+            const fulfiledFn = callbacks.shift();
+            handle(fulfiledFn);
+        };
+    }
+
+    fn(resolve)
+}
 ```
 
 **这个模型简单易懂，这里最关键的点就是在 then 中新创建的 Promise，它的状态变为 fulfilled 的节点是在上一个 Promise的回调执行完毕的时候。也就是说当一个 Promise 的状态被 fulfilled 之后，会执行其回调函数，而回调函数返回的结果会被当作 value，返回给下一个 Promise(也就是then 中产生的 Promise)，同时下一个 Promise的状态也会被改变(执行 resolve 或 reject)，然后再去执行其回调,以此类推下去...链式调用的效应就出来了。**

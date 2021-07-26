@@ -13,7 +13,7 @@ tags:
 
 ## 剑指offer
 
-#### 03.[数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
+#### 03. [数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
 
 找出数组中重复的数字。
 
@@ -85,7 +85,7 @@ var findRepeatNumber = function(nums) {
 };
 ```
 
-#### 04.[二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
+#### 04. [二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
 
 在一个 n * m 的二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个高效的函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
 
@@ -143,7 +143,7 @@ var findNumberIn2DArray = function(matrix, target) {
 };
 ```
 
-#### 05.[替换空格](https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/)
+#### 05. [替换空格](https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/)
 
 请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
 
@@ -183,11 +183,9 @@ var replaceSpace = function(s) {
 };
 ```
 
-#### 06.[从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
+#### 06. [从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
 
 输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。
-
- 
 
 **示例 1：**
 
@@ -242,7 +240,7 @@ var reversePrint = function(head) {
 };
 ```
 
-#### 07.[重建二叉树](https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/)
+#### 07. [重建二叉树](https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/)
 
 输入某二叉树的前序遍历和中序遍历的结果，请重建该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
 
@@ -335,7 +333,7 @@ var buildTree = function(preorder, inorder) {
 };
 ```
 
-#### 09.[用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
+#### 09. [用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
 
 请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（`push`、`pop`、`peek`、`empty`）：
 
@@ -450,7 +448,7 @@ MyQueue.prototype.empty = function() {
  */
 ```
 
-#### 10.[斐波那契数列](https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/)
+#### 10. [斐波那契数列](https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/)
 
 写一个函数，输入 `n` ，求斐波那契（Fibonacci）数列的第 `n` 项（即 `F(N)`）。斐波那契数列的定义如下：
 
@@ -519,7 +517,7 @@ var fib = function(N) {
 };
 ```
 
-#### 11.[寻找旋转排序数组中的最小值 ](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
+#### 11. [寻找旋转排序数组中的最小值 ](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
 
 假设按照升序排序的数组在预先未知的某个点上进行了旋转。
 
@@ -566,21 +564,21 @@ var findMin = function(nums) {
         // 中间节点
         let mid = left + ((right - left) >>> 1);
         if (nums[mid] < nums[right]) {
-            // 中<右 ,排除中（不包含中）到右
+            // 中<右，排除中（不包含中）到右
             right = mid;
         } else if (nums[mid] > nums[right]) {
-            // 中>右 ,排除左到中（包含中）
+            // 中>右，排除左到中（包含中）
             left = mid + 1;
         } else if (nums[mid] === nums[right]) {
             if (nums[left] > nums[mid]) {
-                // 左>中 ,排除中（不包含中）到右
+                // 左>中，排除中（不包含中）到右
                 right = mid;
             } else if (nums[left] < nums[mid]) {
-                // 左<中 ,左节点就是最小
+                // 左<中，左节点就是最小
                 right = left;
             } else {
                 // 右指针左移
-                right --;
+                right--;
             }
             
         }
@@ -589,7 +587,7 @@ var findMin = function(nums) {
 };
 ```
 
-#### 12.[矩阵中的路径](https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/)
+#### 12. [矩阵中的路径](https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/)
 
 请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一格开始，每一步可以在矩阵中向左、右、上、下移动一格。如果一条路径经过了矩阵的某一格，那么该路径不能再次进入该格子。例如，在下面的3×4的矩阵中包含一条字符串“bfce”的路径（路径中的字母用加粗标出）。
 
@@ -635,10 +633,9 @@ var exist = function(board, word) {
         // 锁上，因为后续的递归是4个方向上的，无法保证上一个方向的值
         board[i][j] = '-';
         let res =  dfs(i - 1, j, board, word, index + 1) || dfs(i + 1, j, board, word, index + 1) || dfs(i, j - 1, board, word, index + 1) || dfs(i, j + 1, board, word, index + 1);     
-        // 恢复现场
+        // 恢复
         board[i][j] = tmp;
         return res;
-        
     }
 
     // 遍历整个board，找到初始位置点
@@ -652,11 +649,9 @@ var exist = function(board, word) {
 };
 ```
 
-#### 13.[机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
+#### 13. [机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
 
 地上有一个m行n列的方格，从坐标 `[0,0]` 到坐标 `[m-1,n-1]` 。一个机器人从坐标 `[0, 0] `的格子开始移动，它每次可以向左、右、上、下移动一格（不能移动到方格外），也不能进入行坐标和列坐标的数位之和大于k的格子。例如，当k为18时，机器人能够进入方格 [35, 37] ，因为3+5+3+7=18。但它不能进入方格 [35, 38]，因为3+5+3+8=19。请问该机器人能够到达多少个格子？
-
- 
 
 **示例 1：**
 
@@ -702,11 +697,11 @@ var movingCount = function(m, n, k) {
         vis[i] = new Array(n);
         for (let j = 0; j < n; j++) {
             let sum = countSum(i) + countSum(j);
-            if (i == 0 && j == 0) {
+            if (i === 0 && j === 0) {
                 vis[i][j] = sum <= k;
-            } else if (i == 0) {
+            } else if (i === 0) {
                 vis[i][j] = vis[i][j - 1] && (sum <= k);
-            } else if (j == 0) {
+            } else if (j === 0) {
                 vis[i][j] = vis[i - 1][j] && (sum <= k);
             } else {
                 vis[i][j] = (vis[i - 1][j] || vis[i][j - 1]) && (sum <= k);
@@ -718,7 +713,7 @@ var movingCount = function(m, n, k) {
 };
 ```
 
-#### 14.[整数拆分](https://leetcode-cn.com/problems/integer-break/)
+#### 14. [整数拆分](https://leetcode-cn.com/problems/integer-break/)
 
 给定一个正整数 *n*，将其拆分为**至少**两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
 
@@ -740,7 +735,7 @@ var movingCount = function(m, n, k) {
 
 **说明:** 你可以假设 *n* 不小于 2 且不大于 58。
 
-尽可能拆分更多的3
+尽可能拆分更多的3，多1的话拆分成2
 
 ```javascript
 /**
@@ -761,7 +756,7 @@ var cuttingRope = function(n) {
 }
 ```
 
-#### 15.[位1的个数](https://leetcode-cn.com/problems/number-of-1-bits/)
+#### 15. [位1的个数](https://leetcode-cn.com/problems/number-of-1-bits/)
 
 编写一个函数，输入是一个无符号整数（以二进制串的形式），返回其二进制表达式中数字位数为 '1' 的个数（也被称为[汉明重量](https://baike.baidu.com/item/汉明重量)）。
 
@@ -811,7 +806,7 @@ var cuttingRope = function(n) {
  */
 var hammingWeight = function(n) {
     let number = 0;
-    while(n){
+    while (n) {
         number++;
         n &= n - 1;
     }
@@ -819,9 +814,9 @@ var hammingWeight = function(n) {
 };
 ```
 
-#### 16.[数值的整数次方](https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/)
+#### 16. [数值的整数次方](https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/)
 
-实现 [pow(*x*, *n*)](https://www.cplusplus.com/reference/valarray/pow/) ，即计算 x 的 n 次幂函数（即，xn）。不得使用库函数，同时不需要考虑大数问题。
+实现 [pow(*x*, *n*)](https://www.cplusplus.com/reference/valarray/pow/) ，即计算 x 的 n 次幂函数。不得使用库函数，同时不需要考虑大数问题。
 
 **示例 1：**
 
@@ -860,26 +855,25 @@ var hammingWeight = function(n) {
  * @return {number}
  */
 var myPow = function(x, n) {
-    if (x == 0 || x == 1) return x;
+    if (x === 0 || x === 1) return x;
     x = n >= 0 ? x: 1 / x;
-    if(n != -2147483648){
+    if(n !== -2147483648){
         n = n >= 0 ? n: -n;
     } else {
         n = 2147483648 / 2;
-        x = x * x; 
+        x = x * x;
     }
     let res = 1;
-    while(n){
+    while (n) {
         if (n & 1) res *= x;
         x *= x;
         n >>= 1;
     }
     return res;
 };
-
 ```
 
-#### 17.[打印从1到最大的n位数](https://leetcode-cn.com/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/)
+#### 17. [打印从1到最大的n位数](https://leetcode-cn.com/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/)
 
 输入数字 `n`，按顺序打印出从 1 到最大的 n 位十进制数。比如输入 3，则打印出 1、2、3 一直到最大的 3 位数 999。
 
@@ -924,7 +918,7 @@ var printNumbers = function(n) {
 }
 ```
 
-#### 18.[删除链表的节点](https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/)
+#### 18. [删除链表的节点](https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/)
 
 给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。
 
@@ -983,7 +977,7 @@ var deleteNode = function(head, val) {
 };
 ```
 
-#### 19.[正则表达式匹配](https://leetcode-cn.com/problems/regular-expression-matching/)
+#### 19. [正则表达式匹配](https://leetcode-cn.com/problems/regular-expression-matching/)
 
 给你一个字符串 `s` 和一个字符规律 `p`，请你来实现一个支持 `'.'` 和 `'*'` 的正则表达式匹配。
 
@@ -1141,7 +1135,7 @@ var isMatch = function(s, p) {
 };
 ```
 
-#### 20.[表示数值的字符串](https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/)
+#### 20. [表示数值的字符串](https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/)
 
 请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串"+100"、"5e2"、"-123"、"3.1416"、"-1E-16"、"0123"都表示数值，但"12e"、"1a3.14"、"1.2.3"、"+-5"及"12e+5.4"都不是。
 
@@ -1233,7 +1227,7 @@ var isNumber = function(s) {
 };
 ```
 
-#### 21.[调整数组顺序使奇数位于偶数前面](https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/)
+#### 21. [调整数组顺序使奇数位于偶数前面](https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/)
 
 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有奇数位于数组的前半部分，所有偶数位于数组的后半部分。
 
@@ -1275,7 +1269,7 @@ var exchange = function (nums) {
 };
 ```
 
-#### 22.[链表中倒数第k个节点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
+#### 22. [链表中倒数第k个节点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
 
 输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。
 
@@ -1304,7 +1298,7 @@ var exchange = function (nums) {
  */
 var getKthFromEnd = function(head, k) {
     // 空指针返回
-    if(head == null) {
+    if(head === null) {
         return head;
     }
     // 快慢指针
@@ -1324,7 +1318,7 @@ var getKthFromEnd = function(head, k) {
 };
 ```
 
-#### 24.[反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
+#### 24. [反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
 
 反转一个单链表。
 
@@ -1354,9 +1348,9 @@ var getKthFromEnd = function(head, k) {
  * @return {ListNode}
  */
 var reverseList = function(head) {
-    if(head == null) return null;
+    if (head === null) return null;
     let pre = head, cur = head.next;
-    while(cur != null){
+    while(cur !== null){
         pre.next = cur.next;
         cur.next = head;
         head = cur;
@@ -1381,7 +1375,7 @@ var reverseList = function(head) {
  * @return {ListNode}
  */
 var reverseList = function(head) {
-    if (head == null || head.next == null) {
+    if (head === null || head.next === null) {
         return head;
     }
     const newHead = reverseList(head.next);
@@ -1391,7 +1385,7 @@ var reverseList = function(head) {
 };
 ```
 
-#### 25.[合并两个有序链表](https://leetcode-cn.com/problems/he-bing-liang-ge-pai-xu-de-lian-biao-lcof/)
+#### 25. [合并两个有序链表](https://leetcode-cn.com/problems/he-bing-liang-ge-pai-xu-de-lian-biao-lcof/)
 
 将两个升序链表合并为一个新的 **升序** 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
 
@@ -1439,7 +1433,7 @@ var mergeTwoLists = function(l1, l2) {
     // 当前指针
     let cur = dummy;
     // 两个数组均有数
-    while (l1 != null && l2 != null) {
+    while (l1 !== null && l2 !== null) {
         if (l1.val <= l2.val) {
             cur.next = l1;
             l1 = l1.next;
@@ -1456,7 +1450,7 @@ var mergeTwoLists = function(l1, l2) {
 };
 ```
 
-#### 26.[树的子结构](https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/)
+#### 26. [树的子结构](https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/)
 
 输入两棵二叉树A和B，判断B是不是A的子结构。(约定空树不是任意一个树的子结构)
 
@@ -1519,18 +1513,18 @@ B是A的子结构， 即 A中有出现和B相同的结构和节点值。
  * @return {boolean}
  */
 var isSubStructure = function(A, B) {
-    if (A ==  null || B == null) return false;
-    var isSub = function(A, B){
-        if (B == null) return true;
-        if (A == null) return false;
-        if (A.val != B.val) return false;
+    if (A === null || B === null) return false;
+    var isSub = function(A, B) {
+        if (B === null) return true;
+        if (A === null) return false;
+        if (A.val !== B.val) return false;
         return isSub(A.left, B.left) && isSub(A.right, B.right);
     }
     return isSub(A, B) || isSubStructure(A.left, B) || isSubStructure(A.right, B);
 };
 ```
 
-#### 27.[二叉树的镜像](https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/)
+#### 27. [二叉树的镜像](https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/)
 
 请完成一个函数，输入一个二叉树，该函数输出它的镜像。
 
@@ -1601,7 +1595,7 @@ var invertTree = function(root) {
 };
 ```
 
-#### 28.[对称的二叉树](https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/)
+#### 28. [对称的二叉树](https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/)
 
 请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。
 
@@ -1622,7 +1616,7 @@ var invertTree = function(root) {
    / \
   2   2
    \   \
-   3    3
+    3   3
 ```
 
  **示例 1：**
@@ -1690,7 +1684,7 @@ var isSymmetric = function(root) {
 };
 ```
 
-#### 29.[顺时针打印矩阵](https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/)
+#### 29. [顺时针打印矩阵](https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/)
 
 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字。
 
@@ -1722,9 +1716,9 @@ var isSymmetric = function(root) {
  */
 var spiralOrder = function(matrix) {
     let arr = [];
-    if (matrix == null || matrix.length == 0) return arr;
+    if (matrix === null || matrix.length === 0) return arr;
     let minX = 0, maxX = matrix.length - 1;
-    if (matrix[0].length == 0) return arr;
+    if (matrix[0].length === 0) return arr;
     let minY = 0, maxY = matrix[0].length - 1;
     while (minX <= maxX && minY <= maxY) {
         // 向右
@@ -1760,11 +1754,11 @@ var spiralOrder = function(matrix) {
 };
 ```
 
-#### 30.[包含min函数的栈](https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof/)
+#### 30. [包含min函数的栈](https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof/)
 
 定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的 min 函数在该栈中，调用 min、push 及 pop 的时间复杂度都是 O(1)。
 
- 设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
+设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。
 
 push(x) —— 将元素 x 推入栈中。
 pop() —— 删除栈顶的元素。
@@ -1822,18 +1816,18 @@ var MinStack = function() {
  */
 MinStack.prototype.push = function(x) {
     this.stack.push(x);
-    if (this.min.length == 0 || x <= this.min[this.min.length - 1]) this.min.push(x);
+    if (this.min.length === 0 || x <= this.min[this.min.length - 1]) this.min.push(x);
 };
 
 /**
  * @return {void}
  */
 MinStack.prototype.pop = function() {
-    if (this.stack.length == 0) {
+    if (this.stack.length === 0) {
         return null;
     } else {
         let temp = this.stack.pop();
-        if (temp == this.min[this.min.length - 1]) {
+        if (temp === this.min[this.min.length - 1]) {
             this.min.pop();
         }
         return temp;
@@ -1844,7 +1838,7 @@ MinStack.prototype.pop = function() {
  * @return {number}
  */
 MinStack.prototype.top = function() {
-    if (this.stack.length == 0) return null;
+    if (this.stack.length === 0) return null;
     return this.stack[this.stack.length - 1];
 };
 
@@ -1852,7 +1846,7 @@ MinStack.prototype.top = function() {
  * @return {number}
  */
 MinStack.prototype.getMin = function() {
-    if (this.min.length == 0) return null;
+    if (this.min.length === 0) return null;
     return this.min[this.min.length - 1];
 };
 
@@ -1866,7 +1860,7 @@ MinStack.prototype.getMin = function() {
 */
 ```
 
-#### 31.[栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)
+#### 31. [栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)
 
 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5} 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
 
@@ -1908,16 +1902,16 @@ var validateStackSequences = function(pushed, popped) {
     for (let num of pushed) {
         // num 入栈
         stack.push(num);
-        while (stack.length && stack[stack.length - 1] == popped[i]) {
+        while (stack.length && stack[stack.length - 1] === popped[i]) {
             stack.pop();
             i++;
         }
     }
-    return stack.length == 0;
+    return stack.length === 0;
 };
 ```
 
-#### 32-I.[从上到下打印二叉树](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/)
+#### 32-I. [从上到下打印二叉树](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/)
 
 从上到下打印出二叉树的每个节点，同一层的节点按照从左到右的顺序打印。
 
@@ -1958,19 +1952,19 @@ var validateStackSequences = function(pushed, popped) {
  */
 var levelOrder = function(root) {
     if(!root) return [];
-    let queue=[root];
-    let result=[];
-    while(queue.length){
-         var nowNode=queue.shift();
+    let queue = [root];
+    let result = [];
+    while (queue.length) {
+         let nowNode = queue.shift();
          result.push(nowNode.val);
-         nowNode.left&&queue.push(nowNode.left);
-         nowNode.right&&queue.push(nowNode.right);
+         nowNode.left && queue.push(nowNode.left);
+         nowNode.right && queue.push(nowNode.right);
     }
     return result;
 };
 ```
 
-#### 32-II.[从上到下打印二叉树 II](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/)
+#### 32-II. [从上到下打印二叉树 II](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/)
 
 从上到下按层打印二叉树，同一层的节点按从左到右的顺序打印，每一层打印到一行。
 
@@ -2012,14 +2006,14 @@ var levelOrder = function(root) {
  * @return {number[][]}
  */
 var levelOrder = function(root) {
-    if (root == null) return [];
+    if (root === null) return [];
     let queue = [root];
     let number = [];
     let level = 0;
     while(queue.length > 0){
         number[level] = [];
         let len = queue.length;
-        while (len--){
+        while (len--) {
             let node = queue.shift();
             number[level].push(node.val);
             node.left && queue.push(node.left);
@@ -2031,7 +2025,7 @@ var levelOrder = function(root) {
 };
 ```
 
-#### 32-III.[从上到下打印二叉树 III](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/)
+#### 32-III. [从上到下打印二叉树 III](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/)
 
 请实现一个函数按照之字形顺序打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左的顺序打印，第三行再按照从左到右的顺序打印，其他行以此类推。 
 
@@ -2074,19 +2068,19 @@ var levelOrder = function(root) {
  */
 var levelOrder = function(root) {
     if(!root) return [];
-    const queue=[root];
-    const res=[];
+    const queue = [root];
+    const res = [];
     let level = 0;
     while(queue.length){
-        res[level]=[];
-        let levelNum=queue.length;
-        while(levelNum--){
+        res[level] = [];
+        let levelNum = queue.length;
+        while (levelNum--) {
             const front = queue.shift();
             res[level].push(front.val);
-            if(front.left) queue.push(front.left);
-            if(front.right) queue.push(front.right);
+            if (front.left) queue.push(front.left);
+            if (front.right) queue.push(front.right);
         }
-        if(level%2){
+        if (level % 2) {
             res[level].reverse();
         }
         level++;
@@ -2095,7 +2089,7 @@ var levelOrder = function(root) {
 };
 ```
 
-#### 33.[二叉搜索树的后序遍历序列](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
+#### 33. [二叉搜索树的后序遍历序列](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
 
 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历结果。如果是则返回 `true`，否则返回 `false`。假设输入的数组的任意两个数字都互不相同。
 
@@ -2142,7 +2136,7 @@ var verifyPostorder = function(postorder) {
         if (postorder[i] > root) {
             return false;
         }
-        while (stack.length > 0 && postorder[i] < stack[stack.length - 1]){
+        while (stack.length > 0 && postorder[i] < stack[stack.length - 1]) {
             // 数组元素小于单调栈的元素了，表示往左子树走了，记录下上个根节点
             // 找到这个左子树对应的根节点，之前右子树全部弹出，不再记录，因为不可能在往根节点的右子树走了
             root = stack.pop();
@@ -2154,13 +2148,13 @@ var verifyPostorder = function(postorder) {
 };
 ```
 
-#### 34.[二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
+#### 34. [二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
 
 给你二叉树的根节点 root 和一个整数目标和 targetSum ，找出所有 从根节点到叶子节点 路径总和等于给定目标和的路径。
 
 叶子节点 是指没有子节点的节点。
 
- 示例 1：
+**示例 1：**
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210421151225.jpeg)
 
@@ -2169,8 +2163,7 @@ var verifyPostorder = function(postorder) {
 输出：[[5,4,11,2],[5,8,4,5]]
 ```
 
-
-示例 2：
+**示例 2：**
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210421151242.jpeg)
 
@@ -2219,7 +2212,7 @@ var pathSum = function(root, sum) {
         sum -= root.val;
         path.push(root.val);
         if (!root.left && !root.right) {
-            if (sum == 0) res.push([...path]);
+            if (sum === 0) res.push([...path]);
         }
         if (root.left) dfs(root.left, sum);
         if (root.right) dfs(root.right, sum);
@@ -2230,7 +2223,7 @@ var pathSum = function(root, sum) {
 };
 ```
 
-#### 35.[复杂链表的复制](https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/)
+#### 35. [复杂链表的复制](https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/)
 
 给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。
 
@@ -2409,7 +2402,7 @@ var copyRandomList = function(head) {
 };
 ```
 
-#### 36.[二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
+#### 36. [二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
 
 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
 
@@ -2479,18 +2472,18 @@ var treeToDoublyList = function(root) {
  * @return {Node}
  */
 var treeToDoublyList = function(root) {
-    if(!root) return;
+    if (!root) return;
     let arr = [];
     inOrder(root);
     function inOrder (root) {
         if(!root) return;
         inOrder(root.left);
         arr.push(root);
-        inOrder(root.right)
+        inOrder(root.right);
     }
-    for (var i = 0; i < arr.length - 1; i++) {
-        arr[i].right = arr[i+1];
-        arr[i+1].left = arr[i]
+    for (let i = 0; i < arr.length - 1; i++) {
+        arr[i].right = arr[i + 1];
+        arr[i + 1].left = arr[i];
     }
     len = arr.length;
     arr[len - 1].right = arr[0];
@@ -2499,7 +2492,7 @@ var treeToDoublyList = function(root) {
 };
 ```
 
-#### 37.[序列化二叉树](https://leetcode-cn.com/problems/xu-lie-hua-er-cha-shu-lcof/)
+#### 37. [序列化二叉树](https://leetcode-cn.com/problems/xu-lie-hua-er-cha-shu-lcof/)
 
 序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
 
@@ -2564,7 +2557,7 @@ var treeToDoublyList = function(root) {
  * @return {string}
  */
 var rserialize = function(root, str) {
-    if(root == null) {
+    if(root === null) {
         str += "null,";
         return str;
     }
@@ -2585,7 +2578,7 @@ var serialize = function(root) {
  * @return {TreeNode}
  */
 var rdeserialize = function(arr) {
-    if (arr[0] == "null") {
+    if (arr[0] === "null") {
         arr.shift();
         return null;
     }
@@ -2608,7 +2601,7 @@ var deserialize = function(data) {
  */
 ```
 
-#### 38.[字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+#### 38. [字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
 
 输入一个字符串，打印出该字符串中字符的所有排列。
 
@@ -2642,10 +2635,10 @@ var permutation = function(s) {
     let n = strArr.length;
     let used = new Array(n).fill(false);
     function backtrack(arr, path, used, res) {
-        if (path.length == n) res.push([...path].join(''));
+        if (path.length === n) res.push([...path].join(''));
         for (let i = 0; i < n; i++) {
             // 前一个元素与当前元素相同且未用过，跳过当前项
-            if (used[i] || (i > 0 && arr[i] == arr[i - 1] && !used[i - 1])) continue;
+            if (used[i] || (i > 0 && arr[i] === arr[i - 1] && !used[i - 1])) continue;
             path.push(arr[i]);
             used[i] = true;
             backtrack(arr, path, used, res);
@@ -2658,7 +2651,7 @@ var permutation = function(s) {
 };
 ```
 
-#### 39.[数组中出现次数超过一半的数字](https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/)
+#### 39. [数组中出现次数超过一半的数字](https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/)
 
 数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。
 
@@ -2702,7 +2695,7 @@ var majorityElement = function(nums) {
 };
 ```
 
-#### 40.[最小的k个数](https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/)
+#### 40. [最小的k个数](https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/)
 
 输入整数数组 `arr` ，找出其中最小的 `k` 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。
 
@@ -2743,7 +2736,7 @@ var getLeastNumbers = function(arr, k) {
         // 当前值比最小的k个值中的最大值小
         if (arr[i] < arr[0]) {
             [arr[i], arr[0]] = [arr[0], arr[i]];
-            ajustHeap(arr, 0, k);
+            adjustHeap(arr, 0, k);
         }
     }
     return arr.slice(0, k);
@@ -2752,11 +2745,11 @@ var getLeastNumbers = function(arr, k) {
     function createHeap(arr, length) {
         // 从叶子节点向上进行调整
         for (let i = Math.floor(length / 2) - 1; i >= 0; i--) {
-            ajustHeap(arr, i, length);
+            adjustHeap(arr, i, length);
         }
     }
     // 调整长度为length的堆中元素位置
-    function ajustHeap(arr, index, length) {
+    function adjustHeap(arr, index, length) {
         for (let i = 2 * index + 1; i < length; i = 2 * i + 1) {
             if (i + 1 < length && arr[i + 1] > arr[i]) {
                 i++;
@@ -2781,7 +2774,7 @@ var getLeastNumbers = function(arr, k) {
  * @return {number[]}
  */
 var getLeastNumbers = function(arr, k) {
-    if (k == 0 || arr.length == 0) return [];
+    if (k === 0 || arr.length === 0) return [];
     // 最后一个参数表示我们要找的是下标为k-1的数
     return quickSearch(arr, 0, arr.length - 1, k - 1);
 };
@@ -2789,7 +2782,7 @@ var getLeastNumbers = function(arr, k) {
 function quickSearch(nums, lo, hi, k) {
     // 每快排切分1次，找到排序后下标为j的元素，如果j恰好等于k就返回j以及j左边所有的数；
     let j = partition(nums, lo, hi);
-    if (j == k) return nums.slice(0, j + 1);
+    if (j === k) return nums.slice(0, j + 1);
     // 否则根据下标j与k的大小关系来决定继续切分左段还是右段。
     return j > k ? quickSearch(nums, lo, j - 1, k) : quickSearch(nums, j + 1, hi, k);
 }
@@ -2812,7 +2805,7 @@ function partition(nums, lo, hi) {
 }
 ```
 
-#### 41.[数据流中的中位数](https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/)
+#### 41. [数据流中的中位数](https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/)
 
 如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
 
@@ -2864,14 +2857,14 @@ var MedianFinder = function() {
  * @return {void}
  */
 MedianFinder.prototype.addNum = function(num) {
-    if (this.stack.length == 0) {
+    if (this.stack.length === 0) {
         this.stack.push(num);
         return;
     }
     let left = 0, right = this.stack.length - 1;
     while (left <= right) {
         let mid = Math.floor((left + right) / 2);
-        if (this.stack[mid] == num) {
+        if (this.stack[mid] === num) {
             this.stack.splice(mid, 0, num);
             return;
         } else if (this.stack[mid] < num) {
@@ -2887,11 +2880,11 @@ MedianFinder.prototype.addNum = function(num) {
  * @return {number}
  */
 MedianFinder.prototype.findMedian = function() {
-    if (this.stack.length == 0) {
+    if (this.stack.length === 0) {
         return null;
     }
     let mid = Math.floor((this.stack.length - 1) / 2);
-    if (this.stack.length % 2 == 1) {
+    if (this.stack.length % 2 === 1) {
         return this.stack[mid];
     } else {
         return (this.stack[mid] + this.stack[mid + 1]) / 2;
@@ -3157,44 +3150,40 @@ function swap(arr, i, j) {
  */
 ```
 
-#### 42.[最大子序和](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
+#### 42. [最大子序和](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
 
 给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
 
-示例 1：
+**示例 1：**
 
 ```
 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
 输出：6
 ```
 
-
 解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
-示例 2：
+**示例 2：**
 
 ```
 输入：nums = [1]
 输出：1
 ```
 
-
-示例 3：
+**示例 3：**
 
 ```
 输入：nums = [0]
 输出：0
 ```
 
-
-示例 4：
+**示例 4：**
 
 ```
 输入：nums = [-1]
 输出：-1
 ```
 
-
-示例 5：
+**示例 5：**
 
 ```
 输入：nums = [-100000]
@@ -3215,7 +3204,6 @@ function swap(arr, i, j) {
 动态规划
 
 ```javascript
-
 /**
  * @param {number[]} nums
  * @return {number}
@@ -3272,7 +3260,7 @@ var maxSubArray = function(nums) {
 };
 ```
 
-#### 43.[1～n 整数中 1 出现的次数](https://leetcode-cn.com/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/)
+#### 43. [1～n 整数中 1 出现的次数](https://leetcode-cn.com/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/)
 
 输入一个整数 `n` ，求1～n这n个整数的十进制表示中1出现的次数。
 
@@ -3313,7 +3301,7 @@ var countDigitOne = function(n) {
 };
 ```
 
-#### 44.[数字序列中某一位的数字](https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/)
+#### 44. [数字序列中某一位的数字](https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/)
 
 数字以0123456789101112131415…的格式序列化到一个字符序列中。在这个序列中，第5位（从下标0开始计数）是5，第13位是1，第19位是4，等等。
 
@@ -3346,21 +3334,27 @@ var countDigitOne = function(n) {
  */
 var findNthDigit = function(n) {
     if (n == 0) return n;
+    // 减一
     n--;
+    // 数的位数
     let index = 1;
+    // 数的个数
     let base = 9;
+    // 剩余数字个数
     while(n > index * base){
         n -= index * base;
         index ++;
         base *= 10;
     }
-    let num = Math.floor((n) / index) + base / 9;
+    // 具体的数
+    let num = Math.floor(n / index) + base / 9;
+    // 第几位
     let len = n % index;
     return num.toString()[len];
 };
 ```
 
-#### 45.[把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/)
+#### 45. [把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/)
 
 输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
 
@@ -3400,7 +3394,7 @@ var minNumber = function(nums) {
 };
 ```
 
-#### 46.[把数字翻译成字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+#### 46. [把数字翻译成字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
 
 给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
 
@@ -3431,7 +3425,7 @@ var translateNum = function(num) {
     let dp1 = 1, dp2 = 1, dp3;
     for (let i = 1; i < num.length; i++){
         // 前两个数能组成小于26的数
-        if('' + num[i - 1] + num[i] < 26 && num[i - 1] !== '0'){
+        if(parseInt('' + num[i - 1] + num[i]) < 26 && num[i - 1] !== '0'){
             dp3 = dp1 + dp2;
         } else {
             dp3 = dp2;
@@ -3443,7 +3437,7 @@ var translateNum = function(num) {
 };
 ```
 
-#### 47.[礼物的最大价值](https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof/)
+#### 47. [礼物的最大价值](https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof/)
 
 在一个 m*n 的棋盘的每一格都放有一个礼物，每个礼物都有一定的价值（价值大于 0）。你可以从棋盘的左上角开始拿格子里的礼物，并每次向右或者向下移动一格、直到到达棋盘的右下角。给定一个棋盘及其上面的礼物的价值，请计算你最多能拿到多少价值的礼物？
 
@@ -3540,7 +3534,7 @@ var maxValue = function (grid) {
 };
 ```
 
-#### 48.[最长不含重复字符的子字符串](https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/)
+#### 48. [最长不含重复字符的子字符串](https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/)
 
 请从字符串中找出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。
 
@@ -3609,7 +3603,7 @@ var lengthOfLongestSubstring = function(s) {
 };
 ```
 
-#### 49.[丑数](https://leetcode-cn.com/problems/chou-shu-lcof/)
+#### 49. [丑数](https://leetcode-cn.com/problems/chou-shu-lcof/)
 
 给你一个整数 n ，请你找出并返回第 n 个 丑数 。
 
@@ -3654,7 +3648,7 @@ var nthUglyNumber = function(n) {
 };
 ```
 
-#### 50.[第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
+#### 50. [第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 
 在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。 s 只包含小写字母。
 
@@ -3719,7 +3713,7 @@ var firstUniqChar = function (s) {
 };
 ```
 
-#### 51.[数组中的逆序对](https://leetcode-cn.com/problems/shu-zu-zhong-de-ni-xu-dui-lcof/)
+#### 51. [数组中的逆序对](https://leetcode-cn.com/problems/shu-zu-zhong-de-ni-xu-dui-lcof/)
 
 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
 
@@ -3785,7 +3779,7 @@ function mergeSort(nums, tmp, l, r) {
 }
 ```
 
-#### 52.[两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
+#### 52. [两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
 
 输入两个链表，找出它们的第一个公共节点。
 
@@ -3794,8 +3788,6 @@ function mergeSort(nums, tmp, l, r) {
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210419100033.png)
 
 在节点 c1 开始相交。
-
- 
 
 **示例 1：**
 
@@ -3895,9 +3887,9 @@ var getIntersectionNode = function(headA, headB) {
 };
 ```
 
-#### 53-I.[在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
+#### 53-I. [在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
 
-统计一个数字在排序数组中出现的次数。
+ 统计一个数字在排序数组中出现的次数。
 
 **示例 1:**
 
@@ -3989,8 +3981,7 @@ var search = function (nums, target) {
         let mid = (l + r) >>> 1;
         if (nums[mid] < target) {
             l = mid + 1;
-        }
-        else if (nums[mid] > target) {
+        } else if (nums[mid] > target) {
             r = mid - 1;
         } else {
             temp = mid;
@@ -4011,7 +4002,7 @@ var search = function (nums, target) {
 };
 ```
 
-#### 53-II.[0～n-1中缺失的数字](https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof/)
+#### 53-II. [0～n-1中缺失的数字](https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof/)
 
 一个长度为n-1的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围0～n-1之内。在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。
 
@@ -4073,7 +4064,7 @@ var missingNumber = function(nums) {
 };
 ```
 
-#### 54.[二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
+#### 54. [二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
 
 给定一棵二叉搜索树，请找出其中第k大的节点。
 
@@ -4107,7 +4098,7 @@ var missingNumber = function(nums) {
 
 1 ≤ k ≤ 二叉搜索树元素个数
 
-对于二叉搜索树来说，就是中序遍历找第k个数，可以使用递归法和迭代法
+对于二叉搜索树来说，就是反向中序遍历找第k个数，可以使用递归法和迭代法
 
 ```javascript
 /**
@@ -4125,19 +4116,19 @@ var missingNumber = function(nums) {
  */
 var kthLargest = function(root, k) {
     if(!root) return null;
+    let cur = root;
     let count = 0, stack = [];
-    while (root || stack.length) {
-        if (root) {
-            stack.push(root);
-            root = root.right;
-        } else {
-            let res = stack.pop();
-            count++;
-            if(count === k){
-                return res.val;
-            }
-            root = res.left;
+    while (cur || stack.length) {
+        while (cur) {
+            stack.push(cur);
+            cur = cur.right;
         }
+        cur = stack.pop();
+        count++;
+        if (count === k) {
+            return cur.val;
+        }
+        cur = cur.left;
     }
     return null;
 };
@@ -4161,7 +4152,7 @@ var kthLargest = function(root, k) {
 var kthLargest = function(root, k) {
     let stack = [];
     var lastOrder = function(root){
-        if (root == null) return;
+        if (root === null) return;
         lastOrder(root.right);
         stack.push(root.val);
         lastOrder(root.left);
@@ -4171,7 +4162,7 @@ var kthLargest = function(root, k) {
 };
 ```
 
-#### 55-I.[二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
+#### 55-I. [二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
 
 输入一棵二叉树的根节点，求该树的深度。从根节点到叶节点依次经过的节点（含根、叶节点）形成树的一条路径，最长路径的长度为树的深度。
 
@@ -4220,7 +4211,7 @@ var maxDepth = function(root) {
 }
 ```
 
-#### 55-II.[平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
+#### 55-II. [平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
 
 输入一棵二叉树的根节点，判断该树是不是平衡二叉树。如果某二叉树中任意节点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
 
@@ -4293,7 +4284,7 @@ var isBalanced = function(root) {
 };
 ```
 
-#### 56-I.[数组中数字出现的次数](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/)
+#### 56-I. [数组中数字出现的次数](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/)
 
 一个整型数组 `nums` 里除两个数字之外，其他数字都出现了两次。请写程序找出这两个只出现一次的数字。要求时间复杂度是O(n)，空间复杂度是O(1)。
 
@@ -4338,7 +4329,7 @@ var singleNumbers = function(nums) {
 };
 ```
 
-#### 56-II.[数组中数字出现的次数 II](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/)
+#### 56-II. [数组中数字出现的次数 II](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/)
 
 在一个数组 `nums` 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
 
@@ -4443,7 +4434,7 @@ var singleNumber = function(nums) {
 };
 ```
 
-#### 57-I.[和为s的两个数字](https://leetcode-cn.com/problems/he-wei-sde-liang-ge-shu-zi-lcof/)
+#### 57-I. [和为s的两个数字](https://leetcode-cn.com/problems/he-wei-sde-liang-ge-shu-zi-lcof/)
 
 输入一个递增排序的数组和一个数字s，在数组中查找两个数，使得它们的和正好是s。如果有多对数字的和等于s，则输出任意一对即可。
 
@@ -4478,10 +4469,10 @@ var singleNumber = function(nums) {
 var twoSum = function(nums, target) {
     let l = 0;
     let r = nums.length - 1;
-    while(l < r){
+    while (l < r) {
         if (nums[l] + nums[r] > target) {
             r--;
-        } else if (nums[l] + nums[r] == target){
+        } else if (nums[l] + nums[r] === target){
             return [nums[l], nums[r]];
         } else if (nums[l] + nums[r] < target){
             l++;
@@ -4490,7 +4481,7 @@ var twoSum = function(nums, target) {
 };
 ```
 
-#### 57-II.[和为s的连续正数序列](https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/)
+#### 57-II. [和为s的连续正数序列](https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/)
 
 输入一个正整数 `target` ，输出所有和为 `target` 的连续正整数序列（至少含有两个数）。
 
@@ -4523,17 +4514,18 @@ var twoSum = function(nums, target) {
  */
 var findContinuousSequence = function(target) {
     let number = [];
+    // 连续数的个数
     let i = 2 * Math.floor(Math.sqrt(target)) - 1;
     for (; i > 1; i--){
         let inc = i * (i - 1) / 2;
-        if ((target - inc) % i == 0 && (target - inc) / i > 0)
+        if ((target - inc) % i === 0 && (target - inc) / i > 0)
         number.push(new Array(i).fill("").map((item, index) => index + (target - inc) / i));
     }
     return number;
 }
 ```
 
-#### 58-I.[翻转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
+#### 58-I. [翻转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
 
 输入一个英文句子，翻转句子中单词的顺序，但单词内字符的顺序不变。为简单起见，标点符号和普通字母一样处理。例如输入字符串"I am a student. "，则输出"student. a am I"。 
 
@@ -4578,7 +4570,19 @@ var reverseWords = function(s) {
 };
 ```
 
-#### 58-II.[左旋转字符串](https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
+优化一下效率
+
+```javascript
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var reverseWords = function(s) {
+    return s.trim().split(/\s\s*/).reverse().join(" ");
+};
+```
+
+#### 58-II. [左旋转字符串](https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
 
 字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
 
@@ -4613,7 +4617,7 @@ var reverseLeftWords = function(s, n) {
 };
 ```
 
-#### 59-I.[滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
+#### 59-I. [滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
 
 给定一个数组 `nums` 和滑动窗口的大小 `k`，请找出所有滑动窗口里的最大值。
 
@@ -4664,7 +4668,7 @@ var maxSlidingWindow = function (nums, k) {
 };
 ```
 
-#### 59-II.[队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
+#### 59-II. [队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
 
 请定义一个队列并实现函数 `max_value` 得到队列里的最大值，要求函数`max_value`、`push_back` 和 `pop_front` 的**均摊**时间复杂度都是O(1)。
 
@@ -4705,7 +4709,7 @@ var MaxQueue = function() {
  * @return {number}
  */
 MaxQueue.prototype.max_value = function() {
-    if (this.data.length == 0) {
+    if (this.data.length === 0) {
         return -1;
     } else {
         return this.maxQueue[0];
@@ -4718,7 +4722,7 @@ MaxQueue.prototype.max_value = function() {
  */
 MaxQueue.prototype.push_back = function(value) {
     this.data.push(value);
-    while (this.maxQueue.length != 0 && this.maxQueue[this.maxQueue.length - 1] < value) {
+    while (this.maxQueue.length !== 0 && this.maxQueue[this.maxQueue.length - 1] < value) {
         this.maxQueue.pop();
     } 
     this.maxQueue.push(value);
@@ -4728,9 +4732,9 @@ MaxQueue.prototype.push_back = function(value) {
  * @return {number}
  */
 MaxQueue.prototype.pop_front = function() {
-    if (this.data.length == 0) return -1;
+    if (this.data.length === 0) return -1;
     let data_temp = this.data.shift();
-    if (data_temp ==  this.maxQueue[0]) this.maxQueue.shift();
+    if (data_temp === this.maxQueue[0]) this.maxQueue.shift();
     return data_temp;
 };
 
@@ -4743,7 +4747,7 @@ MaxQueue.prototype.pop_front = function() {
  */
 ```
 
-#### 60.[n个骰子的点数](https://leetcode-cn.com/problems/nge-tou-zi-de-dian-shu-lcof/)
+#### 60. [n个骰子的点数](https://leetcode-cn.com/problems/nge-tou-zi-de-dian-shu-lcof/)
 
 把n个骰子扔在地上，所有骰子朝上一面的点数之和为s。输入n，打印出s的所有可能的值出现的概率。
 
@@ -4784,7 +4788,7 @@ var twoSum = function(n) {
         dp[i] = 1;
     }
 
-    for (let round = 2; round <=n; round++) {
+    for (let round = 2; round <= n; round++) {
         for (let count = 6 * round; count >= round; count--) {
             dp[count] = 0;
             for (let j = 1; j <= 6; j++) {
@@ -4802,7 +4806,7 @@ var twoSum = function(n) {
 };
 ```
 
-#### 62.[圆圈中最后剩下的数字](https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/)
+#### 62. [圆圈中最后剩下的数字](https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/)
 
 0,1,···,n-1这n个数字排成一个圆圈，从数字0开始，每次从这个圆圈里删除第m个数字（删除后从下一个数字开始计数）。求出这个圆圈里剩下的最后一个数字。
 
@@ -4881,7 +4885,7 @@ var lastRemaining = function(n, m) {
 };
 ```
 
-#### 63.[股票的最大利润](https://leetcode-cn.com/problems/gu-piao-de-zui-da-li-run-lcof/)
+#### 63. [股票的最大利润](https://leetcode-cn.com/problems/gu-piao-de-zui-da-li-run-lcof/)
 
 假设把某股票的价格按照时间先后顺序存储在数组中，请问买卖该股票一次可能获得的最大利润是多少？
 
@@ -4930,7 +4934,7 @@ var maxProfit = function(prices) {
 };
 ```
 
-#### 64.[求1+2+…+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)
+#### 64. [求1+2+…+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)
 
 求 `1+2+...+n` ，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
 
@@ -4964,7 +4968,7 @@ var sumNums = function(n) {
 };
 ```
 
-#### 65.[不用加减乘除做加法](https://leetcode-cn.com/problems/bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof/)
+#### 65. [不用加减乘除做加法](https://leetcode-cn.com/problems/bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof/)
 
 写一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“*”、“/” 四则运算符号。
 
@@ -5021,7 +5025,7 @@ var add = function(a, b) {
 };
 ```
 
-#### 66.[构建乘积数组](https://leetcode-cn.com/problems/gou-jian-cheng-ji-shu-zu-lcof/)
+#### 66. [构建乘积数组](https://leetcode-cn.com/problems/gou-jian-cheng-ji-shu-zu-lcof/)
 
 给定一个数组 `A[0,1,…,n-1]`，请构建一个数组 `B[0,1,…,n-1]`，其中 `B[i]` 的值是数组 `A` 中除了下标 `i` 以外的元素的积, 即 `B[i]=A[0]×A[1]×…×A[i-1]×A[i+1]×…×A[n-1]`。不能使用除法。
 
@@ -5045,8 +5049,8 @@ var add = function(a, b) {
  * @return {number[]}
  */
 var constructArr = function(a) {
-    let len = a.length
-    if (len == 0) return [];
+    const len = a.length;
+    if (len === 0) return [];
     let b = new Array(len).fill(1);
     for (let i = 1; i < len; i++){
         b[i] = b[i - 1] * a[i - 1];
@@ -5060,7 +5064,7 @@ var constructArr = function(a) {
 };
 ```
 
-#### 67.[把字符串转换成整数](https://leetcode-cn.com/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/)
+#### 67. [把字符串转换成整数](https://leetcode-cn.com/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/)
 
 请你来实现一个 myAtoi(string s) 函数，使其能将字符串转换成一个 32 位有符号整数（类似 C/C++ 中的 atoi 函数）。
 
@@ -5217,7 +5221,7 @@ var strToInt = function(str) {
                 ['signed', ['end', 'end', 'in_number', 'end']],
                 ['in_number', ['end', 'end', 'in_number', 'end']],
                 ['end', ['end', 'end', 'end', 'end']]
-            ])
+            ]);
         }
         
         // 获取状态的索引
@@ -5279,7 +5283,7 @@ var strToInt = function(str) {
 };
 ```
 
-#### 68-I.[二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+#### 68-I. [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
 
 给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
 
@@ -5364,7 +5368,7 @@ var lowestCommonAncestor = function(root, p, q) {
 };
 ```
 
-#### 68-II.[二叉树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+#### 68-II. [二叉树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
 
 给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
 
