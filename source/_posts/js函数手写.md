@@ -9372,6 +9372,56 @@ addTask(400, '4');
 // 2 3 1 4
 ```
 
+或者
+
+```js
+class Scheduler{
+    constructor(){
+        // 正在运行的任务数量
+        this.taskNum = 0;
+        // 待执行的任务
+        this.taskQueue = [];
+    }
+
+    async add(promiseCreator) {
+        // 在Promise内部把resolve放到任务队列中，只有当resolve被调用，后面的的代码才被执行
+        if (this.taskNum >= 2) {
+            await new Promise((resolve) => {
+                this.taskQueue.push(resolve);
+            })
+        }
+
+        this.taskNum++;
+        let result = await promiseCreator();
+        this.taskNum--;
+        if (this.taskQueue.length > 0) {
+        // 当前任务完成后，如果任务队列里有resolve，那么就调用resolve，之前被堵住的部分就可以得到执行
+            this.taskQueue.shift()();
+        }
+        return result;
+    }
+}
+
+let scheduler = new Scheduler();
+
+let timeout = time => new Promise((resolve) => {
+    setTimeout(resolve, time);
+});
+
+function addTask(delay, num){
+    scheduler.add(() => (
+        timeout(delay).then((val) => {
+            console.log(num);
+        })
+    ))
+}
+
+addTask(1000, '1');
+addTask(500, '2');
+addTask(300, '3');
+addTask(400, '4');
+```
+
 ### 实现带有执行器和拦截器的并发控制
 
 **前言**
@@ -9554,3 +9604,150 @@ run(race) {
 ```
 
 这个地方就是不断通过递归的方式，每当并发池跑完一个任务，就再塞入一个任务
+
+
+
+## 66.LazyMan
+
+### 要求与分析
+
+设计一个LazyMan类，实现以下功能：
+
+```js
+LazyMan('Tony');
+// Hi I am Tony
+LazyMan('Tony').sleep(10).eat('lunch');
+// Hi I am Tony
+// 等待10秒...
+// I am eating lunch
+LazyMan('Tony').eat('lunch').sleep(10).eat('dinner');
+// Hi I am Tony
+// I am eating lunch
+// 等待10秒...
+// I am eating dinner
+LazyMan('Tony').eat('lunch').eat('dinner').sleepFirst(5).sleep(10).eat('junk food');
+// Hi I am Tony
+// 等待了5秒...
+// I am eating lunch
+// I am eating dinner
+// 等待10秒
+// I am eating junk food
+```
+
+分析题目：
+1. 普通调用
+2. 很显然要等待10秒再执行下一步
+3. 前面两个按顺序调用，然后等待10秒再执行下一个，其实跟第二个差不多
+4. 问题：
+	a. sleep(5)写在后面却要在lunch和dinner之间调用
+	b. sleep(5)没执行后面的只能等着
+	c. 很长的一个链式调用
+
+知识点:
+1. 整体是一个js的面向对象编程的题目
+2. 涉及到异步控制的思想
+3. 执行顺序不同于调用顺序
+4. 可以考虑内部维护一个数组控制调用顺序
+5. 可以考虑使用Promise实现
+6. 可以考虑使用async实现
+
+### 代码实现
+
+```js
+class LazyManClass {
+    // 构造函数
+    constructor(name) {
+        this.name = name;
+        // 定义一个数组存放执行队列
+        this.queue = [];
+        console.log(`Hi I am ${name}`);
+        // 在调用LazyManClass时首先会打印 Hi I am ${name}
+        setTimeout(() => {
+            this.next();
+        }, 0);
+    }
+    // 定义原型方法
+    eat (food) {
+        let fn = () => {
+            console.log(`I am eating ${food}`);
+            this.next();
+        }
+        this.queue.push(fn);
+        return this;
+    }
+    sleep (time) {
+        let fn = () => {
+            // 等待了time秒...
+            setTimeout(() => {
+                console.log(`等待了${time}秒`)
+                this.next();
+            }, 1000 * time);
+        }
+        this.queue.push(fn);
+        return this;
+    }
+    sleepFirst (time) {
+        let fn = () => {
+            // 等待了time秒...
+            setTimeout(() => {
+                console.log(`等待了${time}秒`)
+                this.next();
+            }, 1000 * time);
+        }
+        // 置于第一个
+        this.queue.unshift(fn);
+        return this;
+    }
+    next () {
+        let fn = this.queue.shift();
+        fn && fn();
+    }
+}
+function LazyMan (name) {
+    return new LazyManClass(name);
+}
+LazyMan('Tony').eat('lunch').eat('dinner').sleepFirst(5).sleep(10).eat('junk food');
+// Hi I am Tony
+// 等待了5秒...
+// I am eating lunch
+// I am eating dinner
+// 等待10秒
+// I am eating junk food
+```
+
+### 变种：实现PlayBoy类
+
+```js
+// 1. 链式调用
+// 2. 实现sleep函数
+class PlayBoy {
+    constructor (name) {
+        this.name = name;
+    }
+    
+    sayHi () {
+        console.log('大家好，我是' + this.name);
+        return this;
+    }
+    // 时间戳
+    sleep (time) {
+        const start = new Date().getTime();
+        while (new Date().getTime() - start < time) {}
+        return this;
+    }
+    play (game) {
+        console.log('我在玩儿' + game);
+        return this;
+    }
+}
+
+const playBoy = new PlayBoy('Bob');
+playBoy.sayHi().sleep(2000).play('王者荣耀').sleep(3000).play('奇迹暖暖');
+// 输出
+// Bob
+// 等待2s
+// 我在玩儿王者荣耀
+// 等待3s
+// 我在玩儿奇迹暖暖
+```
+
