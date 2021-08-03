@@ -1216,17 +1216,17 @@ var removeInvalidParentheses = function (s) {
         s = queue.shift();
         if (isVaild(s[0])) {
             res.push(s[0]);
-        } else if (res.length == 0) {
+        } else if (res.length === 0) {
             let removei = s[1];
             s = s[0];
             for (; removei < s.length; removei++) {
                 if (
-                //保证是连续括号的第一个
-                (s[removei] == '(' || s[removei] === ')') &&
-                (removei === 0 || s[removei - 1] != s[removei])
+                    // 保证是连续括号的第一个
+                    (s[removei] === '(' || s[removei] === ')') &&
+                    (removei === 0 || s[removei - 1] != s[removei])
                 ) {
                     let nexts = s.substring(0, removei) + s.substring(removei + 1);
-                    //此时删除位置的下标 removei 就是下次删除位置的开始
+                    // 此时删除位置的下标 removei 就是下次删除位置的开始
                     queue.push([nexts, removei]);
                 }
             }
@@ -1444,6 +1444,498 @@ DFS
         return [-1.0, false];
     }
 }
+```
+
+#### 417. [太平洋大西洋水流问题](https://leetcode-cn.com/problems/pacific-atlantic-water-flow/)
+
+给定一个 `m x n` 的非负整数矩阵来表示一片大陆上各个单元格的高度。“太平洋”处于大陆的左边界和上边界，而“大西洋”处于大陆的右边界和下边界。
+
+规定水流只能按照上、下、左、右四个方向流动，且只能从高到低或者在同等高度上流动。
+
+请找出那些水流既可以流动到“太平洋”，又能流动到“大西洋”的陆地单元的坐标。
+
+**提示：**
+
+1. 输出坐标的顺序不重要
+2. *m* 和 *n* 都小于150
+
+**示例：**
+
+```
+给定下面的 5x5 矩阵:
+
+  太平洋 ~   ~   ~   ~   ~ 
+       ~  1   2   2   3  (5) *
+       ~  3   2   3  (4) (4) *
+       ~  2   4  (5)  3   1  *
+       ~ (6) (7)  1   4   5  *
+       ~ (5)  1   1   2   4  *
+          *   *   *   *   * 大西洋
+
+返回:
+
+[[0, 4], [1, 3], [1, 4], [2, 2], [3, 0], [3, 1], [4, 0]] (上图中带括号的单元).
+```
+
+DFS
+
+```javascript
+/**
+ * @param {number[][]} matrix
+ * @return {number[][]}
+ */
+var pacificAtlantic = function(matrix) {
+    const direction = [-1, 0, 1, 0, -1];
+    if (!matrix.length || !matrix[0].length) {
+        return [];
+    }
+    let ans = [];
+    let m = matrix.length, n = matrix[0].length;
+    // 左上角能到达的点
+    let can_reach_p = Array.from(Array(m), () => Array(n).fill(false));
+    // 左上角能到达的点
+    let can_reach_a = Array.from(Array(m), () => Array(n).fill(false));
+    for (let i = 0; i < m; i++) {
+        dfs(can_reach_p, i, 0);
+        dfs(can_reach_a, i, n - 1);
+    }
+    for (let i = 0; i < n; i++) {
+        dfs(can_reach_p, 0, i);
+        dfs(can_reach_a, m - 1, i);
+    }
+    for (let i = 0; i < m; i++) {
+        for (let j = 0; j < n; j++) {
+            if (can_reach_p[i][j] && can_reach_a[i][j]) {
+                ans.push([i, j]);
+            }
+        }
+    }
+    return ans; 
+    function dfs(can_reach, r, c) {
+        if (can_reach[r][c]) {
+            return;
+        }
+        can_reach[r][c] = true;
+        let x, y;
+        for (let i = 0; i < 4; i++) {
+            x = r + direction[i], y = c + direction[i+1];
+            if (x >= 0 && x < m && y >= 0 && y < n && matrix[r][c] <= matrix[x][y]) {
+                dfs(can_reach, x, y);
+            }
+        }
+    }
+};
+```
+
+BFS
+
+```javascript
+/**
+ * @param {number[][]} matrix
+ * @return {number[][]}
+ */
+var pacificAtlantic = function(matrix) {
+    if (!matrix || !matrix[0]) return [];
+    const m = matrix.length;
+    const n = matrix[0].length;
+
+
+    const flag = Array.from({length: m + 10}, () => new Array(n + 10).fill(0));
+    const flag2 = Array.from({length: m + 10}, () => new Array(n + 10).fill(0));
+
+    const bfs = (x, y) => {
+        const q = [[x, y]];
+        flag[x][y] = 1;
+        while (q.length) {
+            const c = q.shift();
+            // console.log("出队",c,c[0],c[1])
+            var cx = c[0];
+            var cy = c[1];
+            flag[cx][cy] = 1;
+            const num = matrix[cx][cy];
+         
+            var shang = cx - 1 >= 0 ? matrix[cx - 1][cy] : -1;
+            var xia = cx + 1 < m ? matrix[cx + 1][cy] : -1;       
+            var zuo = cy - 1 >= 0 ? matrix[cx][cy - 1] : -1;
+            var you = cy + 1 < n ? matrix[cx][cy + 1] : -1;
+          
+            if (shang >= num && flag[cx - 1][cy] === 0){
+                flag[cx - 1][cy] = 1;
+                q.push([cx - 1, cy]);
+            }
+            if (xia >= num && flag[cx + 1][cy] === 0){
+                flag[cx + 1][cy] = 1;
+                q.push([cx + 1, cy]);
+            }
+            if(zuo>=num&&flag[cx][cy-1]==0){
+                flag[cx][cy-1] = 1;
+                q.push([cx,cy-1]);
+            }
+            if(you >= num && flag[cx][cy + 1] == 0){
+                flag[cx][cy + 1] = 1;
+                q.push([cx, cy + 1]);
+            }
+        }
+        
+        
+    }
+
+    const bfs2 = (x, y) => {
+        const q = [[x, y]];
+        flag2[x][y] = 1;
+        while (q.length) {
+            const c = q.shift();
+            var cx = c[0];
+            var cy = c[1];
+            flag2[cx][cy] = 1;
+           
+            const num = matrix[cx][cy];
+            var shang = cx - 1 >= 0 ? matrix[cx - 1][cy] : -1;
+            var xia = cx + 1< m ? matrix[cx + 1][cy] :-1;      
+            var zuo = cy - 1 >= 0 ? matrix[cx][cy - 1] : -1;
+            var you = cy + 1 < n ? matrix[cx][cy + 1] : -1;
+            if(shang >= num && flag2[cx - 1][cy] === 0){
+                flag2[cx - 1][cy] = 1;
+                q.push([cx - 1, cy]);
+            }
+            if(xia >= num && flag2[cx + 1][cy] === 0){
+                flag2[cx + 1][cy] = 1;
+                q.push([cx + 1, cy]);
+             
+            }
+            if(zuo >= num && flag2[cx][cy - 1] === 0){
+                flag2[cx][cy - 1] = 1;
+                q.push([cx, cy - 1]);
+            }
+            if(you >= num && flag2[cx][cy + 1] === 0){
+                flag2[cx][cy + 1] = 1;
+                q.push([cx, cy + 1]);
+            }
+        }
+        
+        
+    }
+
+    for(let i = 0; i < n; i++){
+        bfs(0, i);
+    }
+    for(let i = 0; i < m; i++){
+        bfs(i, 0);
+    }
+    for(let i=0;i<m;i++){
+        bfs2(i, n - 1);
+    }
+    for(let i = 0; i < n; i++){
+        bfs2(m - 1, i);
+    }
+    const qq = [];
+    for(let i = 0; i < m; i++){
+        for(let j = 0; j < n; j++){
+            if(flag[i][j] + flag2[i][j] === 2){
+                qq.push([i, j]);
+            }
+        }
+    }
+    return qq;
+};
+```
+
+#### 547. [省份数量](https://leetcode-cn.com/problems/number-of-provinces/)
+
+有 `n` 个城市，其中一些彼此相连，另一些没有相连。如果城市 `a` 与城市 `b` 直接相连，且城市 `b` 与城市 `c` 直接相连，那么城市 `a` 与城市 `c` 间接相连。
+
+**省份** 是一组直接或间接相连的城市，组内不含其他没有相连的城市。
+
+给你一个 `n x n` 的矩阵 `isConnected` ，其中 `isConnected[i][j] = 1` 表示第 `i` 个城市和第 `j` 个城市直接相连，而 `isConnected[i][j] = 0` 表示二者不直接相连。
+
+返回矩阵中 **省份** 的数量。
+
+**示例 1：**
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210803000409.jpeg)
+
+```
+输入：isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+输出：2
+```
+
+**示例 2：**
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210803083157.jpeg)
+
+```
+输入：isConnected = [[1,0,0],[0,1,0],[0,0,1]]
+输出：3
+```
+
+**提示：**
+
+- 1 <= n <= 200
+- n == isConnected.length
+- n == isConnected[i].length
+- isConnected[i][j] 为 1 或 0
+- isConnected[i][i] == 1
+- isConnected[i][j] == isConnected[j][i]
+
+DFS
+
+```javascript
+/**
+ * @param {number[][]} M
+ * @return {number}
+ */
+var findCircleNum = function(M) {
+    let n = M.length;
+    if (!n) return 0;
+    let count = 0;
+    let isVisited = new Array(n).fill(false);
+    for (let i = 0; i < n; i++) {
+        if (!isVisited[i]) {
+            dfs(i);
+            count++;
+        }
+    }
+    return count;
+    function dfs(i) {
+        isVisited[i] = true;
+        for (let j = 0; j < n; j++) {
+            if (!isVisited[j] && M[i][j]) {
+                dfs(j);
+            }
+        }
+    }
+};
+```
+
+或者用set存储
+
+```javascript
+/**
+ * @param {number[][]} M
+ * @return {number}
+ * 深度优先搜索
+ */
+var findCircleNum = function(M) {
+    // 已访问的省份数
+    let visited = new Set();
+    // 集的个数
+    let count = 0;
+    // 遍历每行
+    for (let i = 0; i < M.length; i++) {
+        // 检查第i个城市是否已访问过
+        if (!visited.has(i)) {
+            // 未访问过i，进行深度遍历搜索
+            dfs(M, visited, i);
+            count++;
+        }
+    }
+    return count;
+}
+// 深度优先搜索原矩阵
+function dfs(M, visited, i) { 
+    // 遍历改行
+    for (let j = 0; j < M.length; j++) {
+        // i与j联通，且没有访问过
+        if (M[i][j] == 1 && !visited.has(j)) {
+            visited.add(j);
+            dfs(M, visited, j);
+        }
+    }
+}
+```
+
+BFS
+
+```javascript
+/**
+ * @param {number[][]} M
+ * @return {number}
+ * 广度优先搜索
+ */
+var findCircleNum = function(M) {
+    // 省份数量
+    const provinces = M.length;
+    // 已遍历的
+    const visited = new Set();
+    // 图的个数
+    let circles = 0;
+    // 队列
+    const queue = new Array();
+    // 遍历各行
+    for (let i = 0; i < provinces; i++) {
+        // 未访问该省
+        if (!visited.has(i)) {
+            queue.push(i);
+            while (queue.length) {
+                // 首页
+                const j = queue.shift();
+                visited.add(j);
+                for (let k = 0; k < provinces; k++) {
+                    if (M[j][k] === 1 && !visited.has(k)) {
+                        queue.push(k);
+                    }
+                }
+            }
+            circles++;
+        }
+    }
+    return circles;
+};
+```
+
+并查集
+
+```javascript
+/**
+ * @param {number[][]} M
+ * @return {number}
+ * 并查集
+ */
+var findCircleNum = function(isConnected) {
+    const provinces = isConnected.length;
+    const parent = new Array(provinces).fill(0);
+    for (let i = 0; i < provinces; i++) {
+        parent[i] = i;
+    }
+    for (let i = 0; i < provinces; i++) {
+        for (let j = i + 1; j < provinces; j++) {
+            if (isConnected[i][j] == 1) {
+                union(parent, i, j);
+            }
+        }
+    }
+    let circles = 0;
+    for (let i = 0; i < provinces; i++) {
+        if (parent[i] === i) {
+            circles++;
+        }
+    }
+    return circles;
+};
+// 并
+const union = (parent, index1, index2) => {
+    parent[find(parent, index1)] = find(parent, index2);
+}
+
+// 查找
+const find = (parent, index) => {
+    if (parent[index] !== index) {
+        parent[index] = find(parent, parent[index]);
+    }
+    return parent[index];
+}
+```
+
+#### 695. [岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/)
+
+给定一个包含了一些 `0` 和 `1` 的非空二维数组 `grid` 。
+
+一个 **岛屿** 是由一些相邻的 `1` (代表土地) 构成的组合，这里的「相邻」要求两个 `1` 必须在水平或者竖直方向上相邻。你可以假设 `grid` 的四个边缘都被 `0`（代表水）包围着。
+
+找到给定的二维数组中最大的岛屿面积。(如果没有岛屿，则返回面积为 `0` 。)
+
+**示例 1:**
+
+```
+[[0,0,1,0,0,0,0,1,0,0,0,0,0],
+ [0,0,0,0,0,0,0,1,1,1,0,0,0],
+ [0,1,1,0,1,0,0,0,0,0,0,0,0],
+ [0,1,0,0,1,1,0,0,1,0,1,0,0],
+ [0,1,0,0,1,1,0,0,1,1,1,0,0],
+ [0,0,0,0,0,0,0,0,0,0,1,0,0],
+ [0,0,0,0,0,0,0,1,1,1,0,0,0],
+ [0,0,0,0,0,0,0,1,1,0,0,0,0]]
+```
+
+对于上面这个给定矩阵应返回 `6`。注意答案不应该是 `11` ，因为岛屿只能包含水平或垂直的四个方向的 `1` 。
+
+**示例 2:**
+
+```
+[[0,0,0,0,0,0,0,0]]
+```
+
+对于上面这个给定的矩阵, 返回 `0`。
+
+ **注意:** 给定的矩阵`grid` 的长度和宽度都不超过 50。
+
+DFS 
+
+```javascript
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var maxAreaOfIsland = function(grid) {
+    if (!grid.length) return 0;
+
+    let max = 0;
+
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            if (grid[i][j] === 0) {
+                continue;
+            }
+
+            max = Math.max(max, dfs(i, j, 1));
+        }
+    }
+
+    function dfs (i, j, count) {
+        if (i < 0 || i > grid.length - 1 || j < 0 || j > grid[i].length - 1) {
+            return 0;
+        }
+        if (grid[i][j] === 0) {
+            return 0;
+        }
+        grid[i][j] = 0;
+
+        let downCount = dfs(i + 1, j);
+        let upCount = dfs(i - 1, j);
+        let leftCount = dfs(i, j + 1);
+        let rightCount = dfs(i, j - 1);
+
+        return 1 + downCount + upCount + leftCount + rightCount;
+    }
+
+    return max;
+};
+```
+
+BFS
+
+```javascript
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var maxAreaOfIsland = function(grid) {
+    let row = grid.length, col = grid[0].length;
+    let direct = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+    let stack = [], max = 0;
+    for(let i = 0; i < row; i++) {
+        for(let j = 0; j < col; j++) {
+            if(grid[i][j] === 0) continue;
+            let t = 1;
+            stack.push([i, j]);
+            grid[i][j] = 0;
+            while(stack.length > 0) {
+                let [x, y] = stack.pop();
+                for(let k = 0; k < 4; k++) {
+                    let newX = x + direct[k][0];
+                    let newY = y + direct[k][1];
+                    if(newX >= 0 && newY >= 0 && newX < row && newY < col && grid[newX][newY] === 1) {
+                        grid[newX][newY] = 0;
+                        stack.push([newX, newY]);
+                        t++;
+                    }
+                }
+            }
+            max = Math.max(max, t);
+        }
+    }
+    return max;
+};
 ```
 
 #### 寻找和为定值的多个数
