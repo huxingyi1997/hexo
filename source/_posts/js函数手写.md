@@ -141,6 +141,10 @@ tags:
 
 65.[异步并发数限制](#65.异步并发数限制)✅
 
+66.[LazyMan](#66.LazyMan)✅
+
+67.[Promise超时重新请求](#67.Promise超时重新请求)✅
+
 
 
 <!-- more -->
@@ -7449,7 +7453,7 @@ class MyPromise {
     					res[i] = value;
     					// 所有MyPromise都resolve
     					if (index === promises.length) resolve(res);
-    				},function(reason) {
+    				}, function(reason) {
     					// 第一个reject的MyPromise
     					reject(reason);
     				}
@@ -7612,7 +7616,7 @@ class MyPromise {
     					res[i] = value;
     					// 所有MyPromise都resolve
     					if (index === promises.length) resolve(res);
-    				},function(reason) {
+    				}, function(reason) {
     					// 第一个reject的MyPromise
     					reject(reason);
     				}
@@ -7795,7 +7799,7 @@ class MyPromise {
     					res[i] = value;
     					// 所有MyPromise都resolve
     					if (index === promises.length) resolve(res);
-    				},function(reason) {
+    				}, function(reason) {
     					// 第一个reject的MyPromise
     					reject(reason);
     				}
@@ -7837,7 +7841,7 @@ class MyPromise {
     					res[i] = { status: 'fulfilled', value: value };
     					// 所有MyPromise都resolve
     					if (index === promises.length) resolve(res);
-    				},function(reason) {
+    				}, function(reason) {
     					// 和第一个类似，但要注意状态
     					index++;
     					// 结果数组按照原数组的顺序依次输出
@@ -8006,7 +8010,7 @@ class MyPromise {
     					res[i] = value;
     					// 所有MyPromise都resolve
     					if (index === promises.length) resolve(res);
-    				},function(reason) {
+    				}, function(reason) {
     					// 第一个reject的MyPromise
     					reject(reason);
     				}
@@ -8048,7 +8052,7 @@ class MyPromise {
     					res[i] = { status: 'fulfilled', value: value };
     					// 所有MyPromise都resolve
     					if (index === promises.length) resolve(res);
-    				},function(reason) {
+    				}, function(reason) {
     					// 和第一个类似，但要注意状态
     					index++;
     					// 结果数组按照原数组的顺序依次输出
@@ -9774,5 +9778,35 @@ playBoy.sayHi().sleep(2000).play('王者荣耀').sleep(3000).play('奇迹暖暖'
 // 我在玩儿王者荣耀
 // 等待3s
 // 我在玩儿奇迹暖暖
+```
+
+
+
+## 67.Promise超时重新请求
+
+```js
+function resend(fn，times，interval) {
+    return new Promise((resolve, reject) => {
+        let promise = null;
+        let executePromise = timer => {
+            if (times < 1) {
+                window.clearInterval(timer);
+                reject(new Error('promise not until timeout'));
+                return null;
+            }
+            times--;
+            return Promise.resolve(fn).then(res => {
+                window.clearInterval(timer);
+                resolve(res);
+            }).catch((e) => {
+                throw new Error(e);
+            });
+        }
+        let timer = window.setInterval(() => {
+            promise = executePromise(timer);
+        }, interval);
+        promise = executePromise(timer);
+    })
+}
 ```
 

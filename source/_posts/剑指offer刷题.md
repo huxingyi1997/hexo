@@ -118,7 +118,7 @@ var findRepeatNumber = function(nums) {
  */
 var findNumberIn2DArray = function(matrix, target) {
     // 排除长或宽为0
-    if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return false;
+    if (matrix === null || matrix.length === 0 || matrix[0].length === 0) return false;
     // 长
     let lenX = matrix.length;
     // 宽
@@ -127,7 +127,7 @@ var findNumberIn2DArray = function(matrix, target) {
     let x = 0, y = lenY - 1;
     // 不越界
     while(x < lenX && y >= 0){
-        if (matrix[x][y] == target){
+        if (matrix[x][y] === target){
             // 找到目标
             return true;
         } else if (matrix[x][y] > target){
@@ -207,7 +207,7 @@ var reversePrint = function(head) {
     // 数组
     let arr = [];
     // 不断移动链表
-    while(head != null){
+    while(head !== null){
         arr.unshift(head.val);
         head = head.next;
     }
@@ -223,7 +223,7 @@ var reversePrint = function(head) {
     // 之前的和当前指针
     let pre = head, cur = head.next;
     // 反转链表
-    while(cur != null){
+    while (cur !== null) {
         pre.next = cur.next;
         cur.next = head;
         head = cur;
@@ -625,9 +625,9 @@ var exist = function(board, word) {
 
     function dfs (i, j, board, word, index) {
         // 判断不符合条件
-        if(i < 0 || i >= row || j < 0 || j > col || board[i][j] !== word[index]) return false;
+        if (i < 0 || i >= row || j < 0 || j > col || board[i][j] !== word[index]) return false;
         // word遍历完了
-        if(index === word.length - 1) return true;
+        if (index === word.length - 1) return true;
         // 记录到board的值
         let tmp = board[i][j];
         // 锁上，因为后续的递归是4个方向上的，无法保证上一个方向的值
@@ -857,7 +857,7 @@ var hammingWeight = function(n) {
 var myPow = function(x, n) {
     if (x === 0 || x === 1) return x;
     x = n >= 0 ? x: 1 / x;
-    if(n !== -2147483648){
+    if (n !== -2147483648) {
         n = n >= 0 ? n: -n;
     } else {
         n = 2147483648 / 2;
