@@ -567,10 +567,12 @@ function create (proto) {
 使用方法，特别注意和ES5手写继承时用法不同，因此其传递得时构造函数
 
 ```js
-var p = {name:'smyhvae'};
-var obj1 = Object.create(p);  //此方法创建的对象，是用原型链连接的
+var p = {
+    name: 'smyhvae'
+};
+var obj1 = Object.create(p);  // 此方法创建的对象，是用原型链连接的
 console.log(obj1.__proto__ === p);
-var obj2 = Object.create(p.prototype);  //此方法创建的对象，是用原型链连接的
+var obj2 = Object.create(p.prototype);  // 此方法创建的对象，是用原型链连接的
 console.log(obj2); /* VM3968:4 Uncaught TypeError: Object prototype may only be an Object or null: undefined
     at Function.create (<anonymous>)
     at <anonymous>:4:19 */
@@ -1261,10 +1263,6 @@ function deepCopy(obj, map = new Map()) {
             }
             res[key] = deepCopy(obj[key], map);
         });
-		for (let i in obj) {
-			// 遍历对象中的每个元素是否为对象类型
-			res[i] = typeof obj[i] === "object" ? deepCopy(obj[i], map) : obj[i];
-		}
 	} else {
 		// 简单数据类型 直接 = 赋值
 		res = obj;
@@ -1917,7 +1915,7 @@ function flat(arr) {
     let res = [];
     arr.forEach(function (item){
         if (item.constructor === Array) {
-        // if (instanceof(item) === Array) {
+        	// if (instanceof(item) === Array) {
             res.push(...flat(item));
         } else {
             res.push(item);
@@ -2588,7 +2586,7 @@ let resources = [
     { name: "李四", age: "19" },
     { name: "王五", age: "20" },
     { name: "赵六", age: "21" }
-]
+];
 function dedup (data, key) {
     return data.reduce((res, cur) => {
         const keys = res.map(item => item[key]);
@@ -2613,7 +2611,7 @@ const str = 'sfhjasfjgfasjuwqrqadqeiqsajsdaiwqdaklldflas-cmxzmnha';
 const res = str.split('').reduce((count, next) => {
     count[next] ? count[next]++ : count[next] = 1;
     return count;
-},{});
+}, {});
 console.log(res);
 // 结果
 /*
@@ -2653,7 +2651,7 @@ function compose(...funs) {
     if (funs.length === 1) {
        return funs[0];
     }
-    return funs.reduce((a, b) => (...arg) => a(b(...arg)))
+    return funs.reduce((a, b) => (...arg) => a(b(...arg)));
 }
 
 const partial = (fn, ...args) => (..._args) =>
@@ -2745,7 +2743,7 @@ function backtrack(arr) {
 			}
 		}
         return list;
-	})
+	}, [])
 }
 
 console.log(backtrack([['a', 'b'], ['n', 'm'], ['0', '1']]));
@@ -2832,7 +2830,7 @@ console.log(arr);
 ```js
 const obj = {
     a: 1,
-    b: [1, 2, { c: true }],
+    b: [ 1, 2, { c: true }],
     c: { e: 2, f: 3 },
     g: null,
 };
@@ -3023,7 +3021,7 @@ console.log(multi(5, 6)(7)); // 210
 
 ```js
 const curry = (fn, arr = []) => (..._args) => (
-	args => args.length === fn.length ? fn(...args) : curry(fn, args)
+	args => args.length === fn.length ? fn(...args) : curry(fn, args);
 )([...arr, ..._args])
 
 function multiFn(a, b, c) {
@@ -3669,7 +3667,7 @@ container.onmousemove = getUserAction;
 function debounce(func, wait) {
     var timeout;
     return function () {
-        clearTimeout(timeout)
+        clearTimeout(timeout);
         timeout = setTimeout(func, wait);
     }
 }

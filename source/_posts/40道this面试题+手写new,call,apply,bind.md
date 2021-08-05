@@ -47,7 +47,7 @@ this指针是JavaScript的一大特色，对于this的理解很考验一个人�
 
 来看个最基本的案例：
 
-```
+```js
 var a = 10;
 function foo () {
 	console.log(this.a)
@@ -61,7 +61,7 @@ foo(); // 10
 
 因此上面的代码其实就相当于是这样:
 
-```
+```js
 window.a = 10;
 function foo() {
 	console.log(this.a);
@@ -73,7 +73,7 @@ window.foo();
 
 答案：
 
-```
+```sh
 10
 ```
 
@@ -83,7 +83,7 @@ window.foo();
 
 (想要开启严格模式，只要在需要开启的地方写上`"use strict"`)
 
-```
+```js
 "use strict";
 var a = 10;
 function foo () {
@@ -103,7 +103,7 @@ foo();
 
 所以最后的执行结果：
 
-```
+```js
 f foo() {...}
 'this2' Window{...}
 'this1' undefined
@@ -113,7 +113,7 @@ Uncaught TypeError: Cannot read property 'a' of undefined
 
 #### 1.3 题目三
 
-```
+```js
 let a = 10;
 const b = 20;
 
@@ -129,7 +129,7 @@ console.log(window.a) // undefined
 
 答案：
 
-```
+```sh
 undefined
 undefined
 undefined
@@ -137,7 +137,7 @@ undefined
 
 #### 1.4 题目四
 
-```
+```js
 var a = 1;
 function foo () {
     var a = 2;
@@ -156,7 +156,7 @@ foo();
 
 因此答案为：
 
-```
+```sh
 Window{...}
 1
 ```
@@ -165,7 +165,7 @@ Window{...}
 
 把题目`1.4`改造一下。
 
-```
+```js
 var a = 1;
 function foo () {
     var a = 2;
@@ -202,7 +202,7 @@ foo();
 
 #### 2.1 题目一
 
-```
+```js
 function foo () {
 	console.log(this.a);
 }
@@ -222,7 +222,7 @@ obj.foo();
 
 上面这段代码是不是就相当于是这样：
 
-```
+```js
 var obj = {
     a: 1,
     foo: function () {
@@ -237,7 +237,7 @@ obj.foo();
 
 答案都是：
 
-```
+```sh
 1
 ```
 
@@ -264,7 +264,7 @@ obj.foo();
 
 使用另一个变量来给函数取别名会发生隐式丢失。
 
-```
+```js
 function foo () {
 	console.log(this.a);
 };
@@ -289,7 +289,7 @@ foo2(); // 2
 
 答案：
 
-```
+```sh
 1
 2
 ```
@@ -302,7 +302,7 @@ foo2(); // 2
 
 让我们在一个新的变量`obj2`中也定义一个`foo2`看看：
 
-```
+```js
 function foo () {
 	console.log(this.a);
 };
@@ -326,7 +326,7 @@ obj2.foo2(); // 3
 
 答案：
 
-```
+```sh
 1
 2
 3
@@ -342,7 +342,7 @@ obj2.foo2(); // 3
 
 来看看这道题目：
 
-```
+```js
 function foo () {
 	console.log(this.a);
 }
@@ -362,7 +362,7 @@ doFoo(obj.foo);
 
 因此结果为：
 
-```
+```sh
 Window{...}
 2
 ```
@@ -375,7 +375,7 @@ Window{...}
 
 现在我们不用`window`调用`doFoo`，而是放在对象`obj2`里，用`obj2`调用：
 
-```
+```js
 function foo () {
 	console.log(this.a);
 }
@@ -402,7 +402,7 @@ obj2.doFoo(obj.foo);
 
 执行结果为：
 
-```
+```sh
 { a:3, doFoo: f }
 2
 ```
@@ -411,7 +411,7 @@ obj2.doFoo(obj.foo);
 
 一样的代码，试试严格模式下：
 
-```
+```js
 "use strict"
 function foo () {
 	console.log(this.a);
@@ -435,7 +435,7 @@ obj2.doFoo(obj.foo);
 
 执行结果：
 
-```
+```sh
 { a:3, doFoo: f }
 Uncaught TypeError: Cannot read property 'a' of undefined
 ```
@@ -456,7 +456,7 @@ Uncaught TypeError: Cannot read property 'a' of undefined
 
 #### 4.1 题目一
 
-```
+```js
 function foo () {
 	console.log(this.a);
 }
@@ -479,7 +479,7 @@ foo.bind(obj);
 
 答案：
 
-```
+```sh
 2
 1
 1
@@ -489,7 +489,7 @@ foo.bind(obj);
 
 例如：
 
-```
+```js
 function foo () {
 	console.log(this.a);
 }
@@ -501,7 +501,7 @@ foo.call(undefined); // 2
 
 输出的是：
 
-```
+```sh
 2
 2
 2
