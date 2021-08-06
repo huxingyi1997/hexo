@@ -5569,7 +5569,7 @@ class MySet{
 		return entries;
 	}
 	// 遍历，返回一个新的迭代器对象，该对象包含MySet对象中的按插入顺序排列的所有元素的值。
-    *[Symbol.iterator](){
+    *[Symbol.iterator]() {
         for (const item of this.items) {
             yield item;
         }
@@ -5884,7 +5884,7 @@ Singleton.getInstance = (function(name) {
 	let instance;
 	return function(name) {
 		if (!instance) {
-			instance = new Singleton (name);
+			instance = new Singleton(name);
 		}
 		return instance;
 	}
@@ -5894,7 +5894,7 @@ Singleton.getInstance = (function(name) {
 var a = Singleton.getInstance('ConardLi');
 var b = Singleton.getInstance('ConardLi2');
 
-console.log(a === b);   //true
+console.log(a === b); // true
 ```
 
 
@@ -6380,8 +6380,8 @@ obj1.subscribe((newState, key) => {
 	console.log(newState, key);
 });
 
-obj1.a = 3; // {a:3,b:2} 'a'
-obj1.b = 4; // {a:3,b:4} 'b'
+obj1.a = 3; // {a:3, b:2} 'a'
+obj1.b = 4; // {a:3, b:4} 'b'
 ```
 
 大佬提供的Object.defineProperty版本
@@ -7037,58 +7037,58 @@ p1.then(function(value) {
 
 ```js
 class MyPromise {
-	// 构造方法接收一个回调
-	constructor(fn) {
-		// Promise三种状态
-		this.status = 'pending';
-		// 定义状态为resolved(fulfilled)的时候的状态
-    	this.value = undefined;
-    	// 定义状态为rejected的时候的状态
-    	this.reason = undefined;
-    	
-    	// 成功队列, 存放成功的回调，resolve时触发
-    	this.onResolvedCallbacks = [];
-    	// 失败队列,  存放失败的回调，reject时触发
-    	this.onRejectedCallbacks = [];
-    	
-    	// 由于resolve/reject是在fn内部被调用, 因此需要使用箭头函数固定this指向,指向Promise实例
-    	let resolve = (value) => {
-    		// 对应规范中的"状态只能由pending到fulfilled或rejected"
-    		if (this.status === 'pending') {
-    			this.value = value;
-    			// 变更状态
-    			this.status = 'fulfilled';
-    			this.onResolvedCallbacks.forEach(callback => callback(value));
-    		}
-    	}
-    	// 实现同resolve
-    	let reject = (reason) => {
-    		// 对应规范中的"状态只能由pending到fulfilled或rejected"
-    		if (this.status === 'pending') {
-    			this.reason = reason;
-    			// 变更状态
-    			this.status = 'rejected';
-    			this.onRejectedCallbacks.forEach(callback => callback(reason));
-    		}
-    	}
+    // 构造方法接收一个回调
+    constructor(fn) {
+        // Promise三种状态
+        this.status = 'pending';
+        // 定义状态为resolved(fulfilled)的时候的状态
+        this.value = undefined;
+        // 定义状态为rejected的时候的状态
+        this.reason = undefined;
+
+        // 成功队列, 存放成功的回调，resolve时触发
+        this.onResolvedCallbacks = [];
+        // 失败队列,  存放失败的回调，reject时触发
+        this.onRejectedCallbacks = [];
+
+        // 由于resolve/reject是在fn内部被调用, 因此需要使用箭头函数固定this指向,指向Promise实例
+        let resolve = (value) => {
+            // 对应规范中的"状态只能由pending到fulfilled或rejected"
+            if (this.status === 'pending') {
+                this.value = value;
+                // 变更状态
+                this.status = 'fulfilled';
+                this.onResolvedCallbacks.forEach(callback => callback(value));
+            }
+        }
+        // 实现同resolve
+        let reject = (reason) => {
+            // 对应规范中的"状态只能由pending到fulfilled或rejected"
+            if (this.status === 'pending') {
+                this.reason = reason;
+                // 变更状态
+                this.status = 'rejected';
+                this.onRejectedCallbacks.forEach(callback => callback(reason));
+            }
+        }
         // 执行时可能会发生异常
         try {
             // new Promise()时立即执行fn,并传入resolve和reject
             fn(resolve, reject);
         } catch(e) {
-        	reject(e);
+            reject(e);
         }
-	}
+    }
 
-	// then方法,接收一个成功的回调和一个失败的回调
-	then(onFullfilled, onRejected) {
-		// 防止值的穿透
-		if (typeof onFullfilled !== 'function') onFullfilled = v => v;
-		if (typeof onRejected !== 'function') onRejected = v => v;
-		// return一个新的promise
-		return new MyPromise((resolve, reject) => {
-			// 把onFullfilled重新包装一下,再push进resolve执行队列,这是为了能够获取回调的返回值进行分类讨论，使用箭头函数，使this指向实例
-			const fulfilledFn = value => {
+    // then方法,接收一个成功的回调和一个失败的回调
+    then(onFullfilled, onRejected) {
+        // 防止值的穿透
+        if (typeof onFullfilled !== 'function') onFullfilled = v => v;
+        if (typeof onRejected !== 'function') onRejected = v => v;
+        // return一个新的promise
+        return new MyPromise((resolve, reject) => {
+            // 把onFullfilled重新包装一下,再push进resolve执行队列,这是为了能够获取回调的返回值进行分类讨论，使用箭头函数，使this指向实例
+            const fulfilledFn = value => {
                 try {
                     // 执行第一个(当前的)Promise的成功回调,并获取返回值
                     let x = onFullfilled(value);
@@ -7097,9 +7097,9 @@ class MyPromise {
                 } catch (error) {
                     reject(error);
                 }
-           	}
-           	// 把onRejected重新包装一下，使用箭头函数，使this指向实例
-           	const rejectedFn = value => {
+            }
+            // 把onRejected重新包装一下，使用箭头函数，使this指向实例
+            const rejectedFn = value => {
                 try {
                     // 执行第一个(当前的)Promise的失败回调,并获取返回值
                     let x = onRejected(value);
@@ -7108,43 +7108,43 @@ class MyPromise {
                 } catch (error) {
                     reject(error);
                 }
-           	}
-           	// 根据状态变换
-           	switch(this.status) {
-           		// 当状态为pending时,把then回调push进resolve/reject执行队列,等待执行
-           		case 'pending':
-           			this.onResolvedCallbacks.push(fulfilledFn);
-           			this.onRejectedCallbacks.push(rejectedFn);
-           			break;
-               	// 当状态已经变为resolve/reject时,直接执行then回调
-               	case 'fulfilled':
-           			fulfilledFn(this.value);
-           			break;
-               	case 'rejected':
-           			rejectedFn(this.reason);
-           			break;
-           	}
-		})
-	}
-    
+            }
+            // 根据状态变换
+            switch(this.status) {
+                    // 当状态为pending时,把then回调push进resolve/reject执行队列,等待执行
+                case 'pending':
+                    this.onResolvedCallbacks.push(fulfilledFn);
+                    this.onRejectedCallbacks.push(rejectedFn);
+                    break;
+                    // 当状态已经变为resolve/reject时,直接执行then回调
+                case 'fulfilled':
+                    fulfilledFn(this.value);
+                    break;
+                case 'rejected':
+                    rejectedFn(this.reason);
+                    break;
+            }
+        })
+    }
+
     // catch方法,接收一个失败的回调
-	catch(onRejected) {
+    catch(onRejected) {
         return this.then(undefined, onRejected);
     }
-    
+
     // finally方法
     finally(cb) {
-    	return this.then(
-    		// 执行回调,并return value传递给后面的then
-    		value => MyPromise.resolve(cb()).then(() => value),
-    		// reject同理
-    		reason => MyPromise.resolve(cb()).then(() => {throw reason})
-      	)
+        return this.then(
+            // 执行回调,并return value传递给后面的then
+            value => MyPromise.resolve(cb()).then(() => value),
+            // reject同理
+            reason => MyPromise.resolve(cb()).then(() => {throw reason})
+        )
     }
 }
 
 let promise1 = new MyPromise((resolve, reject) => {
-  	resolve('Success!');
+    resolve('Success!');
 });
 
 promise1.then((value) => {
@@ -7153,14 +7153,14 @@ promise1.then((value) => {
 }).finally(() => console.log('Finally!'));
 
 let p1 = new MyPromise(function(resolve, reject) {
-	resolve('Success');
+    resolve('Success');
 });
 
 p1.then(function(value) {
     console.log(value); // "Success!"
     throw 'oh, no!';
 }).finally(function(){
-	console.log('Finally!');
+    console.log('Finally!');
 });
 ```
 
@@ -8559,20 +8559,20 @@ q.stop(); // 可以随时终止任务
 ### 使用async/await
 
 ```js
-class Queue{
-    constructor(){
+class Queue {
+    constructor() {
     	// 事件队列
         this.queue = [];
         // 定时器
         this.timer = null;
     }
     // 加入事件队列
-    task(time, fn){
+    task(time, fn) {
         this.queue.push([time, fn]);
         return this;
     }
 	// 开始任务
-    async start(){
+    async start() {
         for(let i = 0; i < this.queue.length; i++){
         	// 异步任务阻塞
             await new Promise((resolve)=>{
@@ -8945,7 +8945,6 @@ function asyncToGenerator(generatorFunc) {
 }
 
 // 测试
-
 function* myGenerator() {
     try {
         console.log(yield Promise.resolve(1)) ;
@@ -9397,7 +9396,7 @@ class Scheduler{
         let result = await promiseCreator();
         this.taskNum--;
         if (this.taskQueue.length > 0) {
-        // 当前任务完成后，如果任务队列里有resolve，那么就调用resolve，之前被堵住的部分就可以得到执行
+        	// 当前任务完成后，如果任务队列里有resolve，那么就调用resolve，之前被堵住的部分就可以得到执行
             this.taskQueue.shift()();
         }
         return result;
@@ -9412,7 +9411,7 @@ let timeout = time => new Promise((resolve) => {
 
 function addTask(delay, num){
     scheduler.add(() => (
-        timeout(delay).then((val) => {
+        timeout(delay).then(() => {
             console.log(num);
         })
     ))
@@ -9451,6 +9450,7 @@ class Plimit {
 		// 当前活跃的任务总数
 		this.active = 0;
 	}
+
 	// 把任务放入队列中
 	enqueue(fn) {
 		// 返回一个Promise
@@ -9459,6 +9459,7 @@ class Plimit {
 			this.queue.push({fn, resolve, reject});
 		})
 	}
+
 	// 从队列起始位置开始执行任务
 	dequeue() {
 		if (this.active < this.limit && this.queue.length !== 0) {
@@ -9468,7 +9469,7 @@ class Plimit {
 			this.run(fn).then(resolve, reject);
 		}
 	}
-	
+
 	// async/await 执行器 简化错误处理
 	async run(fn) {
 		// 当前活动任务数量增加
@@ -9480,7 +9481,7 @@ class Plimit {
 		this.deque();
 		return value;
 	}
-	
+
 	// 拦截器
     interceptor(fn) {
         if (this.active > this.limit) {
@@ -9573,7 +9574,7 @@ const URLS = [
     'hulu.com',
     'amazon.com'
 ]
-//自定义请求函数
+// 自定义请求函数
 var requestFn = url => {
     return new Promise(resolve => {
         setTimeout(() => {
@@ -9718,24 +9719,33 @@ LazyMan('Tony').eat('lunch').eat('dinner').sleepFirst(5).sleep(10).eat('junk foo
 ```
 
 总结一下最后一步：
-1.JavaScript引擎中存在着一个主线程，所有的同步任务都会在这个主线程上执行，每当一个同步任务要执行了，主
-线程就会把这个同步任务推入函数堆栈中，待执行完成后，主线程读取下一个同步任务到堆栈中，继续执行；而在这个
-过程中若存在被注册的异步任务回调函数，这些异步任务会交给引擎中的其他模块进行处理，并在异步任务完成或是合
-适的时机（比如setTimeout指定的时间间隔达到了）将回调函数放到任务队列当中，一般来说不同的异步任务会有
-不同的任务队列，而不是所有回调都放在同一个任务队列当中。当主线程中的函数堆栈中不再有更多的同步任务时，
-主线程就会开始读取任务队列中的回调函数。
+
+1.JavaScript引擎中存在着一个主线程，所有的同步任务都会在这个主线程上执行，每当一个同步任务要执行了，主线程就会把这个同步任务推入函数堆栈中，待执行完成后，主线程读取下一个同步任务到堆栈中，继续执行；
+
+而在这个过程中若存在被注册的异步任务回调函数，这些异步任务会交给引擎中的其他模块进行处理，并在异步任务完成或是合适的时机（比如setTimeout指定的时间间隔达到了）将回调函数放到任务队列当中，一般来说不同的异步任务会有不同的任务队列，而不是所有回调都放在同一个任务队列当中。当主线程中的函数堆栈中不再有更多的同步任务时，主线程就会开始读取任务队列中的回调函数。
+
 2.当我们调用LazyMan的时候，constructor里面首先会立即打印信息
-3.然后继续往下走，遇到了settimeout，JS发现他是一个异步任务（先放到一边），settimeout是一个宏任务，
-然后继续执行，走到eat('lunch')，这时候创建了一个函数fn（未执行），继续走，将fn放到事件队列queue[]，
-此时的queue为      [eat('dinner')]
-4.继续往下走 ，遇到了eat('dinner')，这时候又创建了一个fn（未执行），继续走，将fn放到事件队列queue[],
-此时的queue为      [eat('lunch'),eat('dinner')]
+
+3.然后继续往下走，遇到了settimeout，JS发现他是一个异步任务（先放到一边），settimeout是一个宏任务，然后继续执行，走到eat('lunch')，这时候创建了一个函数fn（未执行），继续走，将fn放到事件队列queue[]
+
+此时的queue为 [eat('dinner')]
+
+4.继续往下走 ，遇到了eat('dinner')，这时候又创建了一个fn（未执行），继续走，将fn放到事件队列queue[]
+
+此时的queue为 [eat('lunch'),eat('dinner')]
+
 5.再继续往下走，遇到了sleepFirst(5),看题目，题目要求它要跑到前面去，很简单，那就插个队，unshift
-此时的queue为      [sleepFirst(time),eat('lunch'),eat('dinner')]
+
+此时的queue为 [sleepFirst(time),eat('lunch'),eat('dinner')]
+
 6.再继续往下走，遇到了sleep(10),这里要等待10秒，那就创建一个定时器fn，它在后面调用，正常排队
-此时的queue为      [sleepFirst(5),fneat'lunch'),eat('dinner'),sleep(10)]
+
+此时的queue为[sleepFirst(5),fneat'lunch'),eat('dinner'),sleep(10)]
+
 7.再继续往下走，遇到了eat('junk food'),创建一个fn，正常排队
+
 此时的queue为      [sleepFirst(5),fneat'lunch'),eat('dinner'),sleep(10),eat('junk food')]
+
 8.JS会问还有没有要执行的，其实刚开始我们把settimeout放到了异步队列，
 同步任务：我执行完了
 异步任务：我知道了
@@ -9785,7 +9795,9 @@ playBoy.sayHi().sleep(2000).play('王者荣耀').sleep(3000).play('奇迹暖暖'
 ```js
 function resend(fn，times，interval) {
     return new Promise((resolve, reject) => {
+        // 记录状态
         let promise = null;
+        // 执行Promise
         let executePromise = timer => {
             if (times < 1) {
                 window.clearInterval(timer);
@@ -9800,6 +9812,7 @@ function resend(fn，times，interval) {
                 throw new Error(e);
             });
         }
+        // 定时器
         let timer = window.setInterval(() => {
             promise = executePromise(timer);
         }, interval);
