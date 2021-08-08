@@ -309,7 +309,7 @@ Function.prototype.myBind1 = function(context) {
     // 1. 判断调用bind的是不是一个函数
     if (typeof this !== "function") {
         throw new Error(
-        	"Function.prototype.bind - what is trying to be bound is not callable"
+        	"Function.prototype.bind - what is trying to be bound is not callable";
         );
     }
     // 2. 外层的this指向调用者(也就是调用的函数)
@@ -349,14 +349,14 @@ Function.prototype.myBind1 = function(context) {
 ```js
 Function.prototype.myBind = function (context = window, ...args) {
 	if (this === Function.prototype) return undefined;
-	const _this = this
+	const _this = this;
     // 返回一个函数
     return function F(...arguments) {
         // 因为返回了一个函数，我们可以 new F()，所以需要判断
         if (this instanceof F) {
-            return new _this(...args, ...arguments)
+            return new _this(...args, ...arguments);
         }
-        return _this.apply(context, args.concat(...arguments))
+        return _this.apply(context, args.concat(...arguments));
     }
 }
 ```
@@ -901,7 +901,7 @@ function myInstanceof(target, origin) {
 // 变量origin的prototype 存在于变量target的原型链上
 function myInstanceof(target, origin){    
     // 验证如果为基本数据类型，就直接返回false可以不写
-    const baseType = ['string', 'number','boolean','undefined','symbol']
+    const baseType = ['string', 'number', 'boolean', 'undefined', 'symbol']
     if(baseType.includes(typeof(target))) return false;
     // 取 origin 的显式原型origin的prototype
     let oP  = origin.prototype;
@@ -3730,14 +3730,14 @@ function debounce(func, wait = 50) {
         if (timer) clearTimeout(timer);
         timer = setTimeout(() => {
             func.apply(this);
-        }, wait)
+        }, wait);
     }
 }
 ```
 
 现在 this 已经可以正确指向了。让我们看下个问题：
 
-### event 对象（第三版，已经完成基本功能）
+### event 对象（第三版）
 
 JavaScript 在事件处理函数中会提供事件对象 event，我们修改下 getUserAction 函数：
 
@@ -3770,15 +3770,124 @@ function debounce(func, wait = 50) {
         if (timer) clearTimeout(timer);
         timer = setTimeout(() => {
             func.apply(this, args);
-        }, wait)
+        }, wait);
     }
 }
 ```
 
-到此为止，我们修复了两个小问题：
+### 返回值（第四版，已经完成基本功能）
+
+再注意一个小点，我们要返回函数的执行结果
+
+```js
+// 第四版
+// func是用户传入需要防抖的函数
+// wait是等待时间
+function debounce(func, wait = 50) {
+    // 缓存一个定时器id
+    let timer = 0, res;
+    // 这里返回的函数是每次用户实际调用的防抖函数
+    // 如果已经设定过定时器了就清空上一次的定时器
+    // 开始一个新的定时器，延迟执行用户传入的方法
+    return function(...args) {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+            res = func.apply(this, args);
+        }, wait);
+        return res;
+    }
+}
+```
+
+到此为止，我们修复了三个小问题：
 
 1. this 指向
 2. event 对象
+3. 返回值
+
+### 立刻执行（第五版）
+
+这个时候，代码已经很是完善，但是为了让这个函数更加完善，我们接下来思考一个新的需求。
+
+这个需求就是：
+
+我不希望非要等到事件停止触发后才执行，我希望立刻执行函数，然后等到停止触发n秒后，才可以重新触发执行。
+
+想想这个需求也是很有道理的嘛，那我们加个 immediate 参数判断是否是立刻执行。
+
+```js
+// 第五版
+// func是用户传入需要防抖的函数
+// wait是等待时间
+function debounce(func, wait = 50, immediate) {
+    // 缓存一个定时器id
+    let timer = 0, res;
+    // 这里返回的函数是每次用户实际调用的防抖函数
+    // 如果已经设定过定时器了就清空上一次的定时器
+    // 开始一个新的定时器，延迟执行用户传入的方法
+    return function(...args) {
+        if (timer) clearTimeout(timer);
+        if (immediate) {
+            // 如果已经执行过，不再执行
+            let callNow = !timeout;
+            timer = setTimeout(() => {
+                if (timer) clearTimeout(timer);
+            }, wait);
+            if (callNow) res = func.apply(this, args);
+        } else {
+            timer = setTimeout(() => {
+                res = func.apply(this, args);
+            }, wait);
+        }
+        return res;
+    }
+}
+```
+
+![debounce-4](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210808001039.gif)
+
+### 取消
+
+最后我们再思考一个小需求，我希望能取消 debounce 函数，比如说我 debounce 的时间间隔是 10 秒钟，immediate 为 true，这样的话，我只有等 10 秒后才能重新触发事件，现在我希望有一个按钮，点击后，取消防抖，这样我再去触发，就可以又立刻执行啦，是不是很开心？
+
+为了这个需求，我们写最后一版的代码：
+
+```js
+// 第六版
+// func是用户传入需要防抖的函数
+// wait是等待时间
+function debounce(func, wait = 50, immediate) {
+    // 缓存一个定时器id
+    let timer = 0, res;
+    // 这里返回的函数是每次用户实际调用的防抖函数
+    // 如果已经设定过定时器了就清空上一次的定时器
+    // 开始一个新的定时器，延迟执行用户传入的方法
+    let debounced = function(...args) {
+        if (timer) clearTimeout(timer);
+        if (immediate) {
+            // 如果已经执行过，不再执行
+            let callNow = !timeout;
+            timer = setTimeout(() => {
+                if (timer) clearTimeout(timer);
+            }, wait);
+            if (callNow) res = func.apply(this, args);
+        } else {
+            timer = setTimeout(() => {
+                res = func.apply(this, args);
+            }, wait);
+        }
+        return res;
+    }
+    
+    debounced.cancel = function() {
+        clearTimeout(timer);
+    };
+
+    return debounced;
+}
+```
+
+![debounce-cancel](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210808000649.gif)
 
 功能更丰富的防抖函数请参考[JavaScript专题之跟着underscore学防抖](https://juejin.cn/post/6844903480239325191)
 
@@ -3836,8 +3945,7 @@ function throttle (func, wait = 50) {
 setInterval(
     throttle(() => {
         console.log(1);
-    }, 500),
-    1
+    }, 500), 1
 );
 ```
 
@@ -3910,6 +4018,156 @@ setInterval(
 
 1. 第一种事件会立刻执行，第二种事件会在 n 秒后第一次执行
 2. 第一种事件停止触发后没有办法再执行事件，第二种事件停止触发后依然会再执行一次事件
+
+### 双剑合璧
+
+那我们想要一个什么样的呢？
+
+有人就说了：我想要一个有头有尾的！就是鼠标移入能立刻执行，停止触发的时候还能再执行一次！
+
+所以我们综合两者的优势，然后双剑合璧，写一版代码
+
+```js
+// 第三版
+// func是用户传入需要防抖的函数
+// wait是等待时间
+function throttle(func, wait = 50) {
+    // 定时器，环境this指针，结果
+    let timer = null, context, res;
+    // 上一次执行该函数的时间
+    let lastTime = 0;
+    
+    // 下一次触发还原
+    let later = function () {
+        lastTime  = +new Date();
+        timer = null;
+        func.apply(context, args);
+    }
+    let throttled = function(...args) {
+        let now = +new Date();
+        // 下次触发 func 剩余的时间
+        let remaining = wait - (now - lastTime);
+        context = this;
+         // 如果没有剩余的时间了或者你改了系统时间
+        if (remaining <= 0 || remaining > wait) {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            lastTime = now;
+            func.apply(context, args);
+        } else if (!timer) {
+            timer = setTimeout(later, remaining);
+        }      
+    }
+    return throttled;
+}
+```
+
+效果演示如下：
+
+![throttle3](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20210808142600.gif)
+
+我们可以看到：鼠标移入，事件立刻执行，晃了 3s，事件再一次执行，当数字变成 3 的时候，也就是 6s 后，我们立刻移出鼠标，停止触发事件，9s 的时候，依然会再执行一次事件。
+
+### 优化
+
+但是我有时也希望无头有尾，或者有头无尾，这个咋办？
+
+那我们设置个 options 作为第三个参数，然后根据传的值判断到底哪种效果，我们约定:
+
+leading：false 表示禁用第一次执行 trailing: false 表示禁用停止触发的回调
+
+我们来改一下代码：
+
+```js
+// 第四版
+// func是用户传入需要防抖的函数
+// wait是等待时间
+function throttle(func, wait = 50, options = {}) {
+    // 定时器，环境this指针，结果
+    let timer = null, context, res;
+    // 上一次执行该函数的时间
+    let lastTime = 0;
+    
+    // 下一次触发还原
+    let later = function () {
+        lastTime  = options.leading === false ? 0 : new Date().getTime();
+        timer = null;
+        func.apply(context, args);
+        if (!timer) context = null;
+    }
+    let throttled = function(...args) {
+        let now = new Date().getTime();
+        if (!lastTime && options.leading === false) lastTime = now;
+        // 下次触发 func 剩余的时间
+        let remaining = wait - (now - lastTime);
+        context = this;
+         // 如果没有剩余的时间了或者你改了系统时间
+        if (remaining <= 0 || remaining > wait) {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            lastTime = now;
+            func.apply(context, args);
+        	if (!timer) context = null;
+        } else if (!timer && options.trailing !== false) {
+            timer = setTimeout(later, remaining);
+        }      
+    }
+    return throttled;
+}
+```
+
+### 取消
+
+在 debounce 的实现中，我们加了一个 cancel 方法，throttle 我们也加个 cancel 方法：
+
+```js
+// 第五版
+// func是用户传入需要防抖的函数
+// wait是等待时间
+function throttle(func, wait = 50, options = {}) {
+    // 定时器，环境this指针，结果
+    let timer = null, context, res;
+    // 上一次执行该函数的时间
+    let lastTime = 0;
+    
+    // 下一次触发还原
+    let later = function () {
+        lastTime  = options.leading === false ? 0 : new Date().getTime();
+        timer = null;
+        func.apply(context, args);
+        if (!timer) context = null;
+    }
+    let throttled = function(...args) {
+        let now = new Date().getTime();
+        if (!lastTime && options.leading === false) lastTime = now;
+        // 下次触发 func 剩余的时间
+        let remaining = wait - (now - lastTime);
+        context = this;
+         // 如果没有剩余的时间了或者你改了系统时间
+        if (remaining <= 0 || remaining > wait) {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            lastTime = now;
+            func.apply(context, args);
+        	if (!timer) context = null;
+        } else if (!timer && options.trailing !== false) {
+            timer = setTimeout(later, remaining);
+        }      
+    }
+    throttled.cancel = function() {
+        clearTimeout(timer);
+    }
+    return throttled;
+    lastTime = 0;
+    timer = null;
+}
+```
 
 功能更丰富的节流函数请参考[JavaScript专题之跟着 underscore 学节流](https://juejin.cn/post/6844903481761857543)
 
@@ -4865,15 +5123,11 @@ console.log(caseTransform(str).join(' '));
 
 ​	反向引用
 
-​		()相关匹配会被存储到一个临时缓冲区,所捕获的每个子匹配都会按照正则模式中从左到右
-
-​		出现的顺序存储.缓冲区编号从1开始,最多99个捕获的子表达式,
+​		()相关匹配会被存储到一个临时缓冲区,所捕获的每个子匹配都会按照正则模式中从左到右出现的顺序存储.缓冲区编号从1开始,最多99个捕获的子表达式,
 
 ​		每个缓冲区都可用\n表示,其中 n 为一个标识特定缓冲区的一位或两位十进制数。如:
 
-​			\1 指定第一个子匹配项,指定正则表达式的第二部分是对前面捕获的子匹配项的引用
-
-​			即第二个匹配项正好由括号表达式匹配.
+​			指定第一个子匹配项,指定正则表达式的第二部分是对前面捕获的子匹配项的引用，即第二个匹配项正好由括号表达式匹配.
 
 3.利用replace的参数特性,得到最多字符及个数
   replace() 方法用于在字符串中用一些字符替换另一些字符，或替换一个与正则表达式匹配的子串。
@@ -9711,7 +9965,7 @@ function LazyMan (name) {
 }
 LazyMan('Tony').eat('lunch').eat('dinner').sleepFirst(5).sleep(10).eat('junk food');
 // Hi I am Tony
-// 等待了5秒...
+// 等待了5秒
 // I am eating lunch
 // I am eating dinner
 // 等待10秒
@@ -9751,6 +10005,76 @@ LazyMan('Tony').eat('lunch').eat('dinner').sleepFirst(5).sleep(10).eat('junk foo
 异步任务：我知道了
 异步任务：主线程大哥，该执行我的异步任务了，此时开始执行settimeout里面的this.next()
 然后按照顺序调用。
+
+### Promise实现
+
+如果有promise，相当于把队列的数据结构改成链表。就必须实现一个尾插和一个头插。尾插这里也做了。头插因为promise立即执行的机制，必须和尾插错开，用settimeout就可以了。
+
+```js
+class LazyManClass {
+    // 构造函数
+    constructor(name) {
+        console.log(`Hi I am ${name}`);
+        this.head = null;
+        setTimeout(() => {
+            this.cur = this.head();
+        }, 0);
+        this.head = this.init;
+    }
+    init() {
+        return new Promise(resolve => {
+			resolve();
+        });
+    }
+    // 定义原型方法
+    eat (food) {
+        setTimeout(() => {
+            this.cur = this.cur.then(() => {
+                return new Promise(resolve => {
+                    console.log(`I am eating ${food}`);
+                    resolve();
+                });
+            });
+        }, 0);
+        return this;
+    }
+    sleep (time) {
+        setTimeout(() => {
+            this.cur = this.cur.then(() => {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        console.log(`等待了${time}秒`);
+                        resolve();
+                    }, 1000 * time);
+                });
+            });
+        }, 0);
+        return this;
+    }
+    sleepFirst (time) {
+        const temp = this.head;
+        this.head = () => {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    console.log(`等待了${time}秒`);
+                    resolve();
+                }, 1000 * time);
+            }).then(() => temp());
+        };
+        return this;
+    }
+}
+function LazyMan (name) {
+    return new LazyManClass(name);
+}
+LazyMan('Tony').eat('lunch').eat('dinner').sleepFirst(5).sleep(10).eat('junk food');
+// Hi I am Tony
+// 等待了5秒...
+// I am eating lunch
+// I am eating dinner
+// 等待10秒
+// I am eating junk food
+```
 
 ### 变种：实现PlayBoy类
 
@@ -9817,6 +10141,358 @@ function resend(fn，times，interval) {
             promise = executePromise(timer);
         }, interval);
         promise = executePromise(timer);
+    })
+}
+```
+
+
+
+## 68.实现Promise的first等各种变体
+
+在标准的ES6规范中，提供了`Promise.all`和`Promise.race`两种，我们首先来了解下这两个方法是干嘛的，方便我们后面工作的展开。Promise.all中所有的Promise实例都处于完成状态，该方法才进入完成状态，否则任意一个被拒绝，则该方法进入拒绝状态，并舍弃其他所有完成的结果，拒绝原因是第一个被拒绝的实例的原因。Promise.race中任意的一个Promise实例变成完成状态或者拒绝状态，则race结束，race的结果即为第一个变成最终状态的结果！更详细的可以参考下阮一峰的文章[Promise对象之Promise.all](https://link.zhihu.com/?target=http%3A//es6.ruanyifeng.com/%23docs/promise%23Promise-all)。
+
+### 准备工作
+
+在开始编写各种变体方法之前，这里我们首先定义几个一会儿要使用的几个Promise实例：
+
+```js
+/**
+ * 创建一个Promise对象的实例
+ * @param name {string} 该实例的名称
+ * @param flag {boolean} 返回的结果状态：完成还是拒绝
+ * @param diff {number} 延迟的时间
+ */
+var createPromiseCase = (name, flag, diff) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            flag ? resolve(name) : reject(new Error('testPromise is error, name: ' + name));
+        }, diff);
+    });
+};
+
+var p1_suc_100 = createPromiseCase('p1-suc-100', true, 100);
+var p2_suc_500 = createPromiseCase('p2-suc-500', true, 500);
+var p3_suc_300 = createPromiseCase('p3-suc-300', true, 300);
+var p4_fail_400 = createPromiseCase('p4-fail-400', false, 400);
+var p5_fail_200 = createPromiseCase('p5-fail-200', false, 200);
+```
+
+### Promise.first
+
+场景：一个页面当前正处于loading状态，同时请求了多个接口，无论哪个接口正确返回结果，则loading效果取消！或者其他的要获取获取第一个完成状态的值。
+
+这里就要用到了`Promise.first`了，只要任意一个Promise实例变成完成状态，则Promise.first变成完成状态。其实这里并不适合`Promise.race`方法，因为第一个变成拒绝状态的实例也会激活Promise.race，
+
+```js
+// get first resolve result
+Promise.first = promiseList => {
+    return new Promise((resolve, reject) => {
+        let num = 0;
+        const len = promiseList.length;
+        promiseList.forEach(promise => {
+            Promise.resolve(promise)
+                .then(resolve)
+                .catch(() => {
+                num++;
+                if (num === len) {
+                    reject('all promises not resolve');
+                }
+            });
+        });
+    });
+}
+```
+
+调用方式：
+
+```js
+Promise.first([p4_fail_400, p2_suc_500, p3_suc_300])
+    .then(res => console.log(res)) // p3-suc-300
+    .catch(e => console.error(e));
+```
+
+完整测试代码
+
+```js
+/**
+ * 创建一个Promise对象的实例
+ * @param name {string} 该实例的名称
+ * @param flag {boolean} 返回的结果状态：完成还是拒绝
+ * @param diff {number} 延迟的时间
+ */
+var createPromiseCase = (name, flag, diff) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            flag ? resolve(name) : reject(new Error('testPromise is error, name: ' + name));
+        }, diff);
+    });
+};
+
+var p1_suc_100 = createPromiseCase('p1-suc-100', true, 100);
+var p2_suc_500 = createPromiseCase('p2-suc-500', true, 500);
+var p3_suc_300 = createPromiseCase('p3-suc-300', true, 300);
+var p4_fail_400 = createPromiseCase('p4-fail-400', false, 400);
+var p5_fail_200 = createPromiseCase('p5-fail-200', false, 200);
+
+Promise.first = promiseList => {
+    return new Promise((resolve, reject) => {
+        let num = 0;
+        const len = promiseList.length;
+        promiseList.forEach(promise => {
+            Promise.resolve(promise)
+                .then(resolve)
+                .catch(() => {
+                num++;
+                if (num === len) {
+                    reject('all promises not resolve');
+                }
+            });
+        });
+    });
+}
+
+Promise.first([p4_fail_400, p2_suc_500, p3_suc_300])
+    .then(res => console.log(res)) // p3-suc-300
+    .catch(e => console.error(e));
+```
+
+可以看到每次获取的p3_suc_300的值，因为p4是失败的状态，p2的完成状态没有p3快，因此这里获取到了p3的结果。
+
+### Promise.last
+
+与Promise.first对应的则是`Promise.last`，获取最后变成完成状态的值。这里与Promise.first不同的是，只有最后一个Promise都变成最终态（完成或拒绝），才能知道哪个是最后一个完成的，这里我采用了计数的方式，`then`和`catch`只能二选一，等计数器达到list.length时，执行外部的resolve。
+
+```js
+// get last resolve result
+Promise.last = promiseList => {
+    return new Promise((resolve, reject) => {
+        let num = 0;
+        const len = promiseList.length;
+        let lastRes;
+        
+        const fn = () => {
+            if (++num === len) {
+                lastRes ? resolve(lastRes) : reject('all promises rejected');
+            }
+        }
+        promiseList.forEach(promise => {
+            Promise.resolve(promise)
+                .then(res => {
+                lastRes = res;
+                fn();
+            })
+                .catch(fn);
+        });
+    });
+}
+```
+
+调用方式：
+
+```js
+Promise.last([p1_suc_100, p2_suc_500, p5_fail_200, p3_suc_300, p4_fail_400])
+    .then(res => console.log(res)) // p2-suc-500
+    .catch(e => console.error(e));
+```
+
+p2需要500ms才能完成，是最晚完成的。
+
+完整测试代码
+
+```js
+/**
+ * 创建一个Promise对象的实例
+ * @param name {string} 该实例的名称
+ * @param flag {boolean} 返回的结果状态：完成还是拒绝
+ * @param diff {number} 延迟的时间
+ */
+var createPromiseCase = (name, flag, diff) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            flag ? resolve(name) : reject(new Error('testPromise is error, name: ' + name));
+        }, diff);
+    });
+};
+
+var p1_suc_100 = createPromiseCase('p1-suc-100', true, 100);
+var p2_suc_500 = createPromiseCase('p2-suc-500', true, 500);
+var p3_suc_300 = createPromiseCase('p3-suc-300', true, 300);
+var p4_fail_400 = createPromiseCase('p4-fail-400', false, 400);
+var p5_fail_200 = createPromiseCase('p5-fail-200', false, 200);
+
+Promise.last = promiseList => {
+    return new Promise((resolve, reject) => {
+        let num = 0;
+        const len = promiseList.length;
+        let lastRes;
+        
+        const fn = () => {
+            if (++num === len) {
+                lastRes ? resolve(lastRes) : reject('all promises rejected');
+            }
+        }
+        promiseList.forEach(promise => {
+            Promise.resolve(promise)
+                .then(res => {
+                lastRes = res;
+                fn();
+            })
+                .catch(fn);
+        });
+    });
+}
+
+Promise.last([p1_suc_100, p2_suc_500, p5_fail_200, p3_suc_300, p4_fail_400])
+    .then(res => console.log(res)) // p2-suc-500
+    .catch(e => console.error(e));
+```
+
+### Promise.none
+
+`Promise.none`与Promise.all正好相反，所有的promise都被拒绝了，则Promise.none变成完成状态。该方法可以用Promise.first来切换，当执行Promise.first的catch时，则执行Promise.none中的resolve。不过这里我们使用Promise.all来实现。
+
+```js
+// if all the promises rejected, then success
+Promise.none = promiseList => {
+    return Promise.all(promiseList.map(promise => {
+        return new Promise((resolve, reject) => {
+            // 将promise的resolve和reject反过来
+            return Promise.resolve(promise).then(reject, resolve);
+        });
+    }));
+}
+```
+
+调用方式：
+
+```js
+Promise.none([p5_fail_200, p4_fail_400])
+    .then(res => console.log(res))
+    .catch(e => console.error(e));
+
+// then的输出结果：
+// [
+//     Error: testPromise is error, name: p5-fail-200, 
+//     Error: testPromise is error, name: p4-fail-400
+// ]
+```
+
+两个promise都失败后，则Promise.none进入完成状态。
+
+完整测试代码
+
+```js
+/**
+ * 创建一个Promise对象的实例
+ * @param name {string} 该实例的名称
+ * @param flag {boolean} 返回的结果状态：完成还是拒绝
+ * @param diff {number} 延迟的时间
+ */
+var createPromiseCase = (name, flag, diff) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            flag ? resolve(name) : reject(new Error('testPromise is error, name: ' + name));
+        }, diff);
+    });
+};
+
+var p1_suc_100 = createPromiseCase('p1-suc-100', true, 100);
+var p2_suc_500 = createPromiseCase('p2-suc-500', true, 500);
+var p3_suc_300 = createPromiseCase('p3-suc-300', true, 300);
+var p4_fail_400 = createPromiseCase('p4-fail-400', false, 400);
+var p5_fail_200 = createPromiseCase('p5-fail-200', false, 200);
+
+Promise.none = promiseList => {
+    return Promise.all(promiseList.map(promise => {
+        return new Promise((resolve, reject) => {
+            // 将promise的resolve和reject反过来
+            return Promise.resolve(promise).then(reject, resolve);
+        });
+    }));
+}
+
+Promise.none([p5_fail_200, p4_fail_400])
+    .then(res => console.log(res))
+    .catch(e => console.error(e));
+
+// then的输出结果：
+// [
+//     Error: testPromise is error, name: p5-fail-200, 
+//     Error: testPromise is error, name: p4-fail-400
+// ]
+```
+
+### Promise.every
+
+最后一个的实现比较简单，所有的promise都进入完成状态，则返回true，否则返回false。
+
+```js
+// get the boolean if all promises resolved
+Promise.every = promiseList => {
+	return Promise.all(promiseList)
+    	.then(() => Promise.resolve(true))
+    	.catch(() => Promise.resolve(false));
+}
+```
+
+调用方式：
+
+```js
+Promise.every([p1_suc_100, p2_suc_500, p3_suc_300])
+    .then(result => console.log('Promise.every', result)); // Promise.every true
+
+Promise.every([p1_suc_100, p4_fail_400])
+    .then(result => console.log('Promise.every', result)); // Promise.every false
+```
+
+完整测试代码
+
+```js
+/**
+ * 创建一个Promise对象的实例
+ * @param name {string} 该实例的名称
+ * @param flag {boolean} 返回的结果状态：完成还是拒绝
+ * @param diff {number} 延迟的时间
+ */
+var createPromiseCase = (name, flag, diff) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            flag ? resolve(name) : reject(new Error('testPromise is error, name: ' + name));
+        }, diff);
+    });
+};
+
+var p1_suc_100 = createPromiseCase('p1-suc-100', true, 100);
+var p2_suc_500 = createPromiseCase('p2-suc-500', true, 500);
+var p3_suc_300 = createPromiseCase('p3-suc-300', true, 300);
+var p4_fail_400 = createPromiseCase('p4-fail-400', false, 400);
+var p5_fail_200 = createPromiseCase('p5-fail-200', false, 200);
+
+Promise.every = promiseList => {
+	return Promise.all(promiseList)
+    	.then(() => Promise.resolve(true))
+    	.catch(() => Promise.resolve(false));
+}
+
+Promise.every([p1_suc_100, p2_suc_500, p3_suc_300])
+    .then(result => console.log('Promise.every', result)); // Promise.every true
+
+Promise.every([p1_suc_100, p4_fail_400])
+    .then(result => console.log('Promise.every', result)); // Promise.every false
+```
+
+
+
+## 69.异步加载脚本
+
+```js
+function LoadScript(url) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
     })
 }
 ```
