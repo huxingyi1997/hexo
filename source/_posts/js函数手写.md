@@ -6490,7 +6490,7 @@ function reactive(obj) {
 		Object.keys(obj).forEach(key => {
             // defineReactive方法会给目标属性装上“监听器”
 			defineReactive(obj, key, obj[key]);
-		})
+		});
 	}
 	return obj;
 }
@@ -6523,11 +6523,11 @@ function defineReactive(obj, key, value) {
 // 测试代码
 const data = reactive({
 	msg: 'aaa'
-})
+});
 
 new Watcher(() => {
 	console.log('执行：', data.msg);
-})
+});
 
 setTimeout(() => {
 	data.msg = 'hello';
@@ -6625,11 +6625,11 @@ function reactive(obj) {
 // 测试代码
 const data = reactive({
 	msg: 'aaa'
-})
+});
 
 new Watcher(() => {
 	console.log('执行：', data.msg);
-})
+});
 
 setTimeout(() => {
 	data.msg = 'hello';
@@ -6690,7 +6690,7 @@ function reactive(obj) {
 					subs.forEach(fn => fn(obj, key));
 					return obj[key];
 				}
-			})
+			});
 		}
 	}
 	// 存储回调函数
@@ -8493,13 +8493,13 @@ function ajax(url, method = 'get', param = {}) {
 function sleep(time) {
 	return new Promise(function(resolve) {
 		setTimeout(resolve, time);
-	})
+	});
 }
 
 // 使用
 sleep(1000).then(() => {
 	console.log(1);
-})
+});
 ```
 
 ### 使用生成器Generator
@@ -8508,13 +8508,13 @@ sleep(1000).then(() => {
 function* sleepGenerator(time){
 	yield new Promise(function(resolve, reject) {
 		setTimeout(resolve, time);
-	})
+	});
 }
 
 // 使用
 sleepGenerator(1000).next().value.then(() => {
 	console.log(1);
-})
+});
 ```
 
 ### 使用async/await
@@ -8523,7 +8523,7 @@ sleepGenerator(1000).next().value.then(() => {
 function sleep(time) {
 	return new Promise(function(resolve) {
 		setTimeout(resolve, time);
-	})
+	});
 }
 
 async function output(time) {
@@ -8673,12 +8673,12 @@ function promisify(fn) {
 			// 参数最后增加一个函数的参数
 			args.push(function(err, data) {
 				// 根据回调函数顺序执行对应的函数
-				if(err) reject(err);
+				if (err) reject(err);
 				else resolve(data);
 			});
 			
 			fn(...args);
-		})
+		});
 	}
 }
 ```
@@ -8698,7 +8698,7 @@ function promisify(fn) {
 				if(err) reject(err);
 				else resolve(data);
 			});
-		})
+		});
 	}
 }
 ```
@@ -8719,7 +8719,7 @@ new Queue()
     }) 
         console.log(3) 
     }) 
-    .start()
+    .start();
 ```
 
 ### 累加计时
@@ -8793,7 +8793,7 @@ class Queue {
         return this;
     };
 	// 开始任务
-    start () {
+    start() {
     	// 保证内部定时器this指向Queue实例
         this.queue.forEach((item) => {
         	// promise链式调用
@@ -8906,7 +8906,7 @@ function mySetInterval(callback, time) {
 // 测试
 mySetInterval(() => {
 	console.log(new Date());
-}, 1000)
+}, 1000);
 ```
 
 `clearInterval` 的用法是 `clearInterval(id)`。而这个 `id` 是 `setInterval`的返回值，通过这个 `id` 值就能够清除指定的定时器。具体实现请参考[用setTimeout和clearTimeout简单实现setInterval与clearInterval](https://juejin.cn/post/6844903839934447629)和[你会用 setInterval, setTimeout 互相实现吗？](https://juejin.cn/post/6844903887749513223)
@@ -8965,7 +8965,7 @@ function ajax(url, method = 'get', param = {}) {
                 }
             }
         }
-    })
+    });
 }
 
 function myFetch(url) {
@@ -8978,7 +8978,7 @@ function myFetch(url) {
 		}, function (err) {
 			// 失败
 			reject(err);
-		})
+		});
 	})
 }
 ```
@@ -9023,7 +9023,7 @@ function myFetch(url, timeout) {
 		// 增加一个计时器
 		setTimeout(function() {
 			reject('超时');
-		}, timeout)
+		}, timeout);
 	})
 }
 ```
@@ -9283,7 +9283,7 @@ const promiseAdd = (a, b) => new Promise((resolve, reject) => {
         	reject(err);
         }
         resolve(res);
-	}, 100)
+	}, 100);
 })
 
 // 2. 串行处理
@@ -9628,14 +9628,14 @@ class Scheduler {
 				resolveFn();
 				// 递归执行
 				this.run();
-			})
+			});
 		}
     }
 }
 
 const timeout = (time) => new Promise(resolve => {
 	setTimeout(resolve, time);
-})
+});
 
 const scheduler = new Scheduler();
 const addTask = (time, order) => {
@@ -9666,7 +9666,7 @@ class Scheduler{
         if (this.taskNum >= 2) {
             await new Promise((resolve) => {
                 this.taskQueue.push(resolve);
-            })
+            });
         }
 
         this.taskNum++;
@@ -9690,8 +9690,8 @@ function addTask(delay, num){
     scheduler.add(() => (
         timeout(delay).then(() => {
             console.log(num);
-        })
-    ))
+        });
+    ));
 }
 
 addTask(1000, '1');
@@ -9719,7 +9719,7 @@ addTask(400, '4');
  * 两个要点：一个执行器，一个拦截器
  */
 class Plimit {
-	constructor(limit){
+	constructor(limit) {
 		// 并发限制，默认为2
 		this.limit = limit || 2;
 		// 缓存队列
@@ -9850,7 +9850,7 @@ const URLS = [
     'apple.com',
     'hulu.com',
     'amazon.com'
-]
+];
 // 自定义请求函数
 var requestFn = url => {
     return new Promise(resolve => {
@@ -9859,7 +9859,7 @@ var requestFn = url => {
         }, 1000)
     }).then(res => {
         console.log('外部逻辑', res);
-    })
+    });
 }
 const plimit = new Plimit(5, requestFn); // 并发数为5
 plimit.start(URLS);
@@ -9879,7 +9879,7 @@ run(race) {
         this.setTask(url);
         // 递归调用
         return this.run(Promise.race(this.queue));
-    })
+    });
 }
 ```
 
