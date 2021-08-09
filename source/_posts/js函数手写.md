@@ -2898,13 +2898,13 @@ const source = {
 };
 console.log(objectFlat(source));
 /*
-    a.b[0]: 1
-    a.b[1]: 2
-    a.b[2].c: 1
-    a.b[2].d: 2
-    a.e: 3
-    f.g: 2
-*/
+ * a.b[0]: 1
+ * a.b[1]: 2
+ * a.b[2].c: 1
+ * a.b[2].d: 2
+ * a.e: 3
+ * f.g: 2
+ */
 ```
 
 
@@ -3177,7 +3177,7 @@ function double(x) {
 
 const add10 = partial(add, 10);
 const pow3 = partialRight(pow, 3);
-compose(console.log, add10, pow3, double)(2) // 74
+compose(console.log, add10, pow3, double)(2); // 74
 ```
 
 那么有同学可能也发现了，上述`compose`之后的函数是只可以传递一个参数的。这无疑显得有点蠢？难道不可以优化实现支持多个参数么？
@@ -3362,7 +3362,7 @@ Number.prototype.add = function(n) {
     return this.valueOf() + n;
 }
 Number.prototype.minus = function(n) {
-    return this.valueOf() + n;
+    return this.valueOf() - n;
 }
 console.log((5).add(3).minus(2)); // 6
 ```
@@ -3450,7 +3450,7 @@ function union (nums1, nums2) {
 - 提前结束递推：
   - 两个变量keys数量不同
   - 传入的两个参数是同一个变量
-- 递推工作： 　- 深度比较每一个key
+- 递推工作： - 深度比较每一个key
 
 ```js
 function isEqual(obj1, obj2){
@@ -3829,7 +3829,7 @@ function debounce(func, wait = 50, immediate) {
         if (timer) clearTimeout(timer);
         if (immediate) {
             // 如果已经执行过，不再执行
-            let callNow = !timeout;
+            let callNow = !timer;
             timer = setTimeout(() => {
                 if (timer) clearTimeout(timer);
             }, wait);
@@ -3982,7 +3982,7 @@ function throttle(func, wait = 50) {
             timer = setTimeout(function() {
                 timer = null;
                 func.apply(context, args);
-            }, wait)
+            }, wait);
         }
     }
 }
@@ -3994,8 +3994,8 @@ function throttle(func, wait = 50) {
         if (!timer) {
             timer = setTimeout(() => {
                 timer = null;
-                func.apply(context, args);
-            }, wait)
+                func.apply(this, args);
+            }, wait);
         }
     }
 }
@@ -4005,7 +4005,7 @@ setInterval(
         console.log(1);
     }, 500),
     1
-)
+);
 ```
 
 为了让效果更加明显，我们设置 wait 的时间为 3s，效果演示如下：
@@ -4062,6 +4062,13 @@ function throttle(func, wait = 50) {
     }
     return throttled;
 }
+// 使用方法：定时器
+setInterval(
+    throttle(() => {
+        console.log(1);
+    }, 500),
+    1
+);
 ```
 
 效果演示如下：
@@ -4086,7 +4093,7 @@ leading：false 表示禁用第一次执行 trailing: false 表示禁用停止�
 // wait是等待时间
 function throttle(func, wait = 50, options = {}) {
     // 定时器，环境this指针，结果
-    let timer = null, context, res;
+    let timer = null, context, res, args;
     // 上一次执行该函数的时间
     let lastTime = 0;
     
@@ -4097,12 +4104,13 @@ function throttle(func, wait = 50, options = {}) {
         func.apply(context, args);
         if (!timer) context = null;
     }
-    let throttled = function(...args) {
+    let throttled = function() {
         let now = new Date().getTime();
         if (!lastTime && options.leading === false) lastTime = now;
         // 下次触发 func 剩余的时间
         let remaining = wait - (now - lastTime);
         context = this;
+        args = [...arguments];
          // 如果没有剩余的时间了或者你改了系统时间
         if (remaining <= 0 || remaining > wait) {
             if (timer) {
@@ -4118,6 +4126,13 @@ function throttle(func, wait = 50, options = {}) {
     }
     return throttled;
 }
+// 使用方法：定时器
+setInterval(
+    throttle(() => {
+        console.log(1);
+    }, 500),
+    1
+);
 ```
 
 ### 取消
@@ -4130,7 +4145,7 @@ function throttle(func, wait = 50, options = {}) {
 // wait是等待时间
 function throttle(func, wait = 50, options = {}) {
     // 定时器，环境this指针，结果
-    let timer = null, context, res;
+    let timer = null, context, args, res;
     // 上一次执行该函数的时间
     let lastTime = 0;
     
@@ -4141,12 +4156,13 @@ function throttle(func, wait = 50, options = {}) {
         func.apply(context, args);
         if (!timer) context = null;
     }
-    let throttled = function(...args) {
+    let throttled = function() {
         let now = new Date().getTime();
         if (!lastTime && options.leading === false) lastTime = now;
         // 下次触发 func 剩余的时间
         let remaining = wait - (now - lastTime);
         context = this;
+        args = [...arguments];
          // 如果没有剩余的时间了或者你改了系统时间
         if (remaining <= 0 || remaining > wait) {
             if (timer) {
@@ -4167,6 +4183,13 @@ function throttle(func, wait = 50, options = {}) {
     lastTime = 0;
     timer = null;
 }
+// 使用方法：定时器
+setInterval(
+    throttle(() => {
+        console.log(1);
+    }, 500),
+    1
+);
 ```
 
 功能更丰富的节流函数请参考[JavaScript专题之跟着 underscore 学节流](https://juejin.cn/post/6844903481761857543)
