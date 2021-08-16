@@ -1389,16 +1389,16 @@ function deepCopy(obj, map = new WeakMap()) {
     }
     // map中没有克隆过的对象,进行存储
     map.set(obj, res);
-    
+
+    // 处理Map
     if(type === mapTag) {
-        // 处理Map
         obj.forEach((item, key) => {
             res.set(deepCopy(key, map), deepCopy(item, map));
         })
     }
 
+    // 处理Set
     if(type === setTag) {
-        // 处理Set
         obj.forEach(item => {
             res.add(deepCopy(item, map));
         })
@@ -1512,7 +1512,7 @@ new Ctor(obj); // 结果为 Boolean {true} 而不是 false。
 
 对于这样一个bug，我们可以对 Boolean 拷贝做最简单的修改， 调用valueOf: new obj.constructor(obj.valueOf())。
 
-但实际上，这种写法是不推荐的。因为在ES6后不推荐使用【new 基本类型()】这 样的语法，所以es6中的新类型 Symbol 是不能直接 new 的，只能通过 new Object(SymbelType)。
+但实际上，这种写法是不推荐的。因为在ES6后不推荐使用【new 基本类型()】这 样的语法，所以es6中的新类型 Symbol 是不能直接 new 的，只能通过 new Object(SymbolType)。
 
 因此我们接下来统一一下:
 
@@ -1658,15 +1658,15 @@ function deepCopy(obj, map = new WeakMap()) {
     // map中没有克隆过的对象,进行存储
     map.set(obj, res);
     
+     // 处理Map
     if(type === mapTag) {
-        // 处理Map
         obj.forEach((item, key) => {
             res.set(deepCopy(key, map), deepCopy(item, map));
         })
     }
 
+    // 处理Set
     if(type === setTag) {
-        // 处理Set
         obj.forEach(item => {
             res.add(deepCopy(item, map));
         })
@@ -1783,7 +1783,7 @@ console.log(res);
 多维数组=>一维数组
 
 ```js
-let arr = [1, [2, [3, [4, ,5]]], 6]; // -> [1, 2, 3, 4, 5, 6]
+let arr = [1, [2, [3, [4, , 5]]], 6]; // -> [1, 2, 3, 4, 5, 6]
 ```
 
 如何实现呢，思路非常简单：**我们要做的就是在数组中找到是数组类型的元素，然后将他们展开**。这就是实现数组拍平 `flat` 方法的关键思路。
@@ -1810,7 +1810,7 @@ function flat(arr) {
 function flat(arr) {
     return arr.flat(Infinity);
 }
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 console.log(flat(arr));
 // [1, 2, 3, 4, 5, 6]
 ```
@@ -1825,7 +1825,7 @@ console.log(flat(arr));
 function flat(arr) {
     return arr.toString().replace(/[|]/g, '').split(',');
 }
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 console.log(flat(arr));
 // ["1", "2", "3", "4", "", "5", "6"]
 ```
@@ -1838,7 +1838,7 @@ console.log(flat(arr));
 function flat(arr) {
     return arr.toString().split(',');
 }
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 console.log(flat(arr));
 // ["1", "2", "3", "4", "", "5", "6"]
 ```
@@ -1851,7 +1851,7 @@ console.log(flat(arr));
 function flat(arr) {
     return JSON.stringify(arr).replace(/\[|\]/g, '').split(',');
 }
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 console.log(flat(arr));
 ```
 
@@ -1862,7 +1862,7 @@ function flat(arr) {
     let str = '[' + JSON.stringify(arr).replace(/\[|\]/g, '').split(',') + ']';
     return JSON.parse(str);
 }
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 console.log(flat(arr));
 // [1, 2, 3, 4, null, 5, 6]
 ```
@@ -1881,7 +1881,7 @@ function flat(arr) {
     }
     return res;
 }
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 console.log(flat(arr));
 ```
 
@@ -1923,7 +1923,7 @@ function flat(arr) {
     })
     return res;
 }
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 console.log(flat(arr));
 // [1, 2, 3, 4, 5, 6]
 ```
@@ -1938,7 +1938,7 @@ function flat(arr) {
     	return pre.concat(Array.isArray(cur) ? flat(cur) : cur);
     }, []);
 }
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 console.log(flat(arr));
 // [1, 2, 3, 4, 5, 6]
 ```
@@ -1947,7 +1947,7 @@ console.log(flat(arr));
 
 ```js
 // 只要有一个元素有数组，那么循环继续
-let arr = [1, [2, [3, [4, ,5]]], 6];
+let arr = [1, [2, [3, [4, , 5]]], 6];
 while (arr.some(Array.isArray)) {
     arr = [].concat(...arr);
 }
@@ -2596,11 +2596,11 @@ function dedup (data, key) {
 }
 console.log(dedup(resources, 'name'));
 /*
-    0: {name: "张三", age: "18"}
-    1: {name: "李四", age: "19"}
-    2: {name: "王五", age: "20"}
-    3: {name: "赵六", age: "21"}
-*/
+ * 0: {name: "张三", age: "18"}
+ * 1: {name: "李四", age: "19"}
+ * 2: {name: "王五", age: "20"}
+ * 3: {name: "赵六", age: "21"}
+ */
 ```
 
 ### 求字符串中字母出现的次数
@@ -3022,7 +3022,7 @@ console.log(multi(5, 6)(7)); // 210
 ```js
 const curry = (fn, arr = []) => (..._args) => (
 	args => args.length === fn.length ? fn(...args) : curry(fn, args);
-)([...arr, ..._args])
+)([...arr, ..._args]);
 
 function multiFn(a, b, c) {
     return a * b * c;
@@ -3466,7 +3466,7 @@ function isEqual(obj1, obj2){
     if(obj1Keys.length !== obj2Keys.length) return false;
 
     // 深度比较每一个key
-    for(let key of obj1Keys){
+    for (let key of obj1Keys) {
     	// 递归查询
     	if (!isEqual(obj1[key], obj2[key])) return false;
     }
@@ -3714,7 +3714,7 @@ function debounce(func, wait) {
     return function () {
         let context = this;
         if (timer) clearTimeout(timer);
-        timer = setTimeout(function(){
+        timer = setTimeout(function() {
             func.apply(context);
         }, wait);
     }
@@ -4041,7 +4041,7 @@ function throttle(func, wait = 50) {
     
     // 下一次触发还原
     let later = function () {
-        lastTime  = +new Date();
+        lastTime = +new Date();
         timer = null;
         func.apply(context, args);
     }
@@ -4211,11 +4211,11 @@ babel在let定义的变量前加了道下划线，避免在块级作用域外访
 ```js
 (function(){
     for(var i = 0; i < 5; i ++){
-    	console.log(i)  // 0 1 2 3 4
+    	console.log(i); // 0 1 2 3 4
     }
 })();
 
-console.log(i);      // Uncaught ReferenceError: i is not defined
+console.log(i); // Uncaught ReferenceError: i is not defined
 ```
 
 不过这个问题并没有结束，我们回到`var`和`let/const`的区别上：
@@ -4389,11 +4389,11 @@ input.addEventLisener('keyup', function(e) {
 图片，用一个其他属性存储真正的图片地址：
 
 ```html
-  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_1280.jpg" alt="">
-  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2014/08/01/00/08/pier-407252_1280.jpg" alt="">
-  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2014/12/15/17/16/pier-569314_1280.jpg" alt="">
-  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2010/12/13/10/09/abstract-2384_1280.jpg" alt="">
-  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/10/24/11/09/drop-of-water-1004250_1280.jpg" alt="">
+<img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_1280.jpg" alt="">
+<img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2014/08/01/00/08/pier-407252_1280.jpg" alt="">
+<img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2014/12/15/17/16/pier-569314_1280.jpg" alt="">
+<img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2010/12/13/10/09/abstract-2384_1280.jpg" alt="">
+<img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/10/24/11/09/drop-of-water-1004250_1280.jpg" alt="">
 ```
 
 通过图片`offsetTop`和`window`的`innerHeight`，`scrollTop`判断图片是否位于可视区域。
@@ -4426,7 +4426,7 @@ function lazyload() {
     // 可见区域高度
     let visualHeight = window.innerHeight;
 	// 滚动条距离顶部高度，注意要兼容IE浏览器
-    let scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+    let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
     // 从上一个没有加载完毕的img便利到最后的img
     for (let i = n; i < imgs.length; i++) {
         // 在视窗范围以内
@@ -4851,10 +4851,11 @@ console.log((new Function('return ' + jsonStr))()); // [object Object]: {}
 
 尽可能的全面正确的解析一个任意 url 的所有参数为 Object，注意边界条件的处理
 要求如下：
-• 1. 重复出现的 key 要组装成数组
-• 2. 能被转成数字的就转成数字类型
-• 3. 中⽂需解码
-• 4. 未指定值的 key 约定为 true
+
+1. 重复出现的 key 要组装成数组
+2. 能被转成数字的就转成数字类型
+3. 中⽂需解码
+4. 未指定值的 key 约定为 true
 
 ```js
 let url = 'http://www.domain.com/?user=anonymous&id=123&id=456&city=%E5%8C%97%E4%BA%AC&enabled';
@@ -5863,10 +5864,10 @@ class MySet{
 
 let mySet = new MySet();
 
-mySet.add(1); // Set [ 1 ]
-mySet.add(5); // Set [ 1, 5 ]
-mySet.add(5); // Set [ 1, 5 ]
-mySet.add("some text"); // Set [ 1, 5, "some text" ]
+mySet.add(1); // Set [1]
+mySet.add(5); // Set [1, 5]
+mySet.add(5); // Set [1, 5]
+mySet.add("some text"); // Set [1, 5, "some text"]
 console.log(mySet);
 let o = {a: 1, b: 2};
 mySet.add(o);
@@ -5890,7 +5891,7 @@ console.log(mySet.has(5));     // false, 5已经被移除
 console.log(mySet.size); // 4, 刚刚移除一个值
 
 console.log(mySet);
-// logs Set(4) { 1, "some text", {…}, {…} }
+// logs Set(4) {1, "some text", {…}, {…}}
 ```
 
 还可以尝试着[实现基本集合操作](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Set#实现基本集合操作)或者[js模拟实现一个Set集合](https://blog.csdn.net/tian_123456789/article/details/89400461)，实现两个集合的并集、交集、差集和子集。
@@ -6110,28 +6111,52 @@ function execRecursively(obj) {
     return flag;
 }
 
-let obj1 = { a: "1" };
+let obj1 = {
+    a: "1"
+};
 obj1.b = {};
 obj1.b.a = obj1.b;
 obj1.b.b = obj1.b;
 
 
-let obj2 = { a: { c: "1" } };
+let obj2 = {
+    a: {
+        c: "1"
+    }
+};
 obj2.a.b = obj2;
 
-let obj3 = { a: 1, b: 2, c: { d: 4 }, d: {}, e: {} };
+let obj3 = {
+    a: 1,
+    b: 2,
+    c: {
+        d: 4
+    },
+    d: {},
+    e: {}
+};
 
-let obj4 = { a: "1" };
-obj4.b = { c: 1 };
+let obj4 = {
+    a: "1"
+};
+obj4.b = {
+    c: 1
+};
 obj4.aa = obj4.b;
 obj4.bb = obj4.b;
 
-let obj5 = { a: "1" };
+let obj5 = {
+    a: "1"
+};
 obj5.b = {};
 obj5.b.a = obj5.b;
 obj5.b.b = obj5.b;
 
-let obj6 = { a: {c: "1"} };
+let obj6 = {
+    a: {
+        c: "1"
+    }
+};
 obj6.b = {};
 obj6.b.d = obj6.a;
 
@@ -6204,11 +6229,11 @@ console.log(a === b); // true
 
 #### 总结
 
-​	1.从两张图片可以看到，最大的区别是调度的地方。
+1. 从两张图片可以看到，最大的区别是调度的地方。
 
 虽然两种模式都存在订阅者和发布者（具体观察者可认为是订阅者、具体目标可认为是发布者），但是观察者模式是由具体目标调度的，而发布/订阅模式是统一由调度中心调的，所以观察者模式的订阅者与发布者之间是存在依赖的，而发布/订阅模式则不会。
 
-​	2.两种模式都可以用于松散耦合，改进代码管理和潜在的复用。
+2. 两种模式都可以用于松散耦合，改进代码管理和潜在的复用。
 
 ### 观察者模式的实现
 
@@ -6392,7 +6417,7 @@ function reactive(obj) {
 		Object.keys(obj).forEach(key => {
             // defineReactive方法会给目标属性装上“监听器”
 			defineReactive(obj, key, obj[key]);
-		})
+		});
 	}
 	return obj;
 }
@@ -8139,10 +8164,10 @@ Promise.allSettled([resolved, rejected])
 .then(function (results) {
 	console.log(results);
 });
-// [
-//    { status: 'fulfilled', value: 42 },
-//    { status: 'rejected', reason: -1 }
-// ]
+/* [
+ *    { status: 'fulfilled', value: 42 },
+ *    { status: 'rejected', reason: -1 }
+ */ ]
 ```
 
 ### Promise.any
@@ -8380,9 +8405,9 @@ MyPromise.any(promises1).then((value) => {
 	console.log('err: ', err);
 })
 
-// value:  result
+// value: result
 
-//   如果所有传入的 promises 都失败：
+// 如果所有传入的 promises 都失败：
 
 let promises2 = [
 	MyPromise.reject('ERROR A'),
@@ -8399,10 +8424,10 @@ MyPromise.any(promises2).then((value) => {
 	console.log(err.errors);
 })
 
-// err：AggregateError: All promises were rejected
-// All promises were rejected
-// AggregateError
-// ["ERROR A", "ERROR B", "ERROR C"]
+/* err：AggregateError: All promises were rejected
+ * All promises were rejected
+ * AggregateError
+ */ ["ERROR A", "ERROR B", "ERROR C"]
 ```
 
 最后的全部reject的失败了。
@@ -9026,7 +9051,7 @@ function myFetch(url, timeout) {
 		setTimeout(function() {
 			reject('超时');
 		}, timeout);
-	})
+	});
 }
 ```
 
@@ -9175,8 +9200,8 @@ function asyncToGenerator(generatorFunc) {
     	// 返回一个promise 因为外部是用.then的方式 或者await的方式去使用这个函数的返回值的
     	return new Promise((resolve, reject) => {
     		/* 内部定义一个_next函数 用来一步一步的跨过yield的阻碍
-            	arg参数则是用来把promise resolve出来的值交给下一个yield
-            */
+             * arg参数则是用来把promise resolve出来的值交给下一个yield
+             */
             function _next(arg) {
             	let generatorResult;
             	
@@ -9189,7 +9214,7 @@ function asyncToGenerator(generatorFunc) {
         		}
         		
         		// gen.next() 得到的结果是一个 { value, done } 的结构
-        		const { value, done } = generatorResult;
+        		const {value, done} = generatorResult;
         		
         		// 如果已经完成了 这个done是在最后一次调用next后才会为true
         		if (done) {
@@ -9961,7 +9986,7 @@ class LazyManClass {
         let fn = () => {
             // 等待了time秒...
             setTimeout(() => {
-                console.log(`等待了${time}秒`)
+                console.log(`等待了${time}秒`);
                 this.next();
             }, 1000 * time);
         }
@@ -9972,7 +9997,7 @@ class LazyManClass {
         let fn = () => {
             // 等待了time秒...
             setTimeout(() => {
-                console.log(`等待了${time}秒`)
+                console.log(`等待了${time}秒`);
                 this.next();
             }, 1000 * time);
         }
