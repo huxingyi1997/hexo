@@ -550,7 +550,7 @@ lindaidai.eat(); // 'Eatting'
 
 ## 5.手写Object.create
 
-Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的__proto__，`Object.create`方法的实质是新建一个空的构造函数`F`，然后让`F.prototype`属性指向参数对象`obj`，最后返回一个`F`的实例，从而实现让该实例继承`obj`的属性。
+Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的\__proto__，`Object.create`方法的实质是新建一个空的构造函数`F`，然后让`F.prototype`属性指向参数对象`obj`，最后返回一个`F`的实例，从而实现让该实例继承`obj`的属性。
 
 ```js
 // 模拟 Object.create
@@ -594,7 +594,7 @@ Object.create = function (obj) {
 Object.create = function (obj) {
     var B = {};
     B.__proto__ = obj;
-    return B;  
+    return B;
 };
 ```
 
@@ -1026,7 +1026,7 @@ JSON.parse(JSON.stringify(obj));
 
 ```js
 let a = {
-    val: 2
+    val: 2,
 };
 a.target = a;
 let res = JSON.parse(JSON.stringify(a));
