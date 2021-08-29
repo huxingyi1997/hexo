@@ -66,7 +66,7 @@ var findRepeatNumber = function(nums) {
  */
 var findRepeatNumber = function(nums) {
     // 遍历元素
-    for (let i = 0; i < nums.length; i++ ) {
+    for (let i = 0; i < nums.length; i++) {
         //   当前数字
         let cur = nums[i];
         // 当前位置是否是自身可能已经排行
@@ -580,7 +580,6 @@ var findMin = function(nums) {
                 // 右指针左移
                 right--;
             }
-            
         }
     }
     return nums[left];
@@ -651,7 +650,7 @@ var exist = function(board, word) {
 
 #### 13. [机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
 
-地上有一个m行n列的方格，从坐标 `[0,0]` 到坐标 `[m-1,n-1]` 。一个机器人从坐标 `[0, 0] `的格子开始移动，它每次可以向左、右、上、下移动一格（不能移动到方格外），也不能进入行坐标和列坐标的数位之和大于k的格子。例如，当k为18时，机器人能够进入方格 [35, 37] ，因为3+5+3+7=18。但它不能进入方格 [35, 38]，因为3+5+3+8=19。请问该机器人能够到达多少个格子？
+地上有一个m行n列的方格，从坐标 `[0, 0]` 到坐标 `[m - 1, n - 1]` 。一个机器人从坐标 `[0, 0] `的格子开始移动，它每次可以向左、右、上、下移动一格（不能移动到方格外），也不能进入行坐标和列坐标的数位之和大于k的格子。例如，当k为18时，机器人能够进入方格 [35,  37] ，因为3+5+3+7=18。但它不能进入方格 [35,  38]，因为3+5+3+8=19。请问该机器人能够到达多少个格子？
 
 **示例 1：**
 
@@ -837,7 +836,7 @@ var hammingWeight = function(n) {
 ```
 输入：x = 2.00000, n = -2
 输出：0.25000
-解释：2-2 = 1/22 = 1/4 = 0.25
+解释：2^(-2) = (1/2)^2 = 1/4 = 0.25
 ```
 
  **提示：**
@@ -1069,11 +1068,9 @@ var isMatch = function(s, p) {
                 } else {
                     dp[i][j] = dp[i][j - 2];
                 }
-                
             }
         }
     }
-
     return dp[m][n];
 };
 ```
@@ -4629,7 +4626,7 @@ var reverseLeftWords = function(s, n) {
 解释: 
 
   滑动窗口的位置                最大值
----------------               -----
+-------------------------     -----
 [1  3  -1] -3  5  3  6  7       3
  1 [3  -1  -3] 5  3  6  7       3
  1  3 [-1  -3  5] 3  6  7       5
@@ -4924,7 +4921,7 @@ var maxProfit = function(prices) {
     let n = prices.length;
     // 0代表未持有股票的利润，1代表持有股票的利润
     let dp_i_0 = 0, dp_i_1 = Number.MIN_SAFE_INTEGER;
-    for (let i= 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
         // dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i])
         dp_i_0 = Math.max(dp_i_0, dp_i_1 + prices[i]);
         // dp[i][1] = max(dp[i - 1][1], -prices[i])
@@ -5205,7 +5202,7 @@ var myAtoi = function(str) {
 var strToInt = function(str) {
     // 封装自动机类
     class Automation{
-        constructor(){
+        constructor() {
             // 执行阶段，默认处于开始执行阶段
             this.state = 'start';
             // 正负符号，默认是正数
@@ -5213,9 +5210,10 @@ var strToInt = function(str) {
             // 数值，默认是0
             this.answer = 0;
             /* 关键点：
-            执行阶段和执行阶段德对应表
-            含义如下
-            [执行阶段，[空格，正负，数值，其他]] */
+             *执行阶段和执行阶段德对应表
+             *含义如下
+             *[执行阶段，[空格，正负，数值，其他]]
+             */
             this.map = new Map([
                 ['start', ['start', 'signed', 'in_number', 'end']],
                 ['signed', ['end', 'end', 'in_number', 'end']],
@@ -5242,7 +5240,8 @@ var strToInt = function(str) {
         }
 
         /* 关键点：
-        字符转换执行函数 */
+         * 字符转换执行函数
+         */
         get(char) {
             /* 易错点：
             每次传入字符时，都要变更自动机的执行阶段 */
