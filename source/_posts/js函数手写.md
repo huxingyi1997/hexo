@@ -8351,14 +8351,20 @@ class MyPromise {
     				function(value) {
     					index++;
     					// 结果数组按照原数组的顺序依次输出
-    					res[i] = { status: 'fulfilled', value: value };
+    					res[i] = {
+                            status: 'fulfilled',
+                            value: value
+                        };
     					// 所有MyPromise都resolve
     					if (index === promises.length) resolve(res);
     				}, function(reason) {
     					// 和第一个类似，但要注意状态
     					index++;
     					// 结果数组按照原数组的顺序依次输出
-    					res[i] = { status: 'rejected', reason: reason };
+    					res[i] = {
+                            status: 'rejected',
+                            reason: reason
+                        };
     					// 所有MyPromise都resolve
     					if (index === promises.length) resolve(res);
     				}
@@ -8389,7 +8395,7 @@ class MyPromise {
     				}
     			)
     		}
-    	})
+    	});
 	}
 }
 
@@ -8397,13 +8403,13 @@ let promises1 = [
 	MyPromise.reject('ERROR A'),
 	MyPromise.reject('ERROR B'),
 	MyPromise.resolve('result'),
-]
+];
 
 MyPromise.any(promises1).then((value) => {
 	console.log('value: ', value);
 }).catch((err) => {
 	console.log('err: ', err);
-})
+});
 
 // value: result
 
@@ -8413,7 +8419,7 @@ let promises2 = [
 	MyPromise.reject('ERROR A'),
 	MyPromise.reject('ERROR B'),
 	MyPromise.reject('ERROR C'),
-]
+];
 
 MyPromise.any(promises2).then((value) => {
 	console.log('value：', value);
@@ -8422,12 +8428,12 @@ MyPromise.any(promises2).then((value) => {
 	console.log(err.message);
 	console.log(err.name);
 	console.log(err.errors);
-})
+});
 
 /* err：AggregateError: All promises were rejected
  * All promises were rejected
  * AggregateError
- */ ["ERROR A", "ERROR B", "ERROR C"]
+ */ ["ERROR A", "ERROR B", "ERROR C"];
 ```
 
 最后的全部reject的失败了。
