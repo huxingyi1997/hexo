@@ -5518,10 +5518,10 @@ function numFormat(num) {
     let res = num.toString().replace(/\d+/, function(n) {
         // 先提取整数部分
         // console.log(n);
-        return n.replace(/(\d)(?=(\d{3})+$)/g, function($1) {
+        return n.replace(/(\d)(?=(\d{3})+$)/g, function($0) {
             // 正向搜索后面有3个倍数的数字
-            // console.log($1);
-            return $1 + ",";
+            // console.log($0);
+            return $0 + ",";
         })
     })
     return res;
@@ -5656,7 +5656,7 @@ console.log('   ab cdd  '.myTrim());
 // 比较两个版本的大小
 function compareVersion(version1, version2) {
 	// 先判断2个版本号是否是字符串
-	if (!version1 || !version2 || Object.prototype.toString.call(version1) !== '[object String]'|| Object.prototype.toString.call(version2) !== '[object String]') throw new Error("Version is null!");
+	if (!version1 || !version2 || Object.prototype.toString.call(version1) !== '[object String]' || Object.prototype.toString.call(version2) !== '[object String]') throw new Error("Version is null!");
 	// 按.将2个version进行分割
 	let arr1 = version1.trim().split('.');
 	let arr2 = version2.trim().split('.');
@@ -6539,7 +6539,6 @@ function defineReactive(obj, key, value) {
         	// 通知所有观察者
         	dep.notify();
         }
-        
 	});
 	// 递归深度包装obj
     if (value && typeof value === 'object') {
@@ -6853,10 +6852,10 @@ class EventEmitter {
     }
     
     /**
-    * off方法移除某个事件的一个监听者,移除某个事件回调队列里的指定回调函数
-    * @param {String} eventName 事件类型
-    * @param {Function} cb 回调函数
-    */
+     * off方法移除某个事件的一个监听者,移除某个事件回调队列里的指定回调函数
+     * @param {String} eventName 事件类型
+     * @param {Function} cb 回调函数
+     */
     off(eventName, cb) {
     	if (this.listeners[eventName]) {
     		const callbacks = this.listeners[eventName];
@@ -9438,7 +9437,7 @@ execter([
     Promise.reject(2),
     Promise.resolve(3)
 ]).then(res => {
-	console.log(res); // [1,null,3]
+	console.log(res); // [1,null,3]7656
 })
 ```
 
@@ -10405,7 +10404,7 @@ Promise.last([p1_suc_100, p2_suc_500, p5_fail_200, p3_suc_300, p4_fail_400])
 
 ### Promise.none
 
-`Promise.none`与Promise.all正好相反，所有的promise都被拒绝了，则Promise.none变成完成状态。该方法可以用Promise.first来切换，当执行Promise.first的catch时，则执行Promise.none中的resolve。不过这里我们使用Promise.all来实现。
+`Promise.none`与`Promise.all`正好相反，所有的promise都被拒绝了，则`Promise.none`变成完成状态。该方法可以用`Promise.first`来切换，当执行`Promise.first`的catch时，则执行`Promise.none`中的resolve。不过这里我们使用`Promise.all`来实现。
 
 ```js
 // if all the promises rejected, then success
