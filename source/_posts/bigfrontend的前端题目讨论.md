@@ -5316,3 +5316,126 @@ function fromEvent(element, eventName, capture = false) {
 }
 ```
 
+### 74. implement Observable Transformation Operators
+
+This is a follow-up on [57. create an Observable](https://bigfrontend.dev/problem/create-an-Observable).
+
+There are [a lot of operators](https://rxjs-dev.firebaseapp.com/guide/operators) for Observable, if we think of Observable as event stream, then modifying the stream is a common task, transformation operators are useful at this.
+
+In this problem, you are asked to implement [map()](https://rxjs-dev.firebaseapp.com/api/operators/map), as the name indicates, it maps the value to another value thus creating a new event stream.
+
+Here is an example.
+
+```js
+const source = Observable.from([1,2,3])
+
+map(x => x * x)(source) // this transformer doubles numbers and create a new stream
+ .subscribe(console.log)
+// 1
+// 4
+// 9
+```
+
+Observable has `pipe()` method which could make this more readable.
+
+```js
+const source = Observable.from([1,2,3])
+
+source.pipe(map(x => x * x))
+ .subscribe(console.log)
+// 1
+// 4
+// 9
+```
+
+**Note** Observable is already given for you, no need to create it.
+
+Related Problems
+
+[57. create an Observable ](https://bigfrontend.dev/problem/create-an-Observable)
+[70. implement Observable.from() ](https://bigfrontend.dev/problem/implement-Observable-from)
+[71. implement Observable Subject ](https://bigfrontend.dev/problem/implement-Observable-Subject)
+[72. implement Observable interval() ](https://bigfrontend.dev/problem/implement-Observable-interval)
+[73. implement Observable fromEvent() ](https://bigfrontend.dev/problem/implement-Observable-fromEvent)
+
+重新修改事件
+
+```js
+
+/**
+ * @param {any} input
+ * @return {(observable: Observable) => Observable}
+ * returns a function which trasnform Observable
+ */
+function map(transform) {
+  // your code here
+  return (source) => {
+    return new Observable((subscriber) => {
+      const originalNext = subscriber.next;
+      subscriber.next = (value) => {
+        const newValue = transform(value);
+        originalNext.call(subscriber, newValue);
+      };
+      source.subscribe(subscriber);
+    });
+  };
+}
+```
+
+### 75. implement BigInt subtraction
+
+Luckily we already have built-in support of [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) in JavaScript, at least in some browsers.
+
+```js
+1000000000000000000000n - 999999999999999999999n
+// 1n
+```
+
+Suppose BigInt cannot be used, can you implement a string subtraction function by yourself?
+
+```js
+subtract('1000000000000000000000', '999999999999999999999')
+// '1'
+```
+
+All input are valid **non-negative integer strings**, and the result is guaranteed to be non-negative.
+
+*Don't use BigInt directly, it is not our goal here*
+
+Related Problems
+
+[62. implement BigInt addition ](https://bigfrontend.dev/problem/add-BigInt-string)
+[76. implement BigInt addition with sign](https://bigfrontend.dev/problem/implement-BigInt-addition-with-sign)
+[77. implement BigInt subtraction with sign](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign)
+
+其实本质和大数加法没有不同
+
+```js
+
+/**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+function subtract(num1, num2) {
+  // your code here
+  if (!num1 || !num2) return num1 || num2;
+
+  let i = num1.length - 1, j = num2.length - 1;
+  let carry = 0;
+  let result = [];
+
+  while (i >= 0 || j >= 0 || carry) {
+    let sub = (+num1[i--] || 0) - (+num2[j--] || 0) + carry + 10;
+    carry = Math.floor(sub / 10) > 0 ? 0 : -1;
+    result.unshift(sub % 10);
+  }
+  
+  while (result.length > 1 && +result[0] === 0) {
+    result.shift();
+  }
+
+  return result.join('');
+}
+```
+
