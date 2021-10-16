@@ -4673,8 +4673,10 @@ function cloneDeep(data, map = new WeakMap()) {
   ];
 
   for (const key of keys) {
-    res[key] = cloneDeep()
+    res[key] = cloneDeep(data[key], map);
   }
+
+  return res;
 }
 ```
 
@@ -4691,7 +4693,6 @@ You are asked to create a `fetchWithAutoRetry(fetcher, count)`, which automatica
 For the problem here, there is no need to detect network error, you can just retry on all promise rejections.
 
 ```js
-
 /**
  * @param {() => Promise<any>} fetcher
  * @param {number} maximumRetryCount
@@ -5436,6 +5437,2335 @@ function subtract(num1, num2) {
   }
 
   return result.join('');
+}
+```
+
+### 76. implement BigInt addition with sign
+
+This is a follow-up on [62. implement BigInt addition](https://bigfrontend.dev/problem/add-BigInt-string).
+
+You are asked to implement a string addition function, **with possible negative integers**. Also, '+' plus sign should also be supported
+
+```js
+add('-999999999999999999', '-1')
+// '-1000000000000000000'
+
+add('-999999999999999999', '+1')
+// '-999999999999999998'
+```
+
+Don't use BigInt directly, it is not our goal here.
+
+Related Problems
+
+[62. implement BigInt addition ](https://bigfrontend.dev/problem/add-BigInt-string)
+[75. implement BigInt subtraction ](https://bigfrontend.dev/problem/implement-BigInt-subtraction)
+[77. implement BigInt subtraction with sign](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign)
+
+先判断符号，再进行计算
+
+```js
+/**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+function add(num1, num2) {
+  /**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+function add(num1, num2) {
+  // your code here
+  const isNum1Negative = num1[0] == '-';
+  const isNum2Negative = num2[0] == '-';
+  // remove sign
+  num1 = num1.replace(/^[+|-]/, '');
+  num2 = num2.replace(/^[+|-]/, '');
+  if (isNum1Negative == isNum2Negative) {
+    return (isNum1Negative ? '-' : '') + absAdd(num1, num2);
+  } else {
+    const res = absSub(num1, num2);
+    if (res[0] == '-' && isNum1Negative) {
+      return res.slice(1);
+    }
+    return (isNum1Negative ? '-' : '') + res;
+  }
+}
+
+function absAdd(num1, num2) {
+  const maxLen = Math.max(num1.length, num2.length);
+  num1 = num1.padStart(maxLen, '0')
+  num2 = num2.padStart(maxLen, '0')
+  let extra = 0;
+  let ans = '';
+  for (let i = maxLen - 1; i >= 0; i--) {
+    const n1 = parseInt(num1[i]), n2 = parseInt(num2[i]);
+    const currNum = n1 + n2 + extra;
+    if (currNum >= 10) {
+      extra = 1;
+      ans = String(currNum - 10) + ans;
+    } else {
+      extra = 0;
+      ans = String(currNum) + ans;
+    }
+  }
+  if (extra) return '1' + ans;
+  return ans;
+}
+
+function absSub(num1, num2) {
+  if (num1 == num2) return '0';
+
+  const maxLen = Math.max(num1.length, num2.length);
+  // to aviod negative calculation, we need to make sure num1 >= num2;
+  let reverse = false;
+  if (num1.length !== num2.length) {
+    if (num1.length < num2.length) {
+      reverse = true;
+      const temp = num1;
+      num1 = num2;
+      num2 = temp;
+    }
+  } else {
+    for (let i = 0; i < num1.length; i++) {
+      if (num1[i] < num2[i]) {
+        reverse = true;
+        const temp = num1;
+        num1 = num2;
+        num2 = temp;
+        break;
+      }
+    }
+  }
+
+  num1 = num1.padStart(maxLen, '0')
+  num2 = num2.padStart(maxLen, '0')
+  let borrow = 0;
+  let ans = '';
+  for (let i = maxLen - 1; i >= 0; i--) {
+    const n1 = parseInt(num1[i]), n2 = parseInt(num2[i]);
+    const currNum = 10 + n1 - n2 - borrow;
+    if (currNum < 10) {
+      borrow = 1;
+      ans = String(currNum) + ans;
+    } else {
+      borrow = 0;
+      ans = String(currNum - 10) + ans;
+    }
+  }
+  ans = ans.replace(/^0*/g, '');
+  ans = !!ans ? ans : '0';
+  if (reverse) return '-' + ans;
+  return ans;
+}
+```
+
+### 77. implement BigInt subtraction with sign
+
+This is a follow-up on [75. implement BigInt subtraction](https://bigfrontend.dev/problem/implement-BigInt-subtraction).
+
+You are asked to implement a string substraction function, **with possible negative integers**. Also, '+' plus sign should also be supported
+
+```js
+substract('-999999999999999999', '-1')
+// '-999999999999999998'
+
+substract('-999999999999999999', '+1')
+// '-1000000000000000000'
+```
+
+Don't use BigInt directly, it is not our goal here.
+
+Related Problems
+
+[62. implement BigInt addition ](https://bigfrontend.dev/problem/add-BigInt-string)
+[75. implement BigInt subtraction ](https://bigfrontend.dev/problem/implement-BigInt-subtraction)
+[76. implement BigInt addition with sign ](https://bigfrontend.dev/problem/implement-BigInt-addition-with-sign)
+
+和上题中的加法类似
+
+```js
+
+/**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+function subtract(num1, num2) {
+  // your code here// your code here
+  const isNum1Negative = num1[0] == '-';
+  const isNum2Negative = num2[0] == '-';
+  // remove sign
+  num1 = num1.replace(/^[+|-]/, '');
+  num2 = num2.replace(/^[+|-]/, '');
+  if (isNum1Negative == isNum2Negative) {
+    let res = absSub(num1, num2);
+    if (res[0] == '-' && isNum1Negative) {
+      return res.slice(1);
+    }
+    res = (isNum1Negative ? '-' : '') + res;
+    if(res.length == 2 && res[0] == '-' && res[1] == '0') return '0';
+    return res;
+  } else {
+    res = (isNum1Negative ? '-' : '') + absAdd(num1, num2);
+    if(res.length == 2 && res[0] == '-' && res[1] == '0') return '0';
+    return res;
+  }
+}
+
+function absAdd(num1, num2) {
+  const maxLen = Math.max(num1.length, num2.length);
+  num1 = num1.padStart(maxLen, '0')
+  num2 = num2.padStart(maxLen, '0')
+  let extra = 0;
+  let ans = '';
+  for (let i = maxLen - 1; i >= 0; i--) {
+    const n1 = parseInt(num1[i]), n2 = parseInt(num2[i]);
+    const currNum = n1 + n2 + extra;
+    if (currNum >= 10) {
+      extra = 1;
+      ans = String(currNum - 10) + ans;
+    } else {
+      extra = 0;
+      ans = String(currNum) + ans;
+    }
+  }
+  if (extra) return '1' + ans;
+  return ans;
+}
+
+function absSub(num1, num2) {
+  if (num1 == num2) return '0';
+
+  const maxLen = Math.max(num1.length, num2.length);
+  // to aviod negative calculation, we need to make sure num1 >= num2;
+  let reverse = false;
+  if (num1.length !== num2.length) {
+    if (num1.length < num2.length) {
+      reverse = true;
+      const temp = num1;
+      num1 = num2;
+      num2 = temp;
+    }
+  } else {
+    for (let i = 0; i < num1.length; i++) {
+      if (num1[i] < num2[i]) {
+        reverse = true;
+        const temp = num1;
+        num1 = num2;
+        num2 = temp;
+        break;
+      }
+    }
+  }
+
+  num1 = num1.padStart(maxLen, '0')
+  num2 = num2.padStart(maxLen, '0')
+  let borrow = 0;
+  let ans = '';
+  for (let i = maxLen - 1; i >= 0; i--) {
+    const n1 = parseInt(num1[i]), n2 = parseInt(num2[i]);
+    const currNum = 10 + n1 - n2 - borrow;
+    if (currNum < 10) {
+      borrow = 1;
+      ans = String(currNum) + ans;
+    } else {
+      borrow = 0;
+      ans = String(currNum - 10) + ans;
+    }
+  }
+  ans = ans.replace(/^0*/g, '');
+  ans = !!ans ? ans : '0';
+  if (reverse) return '-' + ans;
+  return ans;
+}
+```
+
+### 78. convert HEX color to RGBA
+
+Suppose you write some CSS code, you need to set [colors](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value). You can choose hexadecimal notation `#fff` or Functional notation `rgba(255,255,255,1)`.
+
+Can you write a function to convert hexadecimal notation to functional notation?
+
+```js
+hexToRgb('#fff')
+// 'rgba(255,255,255,1)'
+```
+
+1. Alpha channel should have **maximum 2 digits after decimal point, round up if needed.**
+2. Don't forget to do input validation
+
+[prev](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign)
+
+强行判断并转换
+
+```ts
+function normalize(hex: string): string {
+  const digits = hex.toLowerCase().slice(1);
+
+  if (digits.length === 3) {
+    return [...digits].map(item => item.repeat(2)).join('') + 'ff';
+  }
+
+  if (digits.length === 4) {
+    return [...digits].map(item => item.repeat(2)).join('');
+  }
+
+  if (digits.length === 6) {
+    return digits + 'ff';
+  }
+
+  return digits;
+}
+
+// max 2 digits for the fraction, 0 should be supressed
+function roundUp(num: number): string {
+  return num.toFixed(2).replace(/([.0]+)$/, '') || '0';
+}
+
+function hexToRgba(hex: string): string {
+  // your code here
+  // 1. validate payload
+  const regValidHexColor = /^#[0-9a-fA-F]+$/;
+  let len = hex.length;
+  if ((len !== 4 && len !== 7 && len !== 5 && len !== 9) || !regValidHexColor.test(hex)) {
+    throw("error input hex");
+  }
+  const normalized = normalize(hex);
+
+  const regColorParts = /(.{2})(.{2})(.{2})(.{2})/;
+  const match = normalized.match(regColorParts)!;
+
+  const [r, g, b, a] = match.slice(1, 5).map(part => parseInt(part, 16));
+
+  return `rgba(${r},${g},${b},${roundUp(a / 255)})`;
+}
+```
+
+### 79. convert snake_case to camelCase
+
+Do you prefer [snake_case](https://en.wikipedia.org/wiki/Snake_case) or [camelCase](https://en.wikipedia.org/wiki/Camel_case) ?
+
+Anyway, please create a function to convert snake_case to camcelCase.
+
+```js
+snakeToCamel('snake_case') 
+// 'snakeCase'
+snakeToCamel('is_flag_on') 
+// 'isFlagOn'
+snakeToCamel('is_IOS_or_Android') 
+// 'isIOSOrAndroid'
+snakeToCamel('_first_underscore') 
+// '_firstUnderscore'
+snakeToCamel('last_underscore_') 
+// 'lastUnderscore_'
+snakeToCamel('_double__underscore_') 
+// '_double__underscore_'
+```
+
+contiguous underscore `__`, leading underscore` _a`, and trailing underscors `a_` should be kept untouched.
+
+找到中间的"_"
+
+```js
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function snakeToCamel(str) {
+  // your code here
+  return str.replace(/[a-z]_[a-z]/gi, match => {
+    return match[0] + match[2].toUpperCase();
+  })
+}
+```
+
+### 80. implement your own URLSearchParams
+
+When we want to extract parameters from query string, [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) could be very handy.
+
+Can you implement `MyURLSearchParams` which works the same ?
+
+```js
+const params = new MyURLSearchParams('?a=1&a=2&b=2')
+params.get('a') // '1'
+params.getAll('a') // ['1', '2']
+params.get('b') // '2'
+params.getAll('b') // ['2']
+
+
+params.append('a', 3)
+params.set('b', '3')
+params.toString() // 'a=1&a=2&b=3&a=3'
+```
+
+There are [a few methods](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) on URLSearchParams, please implement them all.
+
+返回所有的表格
+
+```js
+ class MyURLSearchParams {
+   /**
+    * @params {string} init
+    */
+   constructor(init) {
+    this.map = new Map();
+    const queryString = init.split('?')[1] || init;
+    const qsPairs = queryString.split('&');
+    qsPairs.forEach((pair => {
+      const [key, value] = pair.split('=');
+      if (this.map.has(key)) {
+        this.append(key, value);
+      }
+      else {
+        this.set(key, value);
+      }
+    }));
+   }
+   
+   /** 
+    * @params {string} name
+    * @params {any} value
+    */
+   append(name, value) {
+    this.map.get(name).push(String(value));
+   }
+   
+   /**
+    * @params {string} name
+    */
+   delete(name) {
+     this.map.delete(name);
+   }
+   
+   /**
+    * @returns {Iterator} 
+    */
+   entries() {
+    let that = this;
+    return (function* () {
+      let pairs = [];
+      that.map.forEach((value, key) => {
+        value.forEach(v => {
+          pairs.push([key, v]);
+        });
+      });
+      while (pairs.length) {
+        yield pairs.shift();
+      }
+    })();
+   }
+   
+   /**
+    * @param {(value, key) => void} callback
+    */
+   forEach(callback) {
+    this.map.forEach((value, key) => {
+      value.forEach(val => callback.call(this, val, key));
+    });
+   }
+   
+   /**
+    * @param {string} name
+    * returns the first value of the name
+    */
+   get(name) {
+    name = name.split('?')[1] || name;
+    return this.map.has(name) ? this.map.get(name)[0] : null;
+   }
+   
+   /**
+    * @param {string} name
+    * @return {string[]}
+    * returns the value list of the name
+    */
+   getAll(name) {
+    return this.map.get(name) || [];
+   }
+   
+   /**
+    * @params {string} name
+    * @return {boolean}
+    */
+   has(name) {
+    return Boolean(this.map.has(name));
+   }
+   
+   /**
+    * @return {Iterator}
+    */
+   keys() {
+    return this.map.keys();
+   }
+   
+   /**
+    * @param {string} name
+    * @param {any} value
+    */
+   set(name, value) {
+    this.map.set(String(name), [String(value)]);
+   }
+   
+   // sor all key/value pairs based on the keys
+   sort() {
+    this.map = new Map([...this.map].sort());
+   }
+   
+   /**
+    * @return {string}
+    */
+   toString() {
+    let result = '';
+    let index = 0;
+    this.map.forEach((value, key) => {
+      value.forEach(v => {
+        result += `${index !== 0 ? '&' : ''}${key}=${v}`;
+      });
+      index++;
+    });
+    return result;
+   }
+   
+   /**
+    * @return {Iterator} values
+    */
+   values() {
+    const that = this;
+    return function* () {
+      let valueArray = [];
+      [...that.map.values()].forEach(v => valueArray.push(...v));
+      while (valueArray.length) {
+        yield valueArray.shift();
+      }
+    }();
+   }
+ }
+```
+
+### 81. merge sorted arrays
+
+You are given a list of sorted non-descending integer arrays, write a function to merge them into one sorted non-descending array.
+
+```js
+merge(
+  [
+    [1,1,1,100,1000,10000],
+    [1,2,2,2,200,200,1000],
+    [1000000,10000001],
+    [2,3,3]
+  ]
+)
+// [1,1,1,1,2,2,2,2,3,3,100,200,200,1000,1000,10000,1000000,10000001]
+```
+
+What is time complexity of your solution?
+
+[Source for this](https://www.glassdoor.com/Interview/ByteDance-Front-End-Developer-Interview-Questions-EI_IE1624196.0,9_KO10,29.htm?filter.jobTitleFTS=Front+End+Developer)
+
+分到2个队列进行合并
+
+```js
+
+/**
+ * @param {number[][]} arrList
+ * non-descending integer array
+ * @return {number[]} 
+ */
+function merge(arrList) {
+  // your code here
+  return mergeImpl(arrList, 0, arrList.length - 1);
+}
+
+function mergeImpl(arrList, start, end) {
+  if (start >= end) return arrList[end] || [];
+
+  const mid = start + Math.floor((end - start) / 2);
+
+  const left = mergeImpl(arrList, start, mid);
+  const right = mergeImpl(arrList, mid + 1, end);
+  return mergeSort(left, right);
+}
+
+function mergeSort(arrOne, arrTwo) {
+  const mergedArr = [];
+  let idxOne = 0;
+  let idxTwo = 0;
+
+  while (idxOne !== arrOne.length || idxTwo !== arrTwo.length) {
+    const firstElement = arrOne[idxOne] || Infinity;
+    const secondElement = arrTwo[idxTwo] || Infinity;
+
+    if (firstElement < secondElement) {
+      mergedArr.push(firstElement);
+      idxOne++;
+    } else {
+      mergedArr.push(secondElement);
+      idxTwo++;
+    }
+  }
+
+  return mergedArr;
+}
+```
+
+### 82. find available meeting slots
+
+`[start, end]` is a time interval, with all integers from 0 to 24.
+
+Given schedules for all team members,
+
+```js
+[
+  [[13,15], [11,12], [10,13]], //schedule for member 1
+  [[8, 9]], // schedule for member 2
+  [[13, 18]] // schedule for member 3
+]
+```
+
+You need to create a function `findMeetingSlots()` to return the time slots available for all the members to have a meeting.
+
+For the input above, below slots should be returned
+
+```js
+[[0,8],[9,10],[18,24]]
+```
+
+*Notes*
+
+1. the input schedule intervals might be unsorted
+2. one member's schedule might have overlapping intervals.
+
+排序+贪心
+
+```js
+// type Interval = [number, number]
+
+/**
+ * @param {Interval[][]} schedules
+ * @return {Interval[]}
+ */
+function findMeetingSlots(schedules) {
+  // your code here
+  const mergedSchedules = mergeSchedules(schedules);
+  mergedSchedules.sort((a, b) => a[0] - b[0]);
+
+  const availableTimeBlocks = [];
+  let currentEndTime = 0;
+
+  for (const timeBlock of mergedSchedules) {
+    const [startTime, endTime] = timeBlock;
+
+    if (startTime > currentEndTime) {
+      availableTimeBlocks.push([currentEndTime, startTime]);
+    }
+
+    if (endTime > currentEndTime) {
+      currentEndTime = endTime;
+    }
+  }
+
+  if (currentEndTime < 24) {
+    availableTimeBlocks.push([currentEndTime, 24]);
+  }
+
+  return availableTimeBlocks;
+}
+
+function mergeSchedules(schedules) {
+  const mergedSchedules = [];
+  for (const schedule of schedules) {
+    mergedSchedules.push(...schedule);
+  }
+  return mergedSchedules;
+}
+```
+
+### 83. create an interval
+
+You are asked to create a new `mySetInterval(a, b)` which has a different behavior from `window.setInterval`, the time between calls is a linear function, growing larger and larger `period = a + b * count`.
+
+```js
+let prev = Date.now()
+const func = () => {
+  const now = Date.now()
+  console.log('roughly ', Date.now() - prev)
+  prev = now
+}
+
+const id = mySetInterval(func, 100, 200)
+
+// roughly 100, 100 + 200 * 0
+// roughly 400,  100 + 200 * 1
+// roughly 900,  100 + 200 * 2
+// roughly 1600,  100 + 200 * 3
+// ....
+
+myClearInterval(id) // stop the interval
+```
+
+1. Interface is `mySetInterval(delay, period)`, the first `delay` is used for the first call, and then `period` is used.
+
+1. because `window.setTimeout` and `window.setInterval` are not accurate in browser environment, they are replaced to other implementation when judging your code. They still have the same interface, and internally keep track of the timing for testing purpose.
+
+Something like below will be used to do the test. (You don't need to read following code to accomplish this task)
+
+```js
+let currentTime = 0
+
+const run = (delay, period, clearAt) => {
+  currentTime = 0
+  pipeline.length = 0
+  
+  const logs = []
+
+  const func = () => {
+    logs.push(currentTime)
+  }
+
+  mySetInterval(func, delay, period)
+  if (clearAt !== undefined) {
+    setTimeout(() => {
+      myClearInterval(id)
+    }, clearAt)
+  }
+
+  while (pipeline.length > 0 && calls.length < 5) {
+    const [time, callback] = pipeline.shift()
+    currentTime = time
+    callback()
+  }
+
+  return calls
+}
+
+expect(run(100, 200)).toEqual([100,400,900,1600,2500])
+expect(run(100, 200, 450)).toEqual([100,400])
+expect(run(100, 200, 50)).toEqual([])
+```
+
+设置时间
+
+```js
+const timerIds = new Map();
+/**
+ * @param {Function} func
+ * @param {number} delay
+ * @param {number} period
+ * @return {number}
+ */
+function mySetInterval(func, delay, period) {
+  // your code here
+  let multiplier = 0;
+
+  const initialTimerId = setTimeout(run, delay + period * multiplier);
+
+  function run() {
+    func();
+    multiplier++;
+    const nextTimerId = setTimeout(run, delay + period * multiplier);
+    timerIds.set(initialTimerId, nextTimerId);
+  }
+
+  return initialTimerId;
+}
+
+/**
+ * @param { number } id
+ */
+function myClearInterval(id) {
+  clearTimeout(id);
+  if (timerIds.has(id)) {
+    clearTimeout(timerIds.get(id));
+    timerIds.delete(id);
+  }
+}
+```
+
+### 84. create a fake timer (setInterval)
+
+This is a follow-up on [36. create a fake timer(setTimeout)](https://bigfrontend.dev/problem/create-a-fake-timer)
+
+Like `setTimeout`, `setInterval` also is not accurate. (please refer [Event Loop](https://javascript.info/event-loop) for detail).
+
+This is OK in general web application, but might be problematic in test.
+
+Could you implement your own `setInterval()` and `clearInterval()` to be sync? so that they have **accurate timing** for test. This is what [FakeTimes](https://github.com/sinonjs/fake-timers) are for.
+
+By "accurate", it means **suppose all functions cost no time**, we start our function at time `0`, then `setInterval(func1, 100)` would schedule `func1` exactly at `100, 200, 300 .etc`.
+
+You need to replace `Date.now()` as well to provide the time.
+
+```js
+class FakeTimer {
+  install() {
+    // replace window.setInterval, window.clearInterval, Date.now
+    // with your implementation
+  }
+  
+  uninstall() {
+    // restore the original implementation of
+    // window.setInterval, window.clearInterval, Date.now
+  }
+  
+  tick() {
+    // run the scheduled functions without waiting
+  }
+}
+```
+
+**Be careful about the infinite loops **. Your code is tested like this:
+
+```js
+const fakeTimer = new FakeTimer()
+fakeTimer.install()
+
+const logs = []
+const log = () => {
+    logs.push(Date.now())
+}
+
+let count = 0
+const id = setInterval(() => {
+  if (count > 1) {
+    clearInterval(id)
+  } else {
+    log()
+  }
+  count += 1
+}, 100)
+// log 'A' at every 100, stop at 200
+fakeTimer.tick()
+fakeTimer.uninstall()
+ 
+expect(logs).toEqual([100,200])
+```
+
+*Note*
+
+Only `Date.now()` is used when judging your code, you can ignore other time related apis.
+
+Related Problems
+
+[36. create a fake timer(setTimeout)](https://bigfrontend.dev/problem/create-a-fake-timer)
+
+保存原生的函数
+
+```js
+class FakeTimer {
+  constructor () {
+    this.originSetInterval = window.setInterval;
+    this.originClearInterval = window.clearInterval;
+    this.originDateNow = Date.now;
+
+    this.taskQueue = [];
+    this.currentTime = 0;
+  }
+  install() {
+    // replace window.setInterval, window.clearInterval, Date.now
+    // with your implementation
+    window.setInterval = (fn, delay) => {
+      const id = this.taskQueue.length;
+      this.taskQueue.push({
+        id,
+        fn,
+        delay,
+      });
+      return id;
+    };
+
+    window.clearInterval = (id) => {
+      this.taskQueue = this.taskQueue.filter((task) => task.id !== id);
+    };
+
+    Date.now = () => this.currentTime;
+  }
+  
+  uninstall() {
+    // restore the original implementation of
+    // window.setInterval, window.clearInterval, Date.now
+    window.setInterval = this.originSetInterval;
+    window.clearInterval = this.originClearInterval;
+    Date.now = this.originDateNow;
+  }
+  
+  tick() {
+    // run the scheduled functions without waiting
+    while (this.taskQueue.length > 0) {
+      const task = this.taskQueue.shift();
+      this.currentTime = task.delay;
+      this.taskQueue.push({
+        ...task,
+        delay: this.currentTime + task.delay,
+      });
+      task.fn();
+    }
+  }
+}
+```
+
+### 85. implement `_.get()`
+
+[_.get(object, path, [defaultValue\])](https://lodash.com/docs/4.17.15#get) is a handy method to help retrieving data from an arbitrary object. if the resolved value from `path` is `undefined`, `defaultValue` is returned.
+
+Can you create your own `get()`?
+
+```js
+const obj = {
+  a: {
+    b: {
+      c: [1,2,3]
+    }
+  }
+}
+
+get(obj, 'a.b.c') // [1,2,3]
+get(obj, 'a.b.c.0') // 1
+get(obj, 'a.b.c[1]') // 2
+get(obj, ['a', 'b', 'c', '2']) // 3
+get(obj, 'a.b.c[3]') // undefined
+get(obj, 'a.c', 'bfe') // 'bfe'
+```
+
+Related Problems
+
+[156. implement `_.set()`](https://bigfrontend.dev/problem/lodash-set)
+
+切割路径，然后迭代或递归得到最后的结果
+
+```js
+/**
+ * @param {object} source
+ * @param {string | string[]} path
+ * @param {any} [defaultValue]
+ * @return {any}
+ */
+function get(source, path, defaultValue = undefined) {
+  // your code here
+  path = Array.isArray(path) ? path : path.split(/\.|\[|\]/);
+
+  if (path[path.length - 1] === '') path.pop();
+  if (path.length === 0) return defaultValue;
+
+  let currentSource = source;
+  let index = 0;
+
+  while (currentSource && index < path.length) {
+    const property = path[index];
+    currentSource = currentSource[property];
+    index++;
+  }
+
+  return currentSource || defaultValue;
+}
+```
+
+### 86. Generate Fibonacci Number
+
+```js
+0
+1
+1 = 0 + 1
+2 = 1 + 1
+3 = 1 + 2
+5 = 2 + 3
+8 = 3 + 5
+13 = 5 + 8
+....
+
+[0,1,1,2,3,5,8,13 ...]
+```
+
+Given 2 initial numbers, we can generate a sequence by adding the sum of last two numbers as a new lement.
+
+This is [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_number).
+
+You are asked to create a `fib(n)` function, which generate the n-th Fibonacci number.
+
+What is the time & space cost of your solution?
+
+Related Problems
+
+[93. Generate Fibonacci Number with recursion](https://bigfrontend.dev/problem/Generate-Fibonacci-Number-with-recursion)
+
+动态规划
+
+```js
+/**
+ * @param {number} n - non-negative integer
+ * @return {number}
+ */
+function fib(n) {
+  // your code here
+  if(n < 2) return n;
+  let dp0 = 0, dp1 = 1;
+  for (let i = 2; i <= n; i++) {
+    let temp = dp0 + dp1;
+    dp0 = dp1;
+    dp1 = temp;
+  }
+  return dp1;
+}
+```
+
+尾递归
+
+```js
+/**
+ * @param {number} n - non-negative integer
+ * @return {number}
+ */
+function fib(n, ac1 = 0, ac2 = 1) {
+  // your code here
+  if(n == 0) return 0;
+  if(n == 1) {
+    if(ac2 == 1) return 1;
+    return ac2;
+  }
+  return fib (n - 1, ac2, ac1 + ac2);
+}
+```
+
+### 87. longest substring with unique characters
+
+Given a string, please find the **longest substring that has no repeated characters**.
+
+If there are multiple result, any one substring is fine.
+
+```js
+longestUniqueSubstr('aaaaa')
+// 'a'
+longestUniqueSubstr('abcabc')
+// 'abc', or 'bca', or 'cab'
+longestUniqueSubstr('a12#2')
+// 'a12#'
+```
+
+*Follow-up*
+
+What is the time & space cost of your solution ? Could you do it better?
+
+```js
+
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function longestUniqueSubstr(str) {
+  // your code here
+  let left = 0, right = 0;
+  let maxLen = 0;
+  let leftIndex = 0;
+  let set = new Set();
+  const len = str.length;
+  while (right < len) {
+    while (!set.has(str[right]) && right < len) {
+      set.add(str[right]);
+      right++;
+    }
+    if (right - left > maxLen) {
+      maxLen = right - left;
+      leftIndex = left;
+    }
+    if (right === len) break;
+    while (set.has(str[right])) {
+      set.delete(str[left]);
+      left++;
+    }
+  }
+  return str.slice(leftIndex, leftIndex + maxLen);
+}
+```
+
+### 88. support negative Array index in JavaScript
+
+Python supports negative list index , while JavaScript doesn't.
+
+Can you write a wrapper function to make **negative array index** possible?
+
+```js
+const originalArr = [1,2,3]
+const arr = wrap(originalArr)
+
+arr[0] // 1
+arr[1] // 2
+arr[2] // 3
+arr[3] // undefined
+arr[-1] // 3
+arr[-2] // 2
+arr[-3] // 1
+arr[-4] // undefined
+```
+
+All methods on `arr` should be applied to the original array, which means
+
+```js
+arr.push(4)
+arr[3] // 4
+originalArr[3] // 4
+
+arr.shift()
+arr[0] // 2
+originalArr[0] // 2
+
+arr.bfe = 'bfe'
+originalArr.bfe // 'bfe'
+
+arr[-1] = 5
+arr // [2,3,5]
+originalArr // [2,3,5]
+
+originalArr[2] = 6
+arr // [2,3,6]
+originalArr // [2,3,6]
+```
+
+使用Proxy
+
+```js
+/**
+ * @param {any[]} arr
+ * @returns {?} - sorry no type hint for this
+ */
+function wrap(arr) {
+  // your code here
+  return new Proxy(arr, {
+   get(target, key) {
+     if (key === Symbol.iterator) { return Reflect.get(target, Symbol.iterator);}
+     return +key < 0 ?  Reflect.get(target, target.length + +key) : Reflect.get(target, key);
+    }, 
+    set(target, key, value) {
+      if (+key < 0) {
+        if (target.length + +key < 0) throw new Error('');
+        Reflect.set(target, target.length + +key, value);
+        return true;
+      }
+      Reflect.set(target, key, value);
+      return true;
+    }
+  });
+}
+```
+
+### 88. support negative Array index in JavaScript
+
+Python supports negative list index , while JavaScript doesn't.
+
+Can you write a wrapper function to make **negative array index** possible?
+
+```js
+const originalArr = [1,2,3]
+const arr = wrap(originalArr)
+
+arr[0] // 1
+arr[1] // 2
+arr[2] // 3
+arr[3] // undefined
+arr[-1] // 3
+arr[-2] // 2
+arr[-3] // 1
+arr[-4] // undefined
+```
+
+All methods on `arr` should be applied to the original array, which means
+
+```js
+arr.push(4)
+arr[3] // 4
+originalArr[3] // 4
+
+arr.shift()
+arr[0] // 2
+originalArr[0] // 2
+
+arr.bfe = 'bfe'
+originalArr.bfe // 'bfe'
+
+arr[-1] = 5
+arr // [2,3,5]
+originalArr // [2,3,5]
+
+originalArr[2] = 6
+arr // [2,3,6]
+originalArr // [2,3,6]
+```
+
+使用Proxy
+
+```js
+/**
+ * @param {any[]} arr
+ * @returns {?} - sorry no type hint for this
+ */
+function wrap(arr) {
+  // your code here
+  return new Proxy(arr, {
+   get(target, key) {
+     if (key === Symbol.iterator) { return Reflect.get(target, Symbol.iterator);}
+     return +key < 0 ?  Reflect.get(target, target.length + +key) : Reflect.get(target, key);
+    }, 
+    set(target, key, value) {
+      if (+key < 0) {
+        if (target.length + +key < 0) throw new Error('');
+        Reflect.set(target, target.length + +key, value);
+        return true;
+      }
+      Reflect.set(target, key, value);
+      return true;
+    }
+  });
+}
+```
+
+### 89. Next Right Sibling
+
+Given a DOM tree and a target element, please return the **next right sibling**.
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20211014204116.png)
+
+Like above, the next right sibling of `<button/>` is the blue `<a/>`. Notice that **they don't necessarily have the same parent element.**
+
+If no right sibling, then return `null`.
+
+What is time & space cost of your solution ?
+
+队列+BFS
+
+```js
+
+/**
+ * @param {HTMLElement} root
+ * @param {HTMLElement} target
+ * @return {HTMLElemnt | null}
+ */
+function nextRightSibling(root, target) {
+  // your code here
+  if (!root) return null;
+  const queue = [root];
+  while (queue.length) {
+    const node = queue.shift();
+    if (node === target) return queue[0] || null;
+    for(const child of node.children){
+      queue.push(child);
+    }
+  }
+  return null;
+}
+```
+
+### 90. write your own `instanceof`
+
+Do you know how [instanceOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof) works ?
+
+If so, please write you own `myInstanceOf()`.
+
+```js
+class A {}
+class B extends A {}
+
+const b = new B()
+myInstanceOf(b, B) // true
+myInstanceOf(b, A) // true
+myInstanceOf(b, Object) // true
+
+function C() {}
+myInstanceOf(b, C) // false
+C.prototype = B.prototype
+myInstanceOf(b, C) // true
+C.prototype = {}
+myInstanceOf(b, C) // false
+```
+
+我用的是迭代方法
+
+```js
+
+/**
+ * @param {any} obj
+ * @param {target} target
+ * @return {boolean}
+ */
+function myInstanceOf(obj, target) {
+  // your code here
+  if (obj === null || typeof obj !== 'object') return false;
+  if (typeof target !== 'function') return false;
+
+  while (obj !== null) {
+    const proto = obj.__proto__;
+    if (proto === target.prototype) {
+      return true;
+    }
+    obj = proto;
+  }
+
+  return false;
+}
+```
+
+### 91. invert a binary tree
+
+Can you invert a binary tree and get an offer from Google?
+
+<iframe id="twitter-widget-0" scrolling="no" frameborder="0" allowtransparency="true" allowfullscreen="true" class="" title="Twitter Tweet" src="https://platform.twitter.com/embed/Tweet.html?creatorScreenName=BFEdev&amp;dnt=false&amp;embedId=twitter-widget-0&amp;features=eyJ0ZndfZXhwZXJpbWVudHNfY29va2llX2V4cGlyYXRpb24iOnsiYnVja2V0IjoxMjA5NjAwLCJ2ZXJzaW9uIjpudWxsfSwidGZ3X2hvcml6b25fdHdlZXRfZW1iZWRfOTU1NSI6eyJidWNrZXQiOiJodGUiLCJ2ZXJzaW9uIjpudWxsfSwidGZ3X3NwYWNlX2NhcmQiOnsiYnVja2V0Ijoib2ZmIiwidmVyc2lvbiI6bnVsbH19&amp;frame=false&amp;hideCard=false&amp;hideThread=false&amp;id=608682016205344768&amp;lang=en&amp;origin=https%3A%2F%2Fbigfrontend.dev%2Fproblem%2Finvert-a-binary-tree&amp;sessionId=65b8d9394f59e4de1628a84b773129a4de1c098d&amp;siteScreenName=BFEdev&amp;theme=light&amp;widgetsVersion=fcb1942%3A1632982954711&amp;width=550px" __idm_frm__="1102" data-tweet-id="608682016205344768" style="box-sizing: border-box; max-width: 100%; position: static; visibility: visible; width: 550px; height: 273px; display: block; flex-grow: 1;"></iframe>
+
+Inverting a node means swapping its left child and right child. You need to apply this to all nodes. As following figure illustrates.
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20211014220149.png)
+
+递归啊
+
+```js
+// This is the type for the node
+// type Node = null | {
+//   value: number
+//   left: Node
+//   right: Node
+// }
+
+
+/**
+ * @param {Node} node
+ * @returns {Node}
+ */
+function invert(node) {
+  // your code here
+  if (!node) return node;
+  if (node.left) invert(node.left);
+  if (node.right) invert(node.right);
+  [node.left, node.right] = [node.right, node.left];
+  return node;
+}
+```
+
+### 92. throttle Promises
+
+Say you need to fetch some data through 100 APIs, and as soon as possible.
+
+If you use `Promise.all()`, 100 requests go to your server at the same time, which is a burden to low spec servers.
+
+Can you **throttle your API calls so that always maximum 5 API calls at the same time**?
+
+You are asked to create a general `throttlePromises()` which takes an array of functions returning promises, and a number indicating the maximum concurrent pending promises.
+
+```js
+throttleAsync(callApis, 5).then((data) => {
+  // the data is the same as `Promise.all` 
+}).catch((err) => {
+  // any error occurs in the callApis would be relayed here
+})
+```
+
+By running above code, at any time, no more than 5 APIs are requested, so low spec servers are saved.
+
+Related Problems
+
+[4. implement basic throttle() ](https://bigfrontend.dev/problem/implement-basic-throttle)
+[5. implement throttle() with leading & trailing option ](https://bigfrontend.dev/problem/implement-throttle-with-leading-and-trailing-option)
+
+包装每个函数
+
+```js
+
+/**
+ * @param {() => Promise<any>} func
+ * @param {number} max
+ * @return {Promise}
+ */
+function throttlePromises(funcs, max){
+  // your code here
+  const results = [];
+  async function doWork(iterator) {
+    for (let [index, item] of iterator) {
+      const result = await item();
+      results[index] = result;
+    }
+  }
+
+  const iterator = Array.from(funcs).entries();
+  const workers = Array(max).fill(iterator).map(doWork);
+  return Promise.all(workers).then(() => results);
+}
+```
+
+### 92. throttle Promises
+
+Say you need to fetch some data through 100 APIs, and as soon as possible.
+
+If you use `Promise.all()`, 100 requests go to your server at the same time, which is a burden to low spec servers.
+
+Can you **throttle your API calls so that always maximum 5 API calls at the same time**?
+
+You are asked to create a general `throttlePromises()` which takes an array of functions returning promises, and a number indicating the maximum concurrent pending promises.
+
+```js
+throttleAsync(callApis, 5).then((data) => {
+  // the data is the same as `Promise.all` 
+}).catch((err) => {
+  // any error occurs in the callApis would be relayed here
+})
+```
+
+By running above code, at any time, no more than 5 APIs are requested, so low spec servers are saved.
+
+Related Problems
+
+[4. implement basic throttle() ](https://bigfrontend.dev/problem/implement-basic-throttle)
+[5. implement throttle() with leading & trailing option ](https://bigfrontend.dev/problem/implement-throttle-with-leading-and-trailing-option)
+
+```js
+
+/**
+ * @param {() => Promise<any>} func
+ * @param {number} max
+ * @return {Promise}
+ */
+function throttlePromises(funcs, max){
+  // your code here
+  const results = [];
+  async function doWork(iterator) {
+    for (let [index, item] of iterator) {
+      const result = await item();
+      results[index] = result;
+    }
+  }
+
+  const iterator = Array.from(funcs).entries();
+  const workers = Array(max).fill(iterator).map(doWork);
+  return Promise.all(workers).then(() => results);
+}
+```
+
+### 93. Generate Fibonacci Number with recursion
+
+In [86. Generate Fibonacci Number](https://bigfrontend.dev/problem/fibonacci-number) you are asked to create a `fib(n)`.
+
+This could be simply done by a recursion, but it costs so much time that your browser freezes, don't try it with large numbers.
+
+```js
+const fib = (n) => {
+  if (n === 0) return 0
+  if (n === 1) return 1
+  return fib(n - 1) + fib(n - 2)
+}
+
+fib(10) // 55
+fib(1000) // timeout
+```
+
+Can you improve above implementation to make it work for `fib(1000)` ? recursion should still be used.
+
+Related Problems
+
+[86. Generate Fibonacci Number](https://bigfrontend.dev/problem/fibonacci-number)
+
+尾递归
+
+```js
+// please modify code below to make it work for large number like `fib(1000)`
+// recursion should still be used
+
+function fib(n, a = 0, b = 1){
+  if (n === 0) return a;
+  if (n === 1) return b;
+  return fib(n - 1, b, a + b);
+}
+```
+
+### 94. implement your own `Object.create`
+
+You can use [Object.create()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create) to create a new object.
+
+Can you write your own `myObjectCreate()` to do the same(well for the basic usage) ?
+
+**Note**
+
+1. you don't need to support `propertiesObject `- 2nd parameter of Object.create
+2. throw an Error if non-object is passed in. ([why](https://stackoverflow.com/questions/18198178/null-prototype-object-prototype-and-object-create)?)
+3. `Object.create()` and `Object.setPrototypeOf()` should not be used.
+
+```js
+/**
+ * @param {any} proto
+ * @return {object}
+ */
+function myObjectCreate(proto) {
+  // your code here
+  if (typeof proto !== 'object' || proto === null) throw new Error('');
+  const obj = {};
+  obj.__proto__ = proto;
+  return obj;
+}
+```
+
+### 95. implement String.prototype.trim()
+
+[String.prototype.trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim) is commonly used when processing strings.
+
+It is very easy, can you implement your own one?
+
+There are many ways to do it, can you think of different approaches?
+
+```js
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function trim(str) {
+  // your code here
+  return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
+```
+
+### 95. implement String.prototype.trim()
+
+[String.prototype.trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim) is commonly used when processing strings.
+
+It is very easy, can you implement your own one?
+
+There are many ways to do it, can you think of different approaches?
+
+```js
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function trim(str) {
+  // your code here
+  return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
+```
+
+### 96. count "1" in binary form
+
+Given an integer, count "1" in its binary form.
+
+```js
+countOne(1) // 1,  "1"
+countOne(257799) // 12, "111110111100000111"
+```
+
+1. If you use built-in string methods in JavaScript, please do understand the time complexity, they are not free.
+2. Actually this could be easily done by counting the digit one by one. Could you think of some other approaches?
+
+```js
+/**
+ * @param {number} num - integer
+ * @return {number} count of 1 bit
+ */
+function countOne(num) {
+  // your code here
+  let res = 0;
+  while (num) {
+    num &= (num - 1);
+    res++;
+  }
+  return res;
+}
+```
+
+### 97. compress a string
+
+Given a string, compress the repeating letters with count number
+
+```js
+compress('a') // 'a'
+compress('aa') // 'a2'
+compress('aaa') // 'a3'
+compress('aaab') // 'a3b'
+compress('aaabb') // 'a3b2'
+compress('aaabba') // 'a3b2a'
+```
+
+使用正则表达式
+
+```js
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function compress(str) {
+  // your code here
+  str = str.replace(/(\w)\1+/g, ($0) => {
+      return $0[0] + $0.length;
+  });
+  return str;
+}
+```
+
+### 98. validate an IP address
+
+#### IPv4
+
+An [IPv4 Address](https://en.wikipedia.org/wiki/IP_address#IPv4_addresses) is represented in dot-decimal notation, consisting of 4 numbers( called 'octet'), each ranging from 0 to 255, like `1.22.33.255`. It has 32 bit, so there are maximum 2^32 = 4,294,967,296 IPv4 addresses.
+
+`Leading zeroes` are not allowed in IPv4, like `01.01.01.01` is invalid.
+
+#### IPv6
+
+An [IPv6 Address](https://en.wikipedia.org/wiki/IPv6_address) have 128 bits (which is a lot), separated by 8 groups (called 'hexadectet', or 'hextet', not fixed yet). Each group has 16 bits, so could be represented by a **hexadecimal string at 4 digits**, such as `2001:0db8:85a3:0000:0000:8a2e:0370:7334`.
+
+Notice that `leading zeroes` are allowed in IPv6.
+
+There are other valid format of IPv6 addresses, like [Zero compression](https://tools.ietf.org/html/rfc5952#section-2.2), but it is beyond the scope here, you can ignore them.
+
+#### Task
+
+You are given some random string, please write a function if it is valid IPv4 or IPv6 address.
+
+#### Follow-up
+
+Can you solve it with regular expressions ?
+
+分割判断每一位，不然更复杂
+
+```js
+
+/**
+ * @param {string} str
+ * @return {boolean}
+ */
+function isValidIP(str) {
+  // your code here
+  const arr4 = str.split('.');
+  const arr6 = str.split(':');
+
+  if (arr4.length === 4) {
+    if (arr4.every(part => part.match(/^0$|^([1-9]\d{0,2})$/) && Number(part) <= 255)) {
+      return true;
+    }
+  } else if (arr6.length === 8) {
+    if (arr6.every(part => part.match(/^[0-9a-fA-F]{1,4}$/))) {
+      return true;
+    }
+  }
+  return false;
+}
+```
+
+### 99. extract all anchor element from HTML string
+
+Given a HTML string, write a function to extract the anchor `<a/>` tag from it.
+
+```js
+extract(`
+<div>
+    <a>link1< / a><a href="https://bfe.dev">link1< / a>
+    <div<abbr>bfe</abbr>div>
+    <div>
+<abbr>bfe</abbr><a href="https://bfe.dev" class="link2"> <abbr>bfe</abbr>   <span class="l">l</span><span  class="i">i</span>   nk2   </a>
+    </div>
+</div>
+`)
+
+// [
+//    '<a>link1< / a>',
+//    '<a href="https://bfe.dev">link1< / a>',
+//    '<a href="https://bfe.dev" class="link2"> <abbr>bfe</abbr>   <span class="l">l</span><span  //class="i">i</span>   nk2   </a>'
+ //]
+```
+
+正则表达式
+
+```js
+
+/**
+ * @param {string} str
+ * @return {string[]}
+ */
+function extract(str) {
+  // your code here
+  return str.match(/<a(\s[^>]*)?>.*?<\s*\/\s*a>/g) || [];
+}
+```
+
+纯粹字符串操作
+
+```js
+
+/**
+ * @param {string} str
+ * @return {string[]}
+ */
+function extract(str) {
+  // your code here
+  let i = 0;
+  let res = [];
+  while (i < str.length) {
+    let start = str.indexOf('<a', i);
+    if (start === -1) return res;
+    if (str[start + 2] !== ' ' && str[start + 2] !== '>') {
+      i += 2;
+    } else {
+      let end = str.indexOf('a>', start + 2);
+      if (end === 1) return res;
+      res.push(str.slice(start, end + 2));
+      i = end + 2;
+    }
+  }
+  return res;
+}
+```
+
+### 100. detect circle in linked list
+
+A [Singly Linked List](https://en.wikipedia.org/wiki/Linked_list#Singly_linked_list) is a bunch of nodes linked in one direction.
+
+```ts
+class Node {
+  val: any
+  next: Node
+  constructor(val: any, next:Node) {
+    this.val = val
+    this.next = next
+  }
+}
+
+const node2 = new Node(2)
+const node1 = new Node(1, node2) // connect 1 -> 2
+```
+
+A Node might link to a node before it, thus creating a circle.
+
+Can you write a function to detect it?
+
+**Follow-up**
+
+What is the space cost for your approach? Can you solve it **without extra space**?
+
+```js
+/**
+ * @param {Node} head
+ * @return {boolean}
+ */
+function hasCircle(head) {
+  // your code here
+  if (!head) return false;
+  let fast = head, slow = head;
+
+  while (fast.next && fast.next.next) {
+    fast = fast.next.next;
+    slow = slow.next;
+
+    if (fast === slow) {
+      return true;
+    }
+  }
+
+  return false;
+}
+```
+
+### 101. merge identical API calls
+
+Suppose we have a utility function `getAPI()` which fetches data.
+
+```ts
+const getAPI =  <T>(
+  path: string, 
+  config: SomeConfig
+): Promise<T> => { ... }
+
+const list1 = await getAPI('/list', { keyword: 'bfe'})
+const list2 = await getAPI('/list', { keyword: 'dev'})
+```
+
+It works great. Util the UI become so complicated that same API might be called for multiple time within a relatively short period of time.
+
+You want to avoid the unnecessary API calls, based on following assumption:
+
+**GET API call response hardly changes within 1000ms.**
+
+So identical GET API calls should return the same response within 1000ms. By **identical**, it means `path` and `config` are [deeply equal](https://bigfrontend.dev/problem/implement-deep-equal-isEqual).
+
+You create `getAPIWithMerging(path: string, config: SomeConfig)`, which works like following.
+
+```js
+getAPIWithMerging('/list', { keyword: 'bfe'}).then(...)  
+// 1st call,  this will call getAPI
+
+getAPIWithMerging('/list', { keyword: 'bfe'}).then(...) 
+// 2nd call is identical to 1st call, 
+// so getAPI is not called, 
+// it resolves when 1st call resolves
+
+getAPIWithMerging('/list', { keyword: 'dev'}).then(...)
+// 3rd call is not identical, so getAPI is called
+
+// after 1000ms
+getAPIWithMerging('/list', {keyword: 'bfe'}).then(...)
+// 4th call is identical to 1st call, 
+// but since after 1000ms, getAPI is called.
+```
+
+#### Attention for memory leak!
+
+Your cache system should not bloat. For this problem, you should have 5 cache entries at maximum, which means:
+
+```js
+getAPIWithMerging('/list1', { keyword: 'bfe'}).then(...) 
+// 1st call, call callAPI(), add a cache entry
+getAPIWithMerging('/list2', { keyword: 'bfe'}).then(...) 
+// 2nd call, call callAPI(), add a cache entry
+getAPIWithMerging('/list3', { keyword: 'bfe'}).then(...) 
+// 3rd call, call callAPI(), add a cache entry
+getAPIWithMerging('/list4', { keyword: 'bfe'}).then(...) 
+// 4th call, call callAPI(), add a cache entry
+getAPIWithMerging('/list5', { keyword: 'bfe'}).then(...) 
+// 5th call, call callAPI(), add a cache entry
+
+getAPIWithMerging('/list6', { keyword: 'bfe'}).then(...) 
+// 6th call, call callAPI(), add a cache entry
+// cache of 1st call is removed
+
+getAPIWithMerging('/list1', { keyword: 'bfe'}).then(...) 
+// identical with 1st call, but cache of 1st call is removed
+// new cache of entry is added
+```
+
+#### clear()
+
+For test purpose, please provide a clear method to clear all cache.
+
+```js
+getAPIWithMerging.clearCache()
+```
+
+保存各值
+
+```js
+// getAPI is bundled with your code, config will only be some plain objects.
+// const getAPI = <T>(path: string, config: SomeConfig): Promise<T> => { ... }
+
+
+const cache = new Map();
+
+/**
+ * @param {string} path
+ * @param {object} config
+ * only plain objects/array made up serializable primitives
+ * @returns {Promise<any>}
+ */
+function getAPIWithMerging(path, config) {
+  const key = getHashKey(path, config);
+  const result = cache.get(key);
+  if(result) {
+    if(result.expiredAt > Date.now()) {
+      return Promise.resolve(result.promise);
+    }
+    cache.delete(key);
+  }
+  const promise = getAPI(path, config);
+  cache.set(key, { promise, expiredAt: Date.now() + 1000 })
+  return promise;
+}
+
+getAPIWithMerging.clearCache = () => {
+  cache.clear();
+}
+
+function getHashKey(path, config) {
+  const arr = [path];
+  const keys = Object.keys(config);
+  keys.sort()
+  for(let key of keys) {
+    arr.push([key, config[key]]);
+  }
+  return JSON.stringify(arr);
+}
+```
+
+### 102. validate string of parentheses
+
+Given a string containing only following characters:
+
+1. parentheses : `(` or `)`
+2. brackets: `[` or `]`
+3. braces: `{` or `}`
+
+write a function to **determine if they are valid**.
+
+By 'valid', it means all should be rightly paired, and with the valid order.
+
+```js
+validate('{}[]()') 
+// true
+
+validate('{[()]}') 
+// true
+
+validate('{[}]') 
+// false, they are not in the right order
+
+validate('{}}') 
+// false, last `}` is not paired with `{`
+```
+
+**Follow-up**
+
+What is time & space complexity of your approach ? Can you do it better?
+
+使用栈
+
+```js
+/**
+ * @param {string} str
+ * @return {boolean} 
+ */
+function validate(str) {
+  // your code here
+  const len = str.length;
+  if (!len) return true;
+  if (len % 2 !== 0) return false;
+  const map = new Map();
+  map.set('}', '{');
+  map.set(']', '[');
+  map.set(')', '(');
+  const stack = [];
+  for (let i = 0; i < len; i++) {
+    const char = str[i];
+    if (map.has(char)) {
+      if (!stack.length) return false;
+      if (stack.pop() !== map.get(char)) return false;
+    } else {
+      stack.push(char);
+    }
+  }
+  return stack.length === 0;
+}
+```
+
+### 103. implement Math.sqrt()
+
+[Math.sqrt()](https://tc39.es/ecma262/#sec-math.sqrt) helps us getting the square root of a number.
+
+Can your write your own `mySqrt()` ? You should return the integer part only, truncating the fraction part.
+
+```js
+mySqrt(0)
+// 1
+
+mySqrt(1)
+// 1
+
+mySqrt(2)
+// 1
+
+mySqrt(4)
+// 2
+
+mySqrt(NaN)
+// NaN
+```
+
+Attention for the [special case listed up in the spec](https://tc39.es/ecma262/#sec-math.sqrt).
+
+**Follow-up**
+
+What is time & space complexity of your solution ?Can you do better?
+
+[Source for this ](https://www.glassdoor.com/Interview/Implement-a-square-root-function-Question-related-to-array-data-manipulation-QTN_819390.htm)
+
+```js
+
+/**
+ * @param {any} x
+ * @return {number}
+ */
+function mySqrt(x) {
+  // your code here
+  if(typeof x !== 'number' || isNaN(x) || x < 0) return NaN;
+  let start = 0, end = Math.floor(x / 2);
+  let res = 1;
+  
+  while (start <= end) {
+    const mid = start + Math.floor((end - start) / 2);
+    const square = mid * mid;
+    if (square === x) return mid;
+    if (square > x) {
+      end = mid - 1;
+    } else {
+      res = Math.max(res, mid);
+      start = mid + 1;
+    }
+  }
+  return res;
+}
+```
+
+### 104. Traverse DOM level by level
+
+Given a DOM tree, flatten it into an one dimensional array, in the order of layer by layer, like below.
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20211016160242.png)
+
+队列层次遍历
+
+```js
+/**
+ * @param {HTMLElement | null} root
+ * @return {HTMLElement[]}
+ */
+function flatten(root) {
+  // your code here
+  const res = [];
+  if (!root) {
+    return res;
+  }
+  const queue = [root];
+  while (queue.length) {
+    const node = queue.shift();
+    res.push(node);
+    for (const child of node.children) {
+      queue.push(child);
+    }
+  }
+  return res;
+}
+```
+
+### 105. find the first duplicate character in a string
+
+Given a string which might have duplicate letters, write a function to find the first duplicate.
+
+```js
+firstDuplicate('abca')
+// 'a'
+
+firstDuplicate('abcdefe')
+// 'e'
+
+firstDuplicate('abcdef')
+// null
+```
+
+What is the time & space cost of your approach ? Can you do better?
+
+哈希表
+
+```js
+/**
+ * @param {string} str
+ * @return {string | null}
+ */
+function firstDuplicate(str) {
+  // your code here
+  const visited = new Set();
+  for (const char of str) {
+    if (visited.has(char)) {
+      return char;
+    } else {
+      visited.add(char);
+    }
+  }
+  return null;
+}
+```
+
+### 106. Find two numbers that sum up to 0
+
+Given an array of integers, find two number that sums up to 0, return their indices.
+
+There might be multiple pairs, any of them would do. If not found, return `null`
+
+```js
+findTwo([1,2,3,-1])
+// [0,3]
+
+findTwo([1,2,3,-1,-2,0])
+// [0,3] or [1,4] or [5, 5]
+
+findTwo([1,2,3,4])
+// null
+```
+
+使用哈希
+
+```js
+
+/**
+ * @param {number[]} arr
+ * @return {number[]}
+ */
+function findTwo(arr) {
+  // your code here
+  if (!arr || arr.length < 2) {
+    return null;
+  }
+  let visited = new Map();
+  for (let i in arr) {
+    if (visited.has(-arr[i])) return [visited.get(-arr[i]), i];
+    visited.set(arr[i], i);
+  }
+  return null;
+}
+```
+
+### 107. Find the largest difference
+
+Given an array of numbers, pick any two numbers `a` and `b`, we could get the difference by `Math.abs(a - b)`.
+
+Can you write a function to get the largest difference?
+
+```js
+largestDiff([-1, 2,3,10, 9])
+// 11,  obviously Math.abs(-1 - 10) is the largest
+
+largestDiff([])
+// 0
+
+largestDiff([1])
+// 0
+```
+
+找最大值和最小值，相减
+
+```js
+/**
+ * @param {number[]} arr
+ * @return {number}
+ */
+function largestDiff(arr) {
+  // your code here
+  if (!arr) return 0;
+  const n = arr.length;
+  if (n < 2) return 0;
+  let min = Infinity;
+  let max = -Infinity;
+
+  for (let i = 0; i < n; i++) {
+    min = Math.min(arr[i], min);
+    max = Math.max(arr[i], max);
+  }
+
+  return max - min;
+}
+```
+
+### 108. Implement a Stack by using Queue
+
+> This is reversed problem of [13. Implement a Queue by using Stack](https://bigfrontend.dev/problem/implement-a-queue-by-using-stack)
+
+In JavaScript, we could use array to work as both a Stack or a queue.
+
+```js
+const arr = [1, 2, 3, 4]
+
+arr.push(5) // now array is [1, 2, 3, 4, 5]
+arr.pop() // 5, now the array is [1, 2, 3, 4]
+```
+
+Above code is a Stack, while below is a Queue
+
+```js
+const arr = [1, 2, 3, 4]
+
+arr.push(5) // now the array is [1, 2, 3, 4, 5]
+arr.shift() // 1, now the array is [2, 3, 4, 5]
+```
+
+now suppose you have a Queue, which has only follow interface:
+
+```js
+class Queue {
+  enqueue(element) { /* add element to queue, similar to Array.prototype.push */ }
+  peek() { /* get the head element*/ }
+  dequeue() { /* remove the head element, similar to Array.prototype.pop */ }
+  size() { /* count of elements */ }
+}
+```
+
+Could you implement a Stack by using only above Queue? A Stack must have following interface
+
+```js
+class Stack {
+  push(element) { /* add element to stack */ }
+  peek() { /* get the top element */ }
+  pop() { /* remove the top element */}
+  size() { /* count of elements */}
+}
+```
+
+*note*
+
+you can only use Queue as provided. Don't use Array, it is not what this is for.
+
+Related Problems
+
+[13. Implement a Queue by using Stack ](https://bigfrontend.dev/problem/implement-a-queue-by-using-stack)
+
+封装一个栈
+
+```js
+/* you can use this Queue which is bundled together with your code
+class Queue {
+  enqueue(element) {
+    // add new element to the queue
+  }
+  peek() { 
+    // return the head element
+  }
+  dequeue() { 
+    // remove head element from the queue
+  }
+  size() { 
+    // return the queue size
+  }
+}
+*/
+
+
+// you need to complete the following Stack, using only Queue
+class Stack {
+  constructor() {
+    this.queue = new Queue();
+  }
+  push(element) {
+    // push an element into the stack
+    let rotations = this.size();
+    this.queue.enqueue(element);
+    while (rotations > 0) {
+      this.queue.enqueue(this.queue.dequeue());
+      rotations--;
+    }
+  }
+  peek() { 
+    // get the top element
+    return this.queue.peek();
+  }
+  pop() { 
+    // remove top element from stack
+    return this.queue.dequeue();
+  }
+  size() { 
+    // return count of elements
+    return this.queue.size();
+  }
+}
+```
+
+### 109. implement `Math.pow()`
+
+Can you write your own [Math.pow()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/pow) ? The power would only be integers.
+
+```js
+pow(1, 2)
+// 1
+
+pow(2, 10)
+// 1024
+
+pow(4, -1)
+// 0.25
+```
+
+All inputs are safe.
+
+**Follow-up**
+
+You can easily solve this problem by multiplying the base one after another, but it is slow. For power of `n`, it is needed to do the multiplication `n` times, can you think of a faster solution ?
+
+按位计算
+
+```js
+/**
+ * @param {number} base
+ * @param {number} power - integer
+ * @return {number}
+ */
+function pow(base, power){
+  // your code here
+  if (power < 0) {
+    return 1 / powBinary(base, -power);
+  }
+  
+  return powBinary(base, power);
+}
+
+function powBinary(base, power) {
+  if (power === 0) return 1;
+  if (power === 1) return base;
+  
+  const halfRes = pow(base, Math.floor(power / 2));
+  return power % 2 == 0 ? halfRes * halfRes : halfRes * halfRes * base;
+}
+```
+
+### 110. serialize and deserialize binary tree
+
+Can you transform(serialize) a binary tree into a string and restore(deserialize) a binary tree from the string? Just like what [JSON.stringify()](https://bigfrontend.dev/problem/implement-JSON-stringify) and [JSON.parse()](https://bigfrontend.dev/problem/implement-JSON-parse) do.
+
+For example, for a tree from [91. invert a binary tree](https://bigfrontend.dev/problem/invert-a-binary-tree)
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20211016212854.png)
+
+BFE.dev would serialize it to `[1,2,3,4,null,null,5,6,7,8,null,null,null,null,9]`
+
+But there are more ways of doing it rather than above, any would be fine as long as your `deserialize()` and `serialize()` work as a pair.
+
+Your code is tested like this:
+
+```js
+const tree1 = ...
+expect(typeof serialize(tree1)).toBe('string')
+
+const tree2 = deserialize(serialize(tree1)) 
+expect(isIdentical(tree1, tree2)).toBe(true)
+```
+
+Binary tree in this problem consists of value of integers.
+
+递归实现
+
+```js
+// This is the class for the node
+// you can use this directly as it is bundled with your code
+
+// class Node {
+//   value: number
+//   left: null | Node
+//   right: null | Node
+//   constructor(val) {
+//     this.value = val
+//     this.left = null
+//     this.right = null
+//   }
+// }
+
+/**
+ * @param {Node} root
+ * @return {string}
+ */
+function serialize(root) {
+  // your code here
+  if (!root) return 'null';
+
+  return `${root.val},${serialize(root.left)},${serialize(root.right)}`
+}
+
+/**
+ * @param {string} str
+ * @return {Node}
+ */
+function deserialize(str) {
+  // your code here
+  const arr = str.split(',');
+
+  return dfs(arr);
+
+  function dfs(queue) {
+    if (!queue.length) return null;
+    const v = queue.shift();
+
+    if (v === 'null') {
+      return null;
+    } else {
+      const node = new Node(v);
+      node.left = dfs(queue);
+      node.right = dfs(queue);
+      return node;
+    }
+  }
 }
 ```
 
