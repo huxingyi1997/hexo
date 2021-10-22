@@ -7769,3 +7769,630 @@ function deserialize(str) {
 }
 ```
 
+### 111. Count palindromic substrings
+
+A palindromic string reads the same backward as forward, such as `'madam'`.
+
+Now given a string, count how many substrings it has?
+
+Like `'madam'`, it has following palindromic strings:
+
+```js
+'m'
+'a'
+'d'
+'a'
+'m'
+'ada'
+'madam'
+```
+
+What is the time and space cost of your solution ? Could you improve it ?
+
+> Thanks to [@TechieQian](https://bigfrontend.dev/user/TechieQian) for helping with the test cases.
+
+```js
+/**
+ * @param {string} str
+ * @return {number}
+ */
+function countPalindromicSubstr(str) {
+  // your code here
+  let countPal = 0;
+  if(str.length === 0) return countPal;
+
+  const n = str.length;
+  for (let i = 0; i < n; i++) {
+    expand(i, i); // odd palindrome
+    expand(i, i + 1); // even palindrome
+  }
+
+  function expand(left, right) {
+    while (left >= 0 && right < n && str[left] === str[right]) {
+      countPal++;
+      left--;
+      right++;
+    }
+  }
+
+  return countPal;
+}
+```
+
+### 112. remove duplicate characters in a string
+
+Given a string which, write a function to remove the duplicate characters to make sure that each character only occurs once.
+
+For example
+
+```js
+'xyzabcxyzabc'
+```
+
+Each character appears twice, we could make it unique as follows
+
+```js
+'xyzabc'
+'xyabcz'
+'xabcyz'
+'abcxyz'
+'abxyzc'
+.....
+```
+
+Above all substrings subsequences ([*](https://bigfrontend.dev/problem/112/discuss/394)) contains unique characters, but you need to return the **smallest** one in lexicographical order( 'a' -> 'z'), which is `'abcxyz'`.
+
+All input only contains valid lowercase alphabets only.
+
+找到重复的字母
+
+```js
+
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function smallestUniqueSubstr(str) {
+  // your code here
+  if (str.length === 0) return str;
+
+  let subStr = new Set();
+  let lastElem = str[str.length - 1];
+  subStr.add(lastElem);
+  for (let i = str.length - 2; i >= 0; i--) {
+    let char = str[i];
+    if (char < lastElem || !subStr.has(char)) {
+      subStr.delete(char);
+      subStr.add(char);
+      lastElem = char;
+    }
+  }
+
+  return Array.from(subStr).reverse().join('');
+}
+```
+
+### 113. Virtual DOM I
+
+Suppose you have solved [110. serialize and deserialize binary tree](https://bigfrontend.dev/problem/serialize-and-deserialize-binary-tree), have you wondered how to do similar task to DOM tree ?
+
+HTML string could be thought as some sort of [serialization](https://en.wikipedia.org/wiki/Serialization), the browser parses(deserialize) the HTML → construct the DOM tree.
+
+Besides XML base, we could try JSON for this. If we log the element presentation in React, like below
+
+```jsx
+const el = 
+  this is 
+  a  button  from BFE.dev
+ 
+;
+
+console.log(el)
+```
+
+we would get this( ref, key .etc are stripped off)
+
+```js
+{
+  type: 'div',
+  props: {
+    children: [
+      {
+        type: 'h1',
+        props: {
+          children: ' this is '
+        }
+      },
+      {
+        type: 'p',
+        props: {
+          className: 'paragraph',
+          children: [
+            ' a ',
+            {
+              type: 'button',
+              props: {
+                children: ' button '
+              }
+            },
+            ' from',
+            {
+              type: 'a',
+              props: {
+                href: 'https://bfe.dev',
+                children: [
+                  {
+                    type: 'b',
+                    props: {
+                      children: 'BFE'
+                    }
+                  },
+                  '.dev'
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+Clearly this is the same tree structure but only in object literal.
+
+Now you are asked to serialize/deserialize the DOM tree, like what React does.
+
+**Note**
+
+**Functions like event handlers and custom components are beyond the scope of this problem, you can ignore them**, just focus on basic HTML tags.
+
+You should support:
+
+1. TextNode (string) as children
+2. single child and multiple children
+3. camelCased properties.
+
+`virtualize()` takes in a real DOM tree and create an object literal `render()` takes in a object literal presentation and recreate a DOM tree.
+
+Related Problems
+
+[118. Virtual DOM II - createElement](https://bigfrontend.dev/problem/virtual-dom-II-createElement)
+[140. Virtual DOM III - Functional Component](https://bigfrontend.dev/problem/virtual-DOM-III-Functional-Component)
+[143. Virtual DOM IV - JSX 1](https://bigfrontend.dev/problem/virtual-dom-iv-jsx-1)
+[150. Virtual DOM V - JSX 2](https://bigfrontend.dev/problem/virtual-dom-v-jsx-2)
+
+BFS转化
+
+```js
+/**
+ * @param {HTMLElement} 
+ * @return {object} object literal presentation
+ */
+function virtualize(element) {
+  // your code here
+  // virtualize top level element
+  // recursively handle the children (childNodes)
+  const result = {
+    type: element.tagName.toLowerCase(),
+    props: {}
+  }
+  // props (without children)
+  for (let attr of element.attributes) {
+    const name = attr.name === 'class' ? 'className' : attr.name;
+    result.props[name] = attr.value;
+  }
+  // children
+  const children = [];
+  for (let node of element.childNodes) {
+    if (node.nodeType === 3) {
+      children.push(node.textContent);
+    } else {
+      children.push(virtualize(node));
+    }
+  }
+  result.props.children = children.length === 1 ? children[0] : children;
+  
+  return result;
+}
+
+
+/**
+ * @param {object} valid object literal presentation
+ * @return {HTMLElement} 
+ */
+function render(obj) {
+  // create the top level emlement
+  // recursively append the children
+  // textnode
+  if (typeof obj === 'string') {
+    return document.createTextNode(obj);
+  }
+
+  // element
+  const {type, props: {children, ...attrs}} = obj;
+  const element = document.createElement(type);
+
+  for (let [attr, value] of Object.entries(attrs)) {
+    element[attr] = value;
+  }
+
+  const childrenArr = Array.isArray(children) ? children : [children];
+  
+  for (let child of childrenArr) {
+    element.append(render(child));
+  }
+  
+  return element;
+}
+```
+
+### 114. implement BigInt multiplication
+
+This is a follow-up on [76. implement BigInt addition with sign](https://bigfrontend.dev/problem/implement-BigInt-addition-with-sign).
+
+You are asked to create a function that multiplies two big integers in string.
+
+```js
+multiply(
+  '1123456787654323456789', 
+  '1234567887654323456'
+)
+// '1386983673205309924427166592431045142784'
+```
+
+按照每位进行计算
+
+```js
+/**
+ * @param {string} a 
+ * @param {string} b
+ * @return {string}
+ */
+function multiply(a, b) {
+  let sign = '';
+
+  if (a === '0' || b === '0') return '0';
+
+  if(a[0] === '-' && b[0] !== '-') {
+    sign = '-';
+    a = a.substr(1);
+  } else if (a[0] !== '-' && b[0] === '-') {
+    sign = '-';
+    b = b.substr(1);
+  } else if (a[0] === '-' && b[0] === '-') {
+    a = a.substr(1);
+    b = b.substr(1);
+  }
+
+  let result = new Array(a.length + b.length).fill(0);
+
+  for(let i = a.length - 1; i >= 0; i --) {
+    for(let j = b.length - 1; j >= 0; j--) { 
+      const m = i + j + 1;
+      const n = i + j;
+
+      const s = (+a[i]) * (+b[j]) + result[m] 
+      result[m] = s % 10;
+      result[n] += Math.floor(s / 10);
+    }
+  }
+
+  while (result[0] === 0) {
+    result.shift();
+  }
+
+  return sign + result.join('');
+}
+```
+
+### 115. implement BigInt division
+
+This is a follow-up on [114. implement BigInt multiplication](https://bigfrontend.dev/problem/implement-BigInt-multiplication).
+
+You are asked to create a BigInt division function.
+
+```js
+divide(
+  '1123456787654323456789', 
+  '1234567887654323456'
+)
+// '910'
+
+divide(
+  '-1123456787654323456789', 
+  '1234567887654323456'
+)
+// '-910'
+```
+
+Notice the result should be **rounded towards 0**.
+
+```js
+divide(
+  '5', 
+  '2'
+)
+// '2'
+
+divide(
+  '-3', 
+  '2'
+)
+// '-1'
+```
+
+是
+
+```js
+
+/**
+ * @param {string} a
+ * @param {string} b
+ * @return {string}
+ */
+function divide(a, b) {
+  const negRes = ((a.startsWith('-') && !b.startsWith('-')) || (b.startsWith('-') && !a.startsWith('-')));
+  if (a.startsWith('-')) a = a.slice(1);
+  if (b.startsWith('-')) b = b.slice(1); 
+  if (b === '0') throw new Error('');
+  if (b === '1') return negRes ? '-' + a : a;
+  
+  let res = b;
+  let count = 1;
+  while((+res < +a || res < a) && res.length <= a.length) {
+    res = add(res, b);
+    count++;
+  }
+  count--
+  return negRes ?  '-' + count : ''  + count;
+}
+
+function add(num1, num2) {
+  if (num1.length > num2.length) {
+    num2 = num2.padStart(num1.length, 0);
+  } else if (num2.length > num1.length) {
+    num1 = num1.padStart(num2.length, 0);
+  }
+  let carry = 0;
+  let res = '';
+  for (let i = num1.length - 1; i >= 0; i--) {
+    const ans = +num1[i] + +num2[i] + carry;
+    if (ans >= 10) {
+      carry = Math.floor(ans/10);
+      res = `${ans%10}${res}`;
+    } else {
+      carry = 0;
+      res = `${ans}${res}`;
+    }
+  }
+  if (carry > 0) {
+    res = `${carry}${res}`;
+  }
+  return res;
+}
+```
+
+### 116. implement Object.is()
+
+[Object.is()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is) is similar to `===` except following cases
+
+```js
+Object.is(0, -0) // false
+0 === -0 // true
+
+Object.is(NaN, NaN) // true
+NaN === NaN // false
+```
+
+Here is the [detailed spec](https://www.ecma-international.org/ecma-262/6.0/#sec-samevalue), can you implement your own `is()`?
+
+特别判断一下类型
+
+```js
+/**
+ * @param {any} a
+ * @param {any} b
+ * @return {boolean}
+ */
+function is(a, b) {
+  // your code here
+  if (typeof a === 'number' && typeof b === 'number') {
+    if (Number.isNaN(a) && Number.isNaN(b)) {
+      return true;
+    }
+
+    // 区分正负0
+    if (a === 0 && b === 0 && 1 / a !== 1 / b) {
+      return false;
+    }
+  }
+  return a === b;
+}
+```
+
+### 117. event delegation
+
+[What is Event Delegation?](https://bigfrontend.dev/question/What-is-Event-Delegation)
+
+Can you create a function which works like [jQuery.on()](https://api.jquery.com/on/), that attaches event listeners to selected elements.
+
+In jQuery, selector is used to target the elements, in this problem, it is changed to a predicate function.
+
+```js
+onClick(
+  // root element
+  document.body,  
+  // predicate
+  (el) => el.tagName.toLowerCase() === 'div',  
+  function(e) {
+    console.log(this);
+    // this logs all the `div` element
+  }
+)
+```
+
+1. [event.stopPropagation()](https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation) and [event.stopImmediatePropagation()](https://developer.mozilla.org/en-US/docs/Web/API/Event/stopImmediatePropagation) should also be supported.
+2. you should only attach one real event listener to the root element.
+
+添加监听器
+
+```js
+const allHandlers = new Map();
+/**
+ * @param {HTMLElement} root
+ * @param {(el: HTMLElement) => boolean} predicate
+ * @param {(e: Event) => void} handler
+ */
+function onClick(root, predicate, handler) {
+  // your code here
+  if (allHandlers.has(root)) {
+    allHandlers.get(root).push([predicate, handler]);
+    return;
+  }
+
+  allHandlers.set(root, [[predicate, handler]]);
+
+  // attach the real handler
+  root.addEventListener('click', function(e) {
+    // from e.target -> root
+    // check if element shoulded applied witht handler
+
+    let el = e.target;
+    const handlers = allHandlers.get(root);
+    let isPropagationStopped = false;
+
+    e.stopPropagation = () => {
+      isPropagationStopped = true;
+    }
+
+    while (el) {
+      let isImmediatePropagationStopped = false;
+
+      e.stopImmediatePropagation = () => {
+        isImmediatePropagationStopped = true;
+        isPropagationStopped = true;
+      }
+
+      for (const [predicate, handler] of handlers) {
+        if (predicate(el)) {
+          handler.call(el, e);
+
+          // check immediatepropagtion
+          if (isImmediatePropagationStopped) {
+            break;
+          }
+        }
+      }
+
+      // check propagation
+      if (el === root || isPropagationStopped) break;
+
+      el = el.parentElement;
+    }
+  }, false);
+}
+```
+
+### 118. Virtual DOM II - createElement
+
+> This is a follow-up on [113. Virtual DOM I](https://bigfrontend.dev/problem/Virtual-DOM-I).
+
+Suppose you have solved above problem, now let's take a look at [React.createElement()](https://reactjs.org/docs/react-api.html#createelement):
+
+```js
+React.createElement(
+  type,
+  [props],
+  [...children]
+)
+```
+
+1. First argument is type, it could be set to Custom Component, but here in this problem, it would only be HTML tag name
+2. Second argument is props, here in this problem, it would only be the (common) camelCased HTML attributes
+3. the rest arguments are the children, which in React supports many data types, but in this problem, it only has the element type of MyElement, or string for TextNode.
+
+**You are asked to create your own createElement() and render()**, so that following code could create the exact HTMLElement in [113. Virtual DOM I](https://bigfrontend.dev/problem/Virtual-DOM-I).
+
+```js
+const h = createElement
+
+render(h(
+  'div',
+  {},
+  h('h1', {}, ' this is '),
+  h(
+    'p',
+    { className: 'paragraph' },
+    ' a ',
+    h('button', {}, ' button '),
+    ' from ',
+    h('a', 
+      { href: 'https://bfe.dev' }, 
+      h('b', {}, 'BFE'),
+      '.dev')
+  )
+))
+```
+
+**Notes**
+
+1. The goal of this problem is not to create the replica of React implementation, you can have your own object representation format other than the one in [113. Virtual DOM I](https://bigfrontend.dev/problem/Virtual-DOM-I).
+2. Details about ref, key are ignored here, they will be put in other problems. Re-render is not covered here, it will be in another problem as well.
+
+Related Problems
+
+[113. Virtual DOM I ](https://bigfrontend.dev/problem/Virtual-DOM-I)
+[140. Virtual DOM III - Functional Component](https://bigfrontend.dev/problem/virtual-DOM-III-Functional-Component)
+[143. Virtual DOM IV - JSX 1](https://bigfrontend.dev/problem/virtual-dom-iv-jsx-1)
+[150. Virtual DOM V - JSX 2](https://bigfrontend.dev/problem/virtual-dom-v-jsx-2)
+
+### 119. create a tokenizer
+
+> Given a character sequence and a defined document unit, tokenization is the task of chopping it up into pieces, called tokens , perhaps at the same time throwing away certain characters, such as punctuation. ([ref](https://nlp.stanford.edu/IR-book/html/htmledition/tokenization-1.html))
+
+For tasks of string processing, in many cases we are given a string, and are asked to understand this string in specific logic and then return the result.
+
+For example, if we are to calculate the result of following expression:
+
+```js
+ 1 * (20 -   300      ) 
+```
+
+before we implement the logic, first we need to get the "keywords"(tokens) and ignore the spaces, like following:
+
+```js
+'1','*', '(', '20', '-', '300', ')'
+```
+
+Then we can process above tokens and get the result easier.
+
+**You are asked to implement a tokenize() for arithmetic expression** , which works as below:
+
+```js
+const tokens = tokenize(' 1 * (20 -   300      ) ')
+
+
+while (true) {
+  let token = tokens.next()
+  if (token.done) {
+    break
+  }
+  console.log(token.value)
+}
+```
+
+or you can use `for ... of`
+
+```js
+for (let token of tokens) {
+    console.log(token)   
+}
+```
+
+Because it is trivial, in a real interview you talk to interviewer and implement tokenizer later, this could save yourself some time for more important tasks.
+
+**Input**
+
+1. input only contains valid non-negative integers with `+`, `-`, `*`, `/`, `(`, `)` and spaces, space should be ignored.
+2. your method should return an [Generator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) object.
