@@ -2304,3 +2304,29 @@ foo()
 Error
 ```
 
+### 70. two-way generator
+
+What does the code snippet to the right output by `console.log`?
+
+```js
+function* gen() {
+  yield 2 * (yield 100)
+}
+
+const generator = gen()
+console.log(generator.next().value)
+console.log(generator.next(1).value)
+console.log(generator.next(1).value)
+```
+
+第一次返回的结果为1，打印100，第二次打印2*1=2
+
+```sh
+100
+2
+undefined
+```
+
+### 71. Array length
+
+What does the code snippet to the right output by `console.log`?
