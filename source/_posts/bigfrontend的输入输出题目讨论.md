@@ -1,5 +1,5 @@
 ---
-title:  bigfrontend的输入输出题目讨论
+title:  bigfrontend的输入输出题目讨论（缓慢更新中）
 date: 2021-06-17 21:07:33
 categories: 
 - web前端
@@ -12,11 +12,13 @@ tags:
 国外前端会考察哪些问题？js函数、系统设计、TS类型体操的用法，大大拓宽了我的眼界，去思考和实战更加相关的问题吧，输入输出考验了对js语法的掌握程度，值得多次学习。
 <!-- more -->
 
-## 输入输出
+# 输入输出
 
 综合考察对js的熟悉程度
 
-### 1. Promise order
+## [1. Promise order](https://bigfrontend.dev/quiz/1-promise-order)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -47,6 +49,8 @@ setTimeout(() => {
 }, 0)
 ```
 
+### 答案
+
 实践循环宏任务微任务
 
 ```sh
@@ -61,7 +65,76 @@ setTimeout(() => {
 8
 ```
 
-### 2. Promise executor
+### 详细解析
+
+#### Part 1 - Sync Code
+
+```js
+console.log(1) // sync JS
+
+// promise run constructor function
+// because here resolve is NOT async, then still in sequence to run
+const promise = new Promise((resolve) => {
+  console.log(2) 
+  resolve() // only mark the promise's internal state to be "Fulfilled"
+  console.log(3) // still run to the end of this callback function
+})
+
+console.log(4) // continue to run sequentially
+```
+
+Until now the result output is **Sequential & Sync**:
+
+```js
+1
+2
+3
+4
+```
+
+#### Part 2 - Async & Sync
+
+```js
+// Async: Job Queue for promise
+promise.then(() => {
+  console.log(5) 
+}).then(() => {
+  console.log(6) 
+})
+
+// Sync: should be run immediately compared to ASYNC
+console.log(7) 
+
+// Async: event loop & callback queue for Web API
+setTimeout(() => {
+  console.log(8) 
+}, 10)
+
+// Async: event loop & callback queue for Web API
+setTimeout(() => {
+  console.log(9) 
+}, 0) // even though time is 0, still an ASYNC Call
+```
+
+For the 2nd part, it has both **Sync & Async**, then the priority and order becomes:
+
+- 1st: Sync code
+- 2nd: Async for Job Queue -> process promise
+- 3rd: Async for Callback Queue -> process Web API call
+
+Output for second part should be:
+
+```js
+7 // sync code
+5 // job queue
+6 // job queue
+9 // callback queue 0s
+8 // callback queue 10s
+```
+
+## [2. Promise executor](https://bigfrontend.dev/quiz/2-promise-executor)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -77,13 +150,17 @@ new Promise((resolve, reject) => {
 })
 ```
 
+### 答案
+
 Promise链式调用返回的值和值的穿透
 
 ```sh
 1
 ```
 
-### 3. Promise then callbacks
+## [3. Promise then callbacks](https://bigfrontend.dev/quiz/3-promise-then-callbacks)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -96,13 +173,73 @@ Promise.resolve(1)
 .then(console.log)
 ```
 
+### 答案
+
 Promise链式调用返回的值和值的穿透
 
 ```sh
 6
 ```
 
-### 4. Promise then callbacks II
+### 详细解析
+
+```js
+> Promise.resolve(1)
+  .then(console.log)
+// > 1
+```
+
+Is the same as
+
+```js
+> new Promise((resolve) => resolve(1))
+  .then((val) => console.log(val))
+// > 1
+```
+
+Therefore,
+
+```js
+Promise.then(() => 2)
+  .then(console.log)
+// > 2
+```
+
+But don't forget that if you don't use the new value you are chaining, it won't be used, e.g.
+
+```js
+Promise.resolve(1)
+  .then(() => 2)
+  .then(console.log)
+// > 2 # as 1 isn't passed in the first 'then', e.g. .then(num => num + 2)
+```
+
+And you can't have numbers in .then calls, they need to be functions, ts throws this error, therefore that goes onto the reject pile and we skip over it
+
+```js
+Promise.resolve(1)
+  .then(3) // Argument of type '3' is not assignable to parameter of type '(value: number) => number | PromiseLike<number>'.ts(2345)
+Promise.resolve(1).then(Promise.resolve(4)).then(console.log)
+// > 1
+then(Promise.resolve(4))
+```
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
+
+> returns another pending promise object, the resolution/rejection of the promise returned by then will be subsequent to the resolution/rejection of the promise returned by the handler. Also, the resolved value of the promise returned by then will be the same as the resolved value of the promise returned by the handler.
+
+```js
+Promise.resolve(1) // 1
+.then(() => 2) // 2 (as 1 isn't used)
+.then(3) // skip
+.then((value) => value * 3) // 2 * 3 == 6
+.then(Promise.resolve(4)) // creates a Pending promise
+.then(console.log) // funnels 6 into console.log
+```
+
+## [4. Promise then callbacks II](https://bigfrontend.dev/quiz/4-Promise-then-callbacks-II)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -132,6 +269,8 @@ Promise.resolve(1)
 })
 ```
 
+### 答案
+
 Promise链式调用返回的值和值的穿透
 
 ```sh
@@ -145,7 +284,105 @@ undefined
 undefined
 ```
 
-### 5. block scope
+### 详细解析
+
+I was told that in other classical languages eg: C++, or java, the template order of these 3 keyword is impressive in my memory:
+
+```js
+try{}
+catch{}
+finally{}
+```
+
+But let's **think in JavaScript** .
+
+#### 1. finally() never receive an argument
+
+docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally
+
+#### 2. Normal return value in finally won't make effect on promise object
+
+#### 3. throw Error in finally()
+
+Note: A throw (or returning a rejected promise) in the finally callback will reject the new promise with the rejection reason specified when calling throw.
+
+```js
+Promise.reject(1)
+.finally(() => {                                                                                                                 
+    throw new  Error(2); 
+});
+// or 
+Promise.reject(1)
+.finally(() => {                                                                                                                          
+    return Promise.reject(2); 
+});
+```
+
+The return promise object rejected value will be affected with **2**.
+
+#### 4. Order of then() & catch()
+
+Remember `then()` & `catch()` can be called to handle the promise at any time and at any order. It will use the latest final state of the promise object, and affects the new value of the promise object.
+
+```js
+Promise.reject(1)
+.catch((val)=>{
+    console.log(val); // 1 : rejected value is 1 
+    // return nothing
+    // will return undefined for promise object
+})
+.then((val)=>{
+    console.log(val); // undefine: current promise object is already handled by "catch()"
+})
+```
+
+#### 5. Full solution of original problem
+
+```js
+Promise.resolve(1)
+.then((val) => {
+  console.log(val) // resolve with value 1
+  return val + 1  //  return 2  
+}).then((val) => {
+  console.log(val) // 2
+  // return undefined
+}).then((val) => {
+  console.log(val)  // undefined   
+  return Promise.resolve(3)
+    .then((val) => {
+      console.log(val) // 3
+      // return undefined
+    })
+}).then((val) => {
+  console.log(val)  // undefined 
+  return Promise.reject(4)  // return 4    
+}).catch((val) => {
+  console.log(val)  // 4
+  // return undefined
+}).finally((val) => {
+  console.log(val)  // undefined: finally has no arguments
+  return 10   // no effect on promise object
+}).then((val) => {
+  console.log(val)  // undefined: because last 'catch()' handled the promise object with 'undefined'
+})
+```
+
+#### Final Output:
+
+```js
+1
+2
+undefined
+3
+undefined
+4
+undefined
+undefined
+```
+
+## [5. block scope](https://bigfrontend.dev/quiz/block-scope-1)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -158,6 +395,8 @@ for (let i = 0; i < 5; i++) {
   setTimeout(() => console.log(i), 0)
 }
 ```
+
+### 答案
 
 考的是对于声明变量和作用域的理解
 
@@ -174,7 +413,35 @@ for (let i = 0; i < 5; i++) {
 4
 ```
 
-### 6. Arrow Function
+### 详细解析
+
+Using let means program work as you expect. e.g. this below snippet prints
+
+0 1 2 3 4
+
+```js
+for (let i = 0; i < 5; i++) {
+  setTimeout(() => console.log(i), 0)
+}
+```
+
+However, with
+
+```js
+for (var i = 0; i < 5; i++) {
+  setTimeout(() => console.log(i), 0)
+}
+```
+
+If we use var, then var gets hoisted outside of the block scope into the outer function scope, as var makes it function scoped instead of block scoped.
+
+And, if we have any closures created in the loop, let variables will be bound to the value from only that iteration of the loop, whereas var variables will be the current value of the variable, which at that point of the settimeout it is 5, hence it prints.
+
+5 5 5 5 5
+
+## [6. Arrow Function](https://bigfrontend.dev/quiz/6-Arrow-Function)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -225,6 +492,8 @@ console.log(obj.h()())
 console.log(obj.i()())
 ```
 
+### 答案
+
 考察this指向，主要是箭头函数和字面量函数
 
 ```sh
@@ -239,7 +508,114 @@ undefined
 "bfe"
 ```
 
-### 7. Increment Operator
+### 详细解析
+
+Equivalent
+
+```js
+const obj = {
+  dev: 'bfe',
+  a: function() {
+    return this.dev
+  },
+  b() {
+    return this.dev
+  },
+}
+
+console.log(obj.a()) // bfe
+console.log(obj.b()) // bfe
+```
+
+Arrow function 'this'
+
+```js
+const obj = {
+  dev: 'bfe',
+  c: () => {
+    // When we use arrow functions as object properties
+    // it creates a new context, so console.log(this) is
+    // everything in this arrow function, dev isn't there
+    return this.dev
+  },
+}
+console.log(obj.c()) // undefined
+```
+
+IFFE and arrow functions
+
+```js
+const obj = {
+  dev: 'bfe',
+  d: function() {
+    // although this is an arrow function
+    // it's an IIFE, so when parsed it turns into this
+    // return this.dev
+    return (() => {
+      return this.dev
+    })()
+  },
+  e: function() {
+    // b or e don't have arrow functions
+    // so they can still access dev in the
+    // context of this
+    return this.b()
+  },
+}
+console.log(obj.d()) // bfe
+console.log(obj.e()) // bfe
+const obj = {
+  dev: 'bfe',
+
+  b() {
+    return this.dev
+  },
+
+  f: function() {
+    // When we pass a reference to the b function
+    // we loose the this context as the callee is outside the obj
+    return this.b
+  },
+  g: function() {
+    // we already know c is trapped
+    // in an arrow function context
+    // so it's always gonna be undefined
+    return this.c()
+  },
+  h: function() {
+    // we already know c is trapped
+    // in an arrow function context
+    // so it's always gonna be undefined
+    // even when using obj.h()()
+    return this.c
+  },
+}
+
+
+console.log(obj.f()()) // undefined
+console.log(obj.g()) // undefined
+console.log(obj.h()()) // undefined
+```
+
+Finally nested arrow functions
+
+```js
+const obj = {
+  dev: 'bfe',
+  i: function() {
+    return () => {
+      return this.dev // as this was created inside the function
+      // it assumes the objects this 
+    }
+  }
+}
+
+console.log(obj.i()()) // bfe
+```
+
+## [7. Increment Operator](https://bigfrontend.dev/quiz/Increment-Operator)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -252,6 +628,8 @@ console.log(b)
 console.log(c)
 ```
 
+### 答案
+
 考察++的执行顺序，输出
 
 ```sh
@@ -260,7 +638,25 @@ console.log(c)
 2
 ```
 
-### 8. Implicit Coercion I
+### 详细解析
+
+```js
+let a = 1;
+const b = ++a; // it will increment and return the value *after* incrementing
+
+// a's value will also get updated (allowed because of the 'let')
+const c = a++; // this will increment as well, but it will return the value *before* 
+ incrementing.
+// a's value will also get updated
+
+console.log(a); // 3
+console.log(b); // 2
+console.log(c); // 2
+```
+
+## [8. Implicit Coercion I](https://bigfrontend.dev/quiz/Implicit-Conversion-1)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -277,6 +673,8 @@ console.log(Number(null))
 console.log(Number(false))
 ```
 
+### 答案
+
 类型转换和隐式转换
 
 ```sh
@@ -292,7 +690,42 @@ NaN
 0
 ```
 
-### 9. null and undefined
+### 详细解析
+
+```js
+console.log(Boolean('false')) // ONLY empty string will be false
+console.log(Boolean(false)) // if it's already boolean type, NO conversion
+console.log('3' + 1) // either of part is string, whole expression will be string concatenation 
+console.log('3' - 1) // subtraction operator ONLY trigger ToNumber() conversion, no string
+// same as (3-1) = 2
+console.log('3' - ' 02 ') // String to Number will trim all white spaces and starting 0
+// same as (3 - 2) = 1
+console.log('3' * ' 02 ') // multiplicative operator ONLY trigger ToNumber() conversion
+// same as (3 * 2) = 6
+console.log(Number('1')) // String to Number, here is the valid number 1
+console.log(Number('number')) // String to Number, here NOT Valid, return NaN
+console.log(Number(null)) // by ECMA spec, it's 0
+console.log(Number(false)) // by ECMA spec, it's 0
+```
+
+Final solution:
+
+```text
+true
+false
+"31"
+2
+1
+6
+1
+NaN
+0
+0
+```
+
+## [9. null and undefined](https://bigfrontend.dev/quiz/null-and-undefined)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -313,9 +746,61 @@ console.log(undefined <= 0)
 console.log(undefined >= 0)
 ```
 
+### 答案
+
 一定要注意`null == 0`是错误的，只和null或undefined相等，undefined转为数会变为`NaN`
 
 ```sh
+"[1,2,null,3]"
+"[1,2,null,3]"
+false
+true
+false
+false
+false
+true
+true
+false
+false
+false
+false
+false
+```
+
+### 详细解析
+
+```js
+console.log(JSON.stringify([1,2,null,3]))  // happy path: "[1,2,null,3]"
+console.log(JSON.stringify([1,2,undefined,3]))  // JSON doesn't have undefined value, it's replaced with null in JSON data type.
+console.log(null === undefined) // null -> 0 and undefined -> NaN, then NOT strictly equal
+console.log(null == undefined) // Special rule: true -> Just Remember it
+console.log(null == 0) // Special rule: null is not converted to 0 here
+console.log(null < 0) // false: null -> 0
+console.log(null > 0) // false: null -> 0
+console.log(null <= 0) // true: null -> 0 
+console.log(null >= 0) // true: null -> 0
+console.log(undefined == 0)  // false: undefined -> NaN
+console.log(undefined < 0)  // false: undefined -> NaN
+console.log(undefined > 0)  // false: undefined -> NaN
+console.log(undefined <= 0)  // false: undefined -> NaN
+console.log(undefined >= 0)  // false: undefined -> NaN
+```
+
+**Notes:**
+
+1. When converting to Number, null and undefined are handled differently: null becomes 0, whereas undefined becomes NaN.
+2. When applying `==` to `null` or `undefined`, numeric conversion does not happen. null equals only to null or undefined, and does not equal to anything else.
+
+```js
+null == 0  // false, null is not converted to 0
+null == null  // true
+undefined == undefined  // true
+null == undefined  // true
+```
+
+**Final Solution:**
+
+```js
 "[1,2,null,3]"
 "[1,2,null,3]"
 false
@@ -2225,7 +2710,27 @@ console.log(bar());
 Error
 ```
 
-### 66. if
+### 66. comma
+
+What does the code snippet to the right output by `console.log`?
+
+```js
+var obj = {
+  a: "BFE",
+  b: "dev",
+  func: (function foo(){ return this.a; }, function bar(){ return this.b; })
+}
+
+console.log(obj.func())
+```
+
+ common operator evaluates from left to right and returns the last(right most) operand, so func is assined with bar()
+
+```sh
+"dev"
+```
+
+### 67. if
 
 What does the code snippet to the right output by `console.log`?
 
@@ -2252,7 +2757,7 @@ foo是函数，bar是undefined
 Error
 ```
 
-### 67. if II
+### 68. if II
 
 What does the code snippet to the right output by `console.log`?
 
@@ -2270,7 +2775,7 @@ foo是undefined，函数转化为bool进行判断
 Error
 ```
 
-### 68. undefined
+### 69. undefined
 
 What does the code snippet to the right output by `console.log`?
 
