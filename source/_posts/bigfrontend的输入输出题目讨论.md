@@ -132,6 +132,8 @@ Output for second part should be:
 8 // callback queue 10s
 ```
 
+
+
 ## [2. Promise executor](https://bigfrontend.dev/quiz/2-promise-executor)
 
 ### 题目
@@ -157,6 +159,8 @@ Promise链式调用返回的值和值的穿透
 ```sh
 1
 ```
+
+
 
 ## [3. Promise then callbacks](https://bigfrontend.dev/quiz/3-promise-then-callbacks)
 
@@ -236,6 +240,8 @@ Promise.resolve(1) // 1
 .then(Promise.resolve(4)) // creates a Pending promise
 .then(console.log) // funnels 6 into console.log
 ```
+
+
 
 ## [4. Promise then callbacks II](https://bigfrontend.dev/quiz/4-Promise-then-callbacks-II)
 
@@ -380,6 +386,8 @@ undefined
 undefined
 ```
 
+
+
 ## [5. block scope](https://bigfrontend.dev/quiz/block-scope-1)
 
 ### 题目
@@ -438,6 +446,8 @@ If we use var, then var gets hoisted outside of the block scope into the outer f
 And, if we have any closures created in the loop, let variables will be bound to the value from only that iteration of the loop, whereas var variables will be the current value of the variable, which at that point of the settimeout it is 5, hence it prints.
 
 5 5 5 5 5
+
+
 
 ## [6. Arrow Function](https://bigfrontend.dev/quiz/6-Arrow-Function)
 
@@ -613,6 +623,8 @@ const obj = {
 console.log(obj.i()()) // bfe
 ```
 
+
+
 ## [7. Increment Operator](https://bigfrontend.dev/quiz/Increment-Operator)
 
 ### 题目
@@ -653,6 +665,8 @@ console.log(a); // 3
 console.log(b); // 2
 console.log(c); // 2
 ```
+
+
 
 ## [8. Implicit Coercion I](https://bigfrontend.dev/quiz/Implicit-Conversion-1)
 
@@ -722,6 +736,8 @@ NaN
 0
 0
 ```
+
+
 
 ## [9. null and undefined](https://bigfrontend.dev/quiz/null-and-undefined)
 
@@ -817,9 +833,11 @@ false
 false
 ```
 
-### 10. Equal
 
-What does the code snippet to the right output by `console.log`?
+
+## [10. Equal](https://bigfrontend.dev/quiz/Equal-1)
+
+### 题目
 
 ```js
 console.log(0 == false)
@@ -831,6 +849,8 @@ console.log('1' == true)
 console.log(1n == true)
 console.log(' 1     ' == true)
 ```
+
+### 答案
 
 ==一般会转为数类型进行对比
 
@@ -845,7 +865,58 @@ true
 true
 ```
 
-### 11. Implicit Coercion II
+### 详细解析
+
+I read the [ECMA2020-$7.2.14](https://tc39.es/ecma262/#sec-abstract-equality-comparison) here to finish this quiz
+
+Rules summary:
+
+- Number & String: convert to Number in priority
+- Boolean & other: convert boolean to Number, then compare
+
+-String & other Object: convert Object ToPrimitive(), then compare
+
+- undefined, null is special, just remember rules
+
+```js
+console.log(0 == false)  // ToNumber(false) = 0 -> 0 == 0 -> true
+console.log('' == false)  // "" == 0 -> ToNumber("") == 0 -> true
+console.log([] == false)  // [] == 0 -> ToNumber([]) == 0 -> 0 == 0 -> true
+console.log(undefined == false) // false
+console.log(null == false)  // null is not converted to 0 here, false
+console.log('1' == true)  // "1" == 1 -> ToNumber("1") == 1 -> 1 == 1 -> true
+console.log(1n == true)  // 1n == 1 -> ToNumber(1n) == 1 -> 1== 1 -> true
+console.log(' 1     ' == true)  // "1    " == 1 -> ToNumber("1      ")  == 1 -> true
+```
+
+Helpful Notes:
+
+- `ToNumber()` you can explicitly try to call with `Number(.....)` or use Unary Plus Sign expression: `+[], +1n ......`
+
+- String to Number: it first trims the white space and starting zeros, eg:
+
+  ```
+  "01      "  ->   "1"   ->   1
+  ```
+
+Final solution:
+
+```js
+true
+true
+true
+false
+false
+true
+true
+true
+```
+
+
+
+## [11. Implicit Coercion II](https://bigfrontend.dev/quiz/Implicit-Conversion-II)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -864,6 +935,8 @@ console.log({} + {})
 console.log({} - {})
 ```
 
+### 答案
+
 +转化为字符串，-转化为数
 
 ```sh
@@ -881,7 +954,99 @@ console.log({} - {})
 NaN
 ```
 
-### 12. arguments
+### 详细解析
+
+Hey, this puzzle really need to fully and clearly understand some weird and bad parts of Javascript Type coercion for Objects!
+
+#### I. How object converts to different types?
+
+**Strongly Suggest Read this article before start this quiz.** [What is {} + [\] in JavaScript?](https://2ality.com/2012/01/object-plus-object.html)
+
+#### II. A Call Out: one of the answer maybe WRONG here!
+
+`{} + {}` - **Firefox & Chrome** handle it differently !!!
+
+Answer is different in two browsers:
+
+```js
+// firefox
+{} + {}; // NaN 
+// chrome
+{} + {}; // "[object Object][object Object]"
+```
+
+#### III. Explain parts of the problem
+
+I parse all the expression as:
+
+```js
+Expression:  value1 +/- value2
+prim1 := ToPrimitive(value1)
+prim2 := ToPrimitive(value2)
+```
+
+**Case1: addition + operator**
+
+```
+console.log([[]] + 1)
+[[]] + 1
+prim1: ToPrimitive([[]]) = ""
+prim2: ToPrimitive(1) = 1
+one of them is string type, then do string concatenation
+= "" + 1
+= "1"
+```
+
+**Case2: subtraction - operator**
+
+Subtract Op (-) ONLY triggers **ToNumber()** conversion, NO string operation.
+
+```
+console.log([[]] - 1)
+[[]] - 1
+prim1: ToPrimitive([[]]) = ""
+prim2: ToPrimitive(1) = 1
+Subtract Op (-) makes two parts both convert to Number
+= ToNumber("") + ToNumber(1)
+= 0 + 1
+= 1
+```
+
+**Case3: object conversion**
+
+```
+console.log([] + {})
+[] + {}
+prim1: ToPrimitive([]) = ""
+prim2: ToPrimitive({}) = "[object Object]"
+Both of them are string, then do string concatenation
+= ToString("") + ToString("[object Object]")
+= "" + "[object Object]"
+= "[object Object]"
+```
+
+#### IV. Final Output
+
+```js
+""
+"1"
+"1"
+"11"
+"21"
+-1
+-1
+0
+1
+"[object Object]"
+"[object Object][object Object]"
+NaN
+```
+
+
+
+## [12. arguments](https://bigfrontend.dev/quiz/arguments)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -897,6 +1062,8 @@ function log(a,b,c,d) {
 log(1,2,3)
 ```
 
+### 答案
+
 要注意d没有被重新赋值，只有arguments[3]被重新赋值
 
 ```sh
@@ -904,7 +1071,56 @@ log(1,2,3)
 "bfe",2,3,undefined
 ```
 
-### 13. Operator precedence
+### 详细解析
+
+[arguments](https://bigfrontend.dev/quiz/arguments/discuss) is the actual value passed when function is invoked.
+
+```js
+log(1,2,3)
+```
+
+Here 1,2 and 3 are arguments.
+
+[parameters](https://developer.mozilla.org/en-US/docs/Glossary/Parameter) are local variables in the function.
+
+```js
+function log(a,b,c,d){}
+```
+
+Here a,b,c, and d are parameters.
+
+On execution of
+
+```js
+arguments[0] = 'bfe'
+```
+
+the first argument i.e 1 is replaced with 'bfe'.
+
+However, when
+
+```js
+arguments[3] ='dev'
+```
+
+is executed it results in
+
+```js
+{
+    "0": "bfe",
+    "1": 2,
+    "2": 3,
+    "3": "dev"
+}
+```
+
+so while accessing d parameter, we get undefined since no only 1,2, and 3 are initially passed as arguments and not d.
+
+
+
+## [13. Operator precedence](https://bigfrontend.dev/quiz/operator-precedence)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -917,6 +1133,8 @@ console.log(2 > 1 > 0)
 console.log(3 > 2 > 1)
 ```
 
+### 答案
+
 从左到右判断，bool要转成number
 
 ```sh
@@ -928,7 +1146,26 @@ true
 false
 ```
 
-### 14. Addition vs Unary Plus
+### 详细解析
+
+When we use any comparison operator like `==`, `<` and `>`, if one of the operands is boolean and another is a number it'll convert the boolean into a number and then compare i.e. `false` becomes `0` and `true` becomes `1`
+
+Also, these operators work from left to right [See this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence)
+
+```js
+console.log(0 == 1 == 2) // false == 2 👉🏻 0 == 2 👉🏻 false
+console.log(2 == 1 == 0) // false == 0 👉🏻 0 == 0 👉🏻 true
+console.log(0 < 1 < 2) // true < 2 👉🏻 1 < 2 👉🏻 true
+console.log(1 < 2 < 3) // true < 3 👉🏻 1 < 3 👉🏻 true
+console.log(2 > 1 > 0) // true > 0 👉🏻 1 > 0 👉🏻 true
+console.log(3 > 2 > 1) // true > 1 👉🏻 1 > 1 👉🏻 false
+```
+
+
+
+## [14. Addition vs Unary Plus](https://bigfrontend.dev/quiz/Addition-vs-Unary-Plus)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -957,7 +1194,9 @@ console.log('1' + + undefined)
 console.log('1' + + + undefined)
 ```
 
-三个加号会无视掉中间的
+### 答案
+
+三个加号会无视掉中间的，准确来说是先执行最后一个转化为number，再执行倒数第二个依然是number。
 
 ```sh
 3
@@ -982,7 +1221,55 @@ NaN
 "1NaN"
 ```
 
-### 15. instanceOf
+### 详细解析
+
+Addition operator `+` works on both numbers and strings (used in string concatenation). Hence, if any of the operands is not a number, using `+` converts all operand/s to string and concatenates.
+
+The unary plus operator (+) precedes its operand and attempts to convert it into a number if it isn't already.
+
+Also, few things to know
+
+```js
++1 // 1
++"1" // 1
++true // 1
++null // 0
++undefined // NaN
++NaN // NaN
+```
+
+Remember that the unary operator has higher precedence over the addition operator
+
+```js
+console.log(1 + 2) // 3
+console.log(1 + + 2) // 1 + (+2) = 1 + 2 = 3
+console.log(1 + + + 2) // 1 + (+(+2)) = 1 + 2 = 3
+console.log(1 + '2') // "1" + "2" = "12" 
+console.log(1 + + '2') // 1 + (+2) = 1 + 2 = 3
+console.log('1' + 2) // "1" + "2" = "12"
+console.log('1' + + 2) // "1" + (+2) = "1" + 2 = "1" + "2" = "12"
+console.log(1 + true) // 1 + 1 = 2
+console.log(1 + + true) // 1 + (+true) = 1 + 1 = 2
+console.log('1' + true) // "1" + "true" = "1true"
+console.log('1' + + true) // "1" + (+true) = "1" + 1 = "1" + "1" = "11"
+console.log(1 + null) // 1 + 0 = 1
+console.log(1 + + null) // 1 + (+null) = 1 + 0 = 1
+console.log('1' + null) // "1" + "null" = "1null"
+console.log('1' + + null) // "1" + (+null) = "1" + 0 = "1" + "0" = "10"
+console.log(1 + undefined) // 1 + NaN = NaN
+console.log(1 + + undefined) // 1 + (+undefined) = 1 + NaN = NaN
+console.log('1' + undefined) // "1" + "undefined" = "1undefined"
+console.log('1' + + undefined) // "1" + (+undefined) = "1" + NaN = "1" + "NaN" = "1NaN"
+console.log('1' + + + undefined) // "1" +(+(+undefined)) = "1" + NaN = "1" + "NaN" = "1NaN"
+```
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
+
+
+
+## [15. instanceOf](https://bigfrontend.dev/quiz/instanceOf)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1004,6 +1291,8 @@ console.log([] instanceof Object)
 console.log((() => {}) instanceof Object)
 ```
 
+### 答案
+
 对象才有原型链
 
 ```sh
@@ -1024,7 +1313,31 @@ true
 true
 ```
 
-### 16. parseInt
+### 详细解析
+
+```js
+console.log(typeof null);                          // "object" - 'null' has "object" type in js (backward compatibility)
+console.log(null instanceof Object);               // false - 'null' is primitive and doesn't have 'instanceof' keyword
+console.log(typeof 1);                             // "number" - one of js types
+console.log(1 instanceof Number);                  // false - '1' is primitive and doesn't have 'instanceof' keyword
+console.log(1 instanceof Object);                  // false - same as above
+console.log(Number(1) instanceof Object);          // false - Number(1) === 1 - same as above
+console.log(new Number(1) instanceof Object);      // true - 'new Number(1)' is object, so it's correct
+console.log(typeof true);                          // "boolean" - one of js types
+console.log(true instanceof Boolean);              // false - 'true' is primitive and doesn't have 'instanceof' keyword
+console.log(true instanceof Object);               // false - same as above
+console.log(Boolean(true) instanceof Object);      // false - Boolean(true) === true - same as above
+console.log(new Boolean(true) instanceof Object);  // true - 'new Boolean(true)' is object, so it's correct
+console.log([] instanceof Array);                  // true - '[]' is instanceof Array and Object
+console.log([] instanceof Object);                 // true - '[]' is instanceof Array and Object
+console.log((() => {}) instanceof Object);         // true - if it's not a primitive it's object. So callback is instanceof object
+```
+
+
+
+## [16. parseInt](https://bigfrontend.dev/quiz/parseInt)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1035,6 +1348,8 @@ console.log(['0','1','1'].map(parseInt))
 console.log(['0','1','1','1'].map(parseInt))
 ```
 
+### 答案
+
 注意parseInt第二个参数，没有默认是0
 
 ```sh
@@ -1044,7 +1359,25 @@ console.log(['0','1','1','1'].map(parseInt))
 [0,NaN,1,1]
 ```
 
-### 17. reduce
+### 详细解析
+
+```js
+/** 
+ * parseItn(string, radix) it's callback in map(el, index, arr)
+ * it means second argument in map is index === second argument in parseInt is radix (from 2 to 36 - by default === 10)
+ * example ["0", "1", "1"].map(parseInt): parseItn("0", 0), parseInt("1", 1), parseInt("1", 2)
+ */
+console.log(["0"].map(parseInt));                 // [0] - 1st: parseItn("0", 0) === 0
+console.log(["0", "1"].map(parseInt));            // [0,NaN] - 2nd: parseInt("1", 1) === NaN
+console.log(["0", "1", "1"].map(parseInt));       // [0,NaN,1] - 3rd: parseInt("1", 2) === 1
+console.log(["0", "1", "1", "1"].map(parseInt));  // [0,NaN,1,1] - 4th: parseInt("1", 3) === 1
+```
+
+
+
+## [17. reduce](https://bigfrontend.dev/quiz/reduce)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1058,6 +1391,8 @@ What does the code snippet to the right output by `console.log`?
 }, 0)
 ```
 
+### 答案
+
 reduce根据初始值决定后续的值
 
 ```sh
@@ -1068,7 +1403,46 @@ undefined,2
 undefined,3
 ```
 
-### 18. Promise executor II
+### 详细解析
+
+Modify the example and add semi colons on lines 3 and the last line:
+
+```js
+[1,2,3].reduce((a,b) => {
+  console.log(a,b)
+});
+
+[1,2,3].reduce((a,b) => {
+  console.log(a,b)
+}, 0);
+```
+
+The output is tricky as it's worth knowing the exact API of reduce:
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
+
+> If you don't supply an initial value then the FIRST value is used (and skipped!)
+
+First:
+
+```js
+1,2
+undefined,3 // note, undefined as we don't return from our reduce
+```
+
+Second
+
+```js
+0,1
+undefined,2 // undefined as we don't return from our reduce
+undefined,3
+```
+
+
+
+## [18. Promise executor II](https://bigfrontend.dev/quiz/Promise-executor-II)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1085,6 +1459,8 @@ console.log(p3 == p4)
 console.log(p4 == p5)
 ```
 
+### 答案
+
 p1、p3
 
 ```sh
@@ -1094,7 +1470,31 @@ false
 false
 ```
 
-### 19. `this`
+### 详细解析
+
+```js
+const p1 = Promise.resolve(1) // p1 is 1 Promise, Object=> `Promise { 1 }`
+const p2 = new Promise((resolve) => resolve(p1)) // p2 is a pending promise, Object => `Promise { <pending> }`
+// new Promise.resolve(arg) // if arg instance of Promise, then return arg directly.
+const p3 = Promise.resolve(p1) // p3 is 1 (p3 is essentially Promise.resolve(1) ), Object => pointing to same object that `p1` is pointing i.e. `Promise { 1 }`
+const p4 = p2.then(() => new Promise((resolve) => resolve(p3))) // p4 is a pending promise since .then() returns a new promise,  Object => `Promise { <pending> }`
+const p5 = p4.then(() => p4) //  p5 is a pending promise since  .then() returns a new promise, / Object => `Promise { <pending> }`
+
+const x = p1.then(x=>x)
+
+console.log(p1, x)
+
+console.log(p1 == p2); // false as both are pointing to different object
+console.log(p1 == p3); // true as both point to same object
+console.log(p3 == p4); // false as both are pointing to different object
+console.log(p4 == p5); // false as both are pointing to different object
+```
+
+
+
+## [19. `this`](https://bigfrontend.dev/quiz/this)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1140,6 +1540,8 @@ obj.f()()
 obj.f().call({a:2})
 ```
 
+### 答案
+
 注意箭头函数只与所在位置外层函数有关，call、appy无效
 
 ```sh
@@ -1160,7 +1562,74 @@ undefined
 1
 ```
 
-### 20. name for Function expression
+### 详细解析
+
+```js
+/* 
+Global Execution Context is `created` with following scope chain:
+  - window: global object
+  - this => window
+  - obj => it points to a object which is also a function.
+
+After `creation` phase `execution` phase starts
+  - `obj` is defined 
+ */
+const obj = {
+  a: 1,
+  b: function () {
+    console.log(this.a);
+  },
+  c() {
+    console.log(this.a);
+  },
+  d: () => {
+    console.log(this.a);
+  },
+  e: (function () {
+    return () => {
+      console.log(this.a);
+    };
+  })(), // IIFE, `e: ()=>console.log(this.a)`
+  f: function () {
+    /* Arrow function doesn't have `this` binding it use `this` value of nearest
+    function or otherwise global object. */
+    return () => {
+      console.log(this.a);
+    };
+  },
+};
+
+console.log(obj.a); // 1 => straight forward, call property in obj 1
+
+/* In `b` execution environment
+  - this -> `a` obj
+  Thus, it will print `1` */
+obj.b(); // 1 => function b is called from obj
+;(obj.b)() // 1 => () IIFE is the expression, it doesnt change the way we call the function. same as above
+const b = obj.b;
+b(); // undefined => obj.b return the function and reference to the obj is lost, `this===window` => undefined
+obj.b.apply({ a: 2 }); // 2 => here function b is binded with {a: 2}, hence 2
+obj.c(); // 1 => c function is called with obj, hence 1
+obj.d(); // undefined => here d is arrow function, which is lexically scoped, thus `this===window`, so will print `undefined`
+;(obj.d)() // undefined => () is the expression, it doesn't change the way we call the function. same as above
+obj.d.apply({ a: 2 }); // undefined.  d is arrow function which is lexically scoped, we cant re-bind 'this' reference to arrow function, so `apply`, `call`, & `bind` don't work on arrow function.
+obj.e() // undefined => e is the IIFE, which has its own scope. and a is not present in it. hence undefined
+;(obj.e)() // undefined => e is IIFE, obj.e is invoked and have return arrow function, which cant be re-bined. It doesnt change the way we call the function. same as above
+obj.e.call({ a: 2 }); // undefined => e is IIFE, obj.e is invoked and have return arrow function, which cant be re-bined `call` won't have any effect because it is arrow function
+
+/* Arrow function doesn't have `this` binding it use `this` value of nearest
+    function or otherwise global object. */
+// `obj.f()===()=>console.log(this.a)`, this arrow function was defined inside
+// another fn which had `this===obj`, thus it will return `obj.a===1`.
+obj.f()(); // 1 => same as above1
+obj.f().call({ a: 2 }); // 1 => same as above. note: arrow function cant be re-bind. its lexically scoped
+```
+
+
+
+## [20. name for Function expression](https://bigfrontend.dev/quiz/name-for-Function-expression)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1184,6 +1653,8 @@ console.log(typeof d)
 c()
 ```
 
+### 答案
+
 主要是考察匿名函数的重新赋值无效
 
 ```sh
@@ -1195,7 +1666,75 @@ c()
 "function"
 ```
 
-### 21. Array I
+### 详细解析
+
+- `a` is a [Function Declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) and has data type `function`
+- `b` and `c` are [Function Expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function#description) and have data type `function`
+- `d` is a [Named Function Expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function#named_function_expression) This name `d` is then local only to the function body (scope) hence outside the function body `typeof d` returns `undefined`
+
+```js
+/* 
+Global Execution Context is `created` with following scope chain:
+  - window: global object
+  - this => window
+  - b, c => undefined,
+  - a => it points to an object which is also a function.
+
+After `creation` phase `execution` phase starts
+  - b & c => point to yet another but different callable objects
+ */ 
+function a() {}
+const b = function () {};
+
+const c = function d() {
+
+  console.log(typeof d);
+  d = "e";
+  console.log(typeof d);
+};
+
+console.log(typeof a); // "function"
+console.log(typeof b); // "function"
+console.log(typeof c); // "function"
+
+// undefined.  `d` is hoisted out of function `c` but it was undefined
+// assigned happens after function `c` is invoked.
+console.log(typeof d);
+
+/* 
+`C Execution Context` is `created` with following scope chain:
+  - arguments: { length: 0 }
+  - this: window 
+
+  - window: global object
+  - this => window
+  - b, c => undefined,
+  - a => it points to an object which is also a function.
+
+After `creation` phase `execution` phase starts
+  - b & c => point to yet another but different callable objects
+
+  Now, inside a `named function expression`, function name as a variable is available.
+  If another variable is declared using `var` then it will overshadow `function binding,
+  but it will be declared without `var` then it can't overshadow `function binding`. 
+Thus, inside the function execution environment, it will point to the function itself but after 
+  function execution environment destroyed it will be shown value assigned to it.
+  
+  Thus, in this case, both `console.log` in `function c()` with print "function"
+*/
+
+c();
+```
+
+The special case is inside the named function `d`. **The function name is un-reassignable inside the function**. You can easily see the difference if you run this in `"use strict"` mode where it gives an error `Uncaught TypeError: Assignment to constant variable`. Thus, `d` will still point to the named function `d` despite being reassigned to `"e"`
+
+Note that, the result would have been different if we had redeclared `d` as `var d = "e"` in which case the next console.log would have printed `string` [See the Diff](https://stackoverflow.com/questions/1470488/what-is-the-purpose-of-the-var-keyword-and-when-should-i-use-it-or-omit-it/1471738#1471738)
+
+
+
+## [21. Array I](https://bigfrontend.dev/quiz/Array-I)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1217,6 +1756,8 @@ a.length = 1
 console.log(a[0],a[1],a[2])
 ```
 
+### 答案
+
 注意length不会因为delete减少，重新设置后，后面的就算有值也是undefined,ES5方法跳过空位
 
 ```sh
@@ -1235,7 +1776,70 @@ undefined
 0,undefined,undefined
 ```
 
-### 22. min max
+### 详细解析
+
+In JavaScript, [arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) aren't primitives but are instead Array objects
+
+The [length](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) property of an Array sets or returns the number of elements in that array. You can set the length property to truncate an array at any time. The thing to remember is that the `length` property does not necessarily indicate the number of defined values in the array
+
+In [Array.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map#description) callback is invoked only for indexes of the array which have assigned values (including undefined). It is not called for missing elements of the array
+
+Similarly, [Array.forEach()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach#no_operation_for_uninitialized_values_sparse_arrays) is not invoked for index properties that have been deleted or are uninitialized
+
+Arrays being very similar to Objects allow [Object.keys](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys) to be called on it returning the indexes as an array. However, for sparse arrays, only the defined indexes are returned
+
+Deleting array element using `delete` just unassigns the value (making it empty) at that index
+
+```js
+const a = [0]
+console.log(a.length) // 1 Since array contains one element
+a[3] = 3 // a = [0, empty, empty, 3]
+console.log(a.length) // 4 Since array contains four elements now(even though only 2 elements are defined)
+// 4, array length increase to contain last index. Unfilled slots in 
+// middle remain empty. Accessing them return `undefined`. Such arrays are called
+// sparse array. These have holes in them.
+
+// for-of loop iterate to both holes and elments
+for (let item of a) {
+  console.log(item) // prints all the array items
+}
+// 0
+// undefined
+// undefined
+// 3
+
+// `map`, `filter`, `forEach` all these skips holes.
+a.map(item => {console.log(item)}) // only called for assigned values
+// 0
+// 3
+
+a.forEach(item => {console.log(item)}) // only called for assigned values
+// 0
+// 3
+
+// Object.keys also skips holes
+console.log(Object.keys(a)) // ["0","3"] only defined indexes are retuned
+
+// deleting array elment does reduce its length. It just makes that index
+// hole or emoty. Accessing it will return `undefined`
+delete a[3] // deletes/unassigns that index
+// a = [0, empty, empty, empty]
+console.log(a.length) // 4 since length remains unaffected
+
+a[2] = 2 // a = [0, empty, 2, empty]
+
+// changing length of an array, remove all elements beyond mentined length.
+a.length = 1 // this actually truncates the array so that length is only 1 now
+// a = [0]
+
+console.log(a[0],a[1],a[2]) // 0,undefined,undefined
+```
+
+
+
+## [22. min max](https://bigfrontend.dev/quiz/min-max)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1248,6 +1852,8 @@ console.log(Math.min([1,2,3]))
 console.log(Math.min([1,2,3],1))
 ```
 
+### 答案
+
 最大的数和最小的数默认是-Infinity和Infinity，一旦输入有NaN，输出必然是NaN
 
 ```sh
@@ -1258,7 +1864,37 @@ Infinity
 NaN
 ```
 
-### 23. Promise.all()
+### 详细解析
+
+```js
+console.log(Math.min()) // Infinity
+console.log(Math.max()) // -Infinity
+console.log(Math.min(1)) // 1
+console.log(Math.max(1,2)) // 2
+console.log(Math.min([1,2,3])) // NaN
+```
+
+`Math.min()` function returns the smallest numbers given as input parameters
+
+`Math.max()` function returns the largest numbers given as input parameters
+
+`1.` If no parameters are passed, `Math.min()` returns `Infinity`. This can be understood if you think of implementing this logic yourself, we'll set the min value as the largest possible value i.e. `Infinity`, and will loop over the parameters and compare the current value with this min value and update if current < min. In the end, we return min. Now, since no parameters are passed, we return `Infinity`.
+
+`2.` The inverse of this logic applies to `Math.max()` that returns `-Infinity` when no parameters are passed.
+
+`3.` & `4.` Usual behavior
+
+`5.` If any one or more of the parameters cannot be converted into a number, `NaN` is returned by both methods.
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/min
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max
+
+
+
+## [23. Promise.all()](https://bigfrontend.dev/quiz/Promise-all)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1284,6 +1920,8 @@ What does the code snippet to the right output by `console.log`?
 })()
 ```
 
+### 答案
+
 一旦有reject，进入catch
 
 ```sh
@@ -1292,7 +1930,43 @@ What does the code snippet to the right output by `console.log`?
 "error"
 ```
 
-### 24. Equality & Sameness
+### 详细解析
+
+The [Promise.all()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all) method takes an iterable of promises as an input and returns a single Promise that resolves to an array of the results of the input promises
+
+It rejects immediately upon any of the input promises rejecting or non-promises throwing an error and will reject with this first rejection message/error.
+
+```js
+(async () => {
+  await Promise.all([]).then((value) => {
+    console.log(value) // resolves with empty array []
+  }, (error) => {
+    console.log(error)
+  })
+  
+  await Promise.all([1,2,Promise.resolve(3), Promise.resolve(4)]).then((value) => {
+    console.log(value) // all promises resolve so returns [1,2,3,4]
+  }, (error) => {
+    console.log(error)
+  })
+  
+  await Promise.all([1,2,Promise.resolve(3), Promise.reject('error')]).then((value) => {
+    console.log(value)
+  }, (error) => {
+    console.log(error) // since 4th promise rejected, Promise.all also rejects with that value
+  })
+})()
+
+// []
+// [1,2,3,4]
+// "error"           
+```
+
+
+
+## [24. Equality & Sameness](https://bigfrontend.dev/quiz/Equality-Sameness)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -1318,6 +1992,8 @@ console.log(0 === false)
 console.log(Object.is(0, false))
 ```
 
+### 答案
+
 ==会有隐式转换，但关于NaN，0与-0判断有部分问题，Object.is完全相等
 
 ```sh
@@ -1338,7 +2014,45 @@ false
 false
 ```
 
-### 25. zero
+### 详细解析
+
+In a nutshell,
+
+> The equality operator (==) checks whether its two operands are equal, it attempts to convert and compare operands that are of different types
+
+> The strict equality operator (===) checks whether its two operands are equal without any implicit conversion
+
+> The [Object.is()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is) method determines whether two values are the same value. Note that this is not the same as being equal according to the == or === operator
+
+Also, note that in Javascript, 0 is represented as both -0 and +0 (where 0 is an alias for +0). In practice, there is almost no difference between the different representations; for example, +0 === -0 is true. This difference can be noticed when using `Object.is` for comparison
+
+`NaN` compares unequal (via ==, !=, ===, and !==) to any other value -- including to another `NaN` value. However, `Object.is` gives a true result.
+
+```js
+console.log(0 == '0') // true (after type conversion '0' = 0)
+console.log(0 === '0') // false
+console.log(Object.is(0, '0')) // false
+
+console.log(0 == 0) // true
+console.log(0 === 0) // true
+console.log(Object.is(0, 0)) // true
+
+console.log(0 == -0) // true
+console.log(0 === -0) // true
+console.log(Object.is(0, -0)) // false
+
+console.log(NaN == NaN) // false
+console.log(NaN === NaN) // false
+console.log(Object.is(NaN, NaN)) // true
+
+console.log(0 == false) // true (after type conversion false = 0)
+console.log(0 === false) // false
+console.log(Object.is(0, false)) // false
+```
+
+
+
+## 25. zero
 
 What does the code snippet to the right output by `console.log`?
 
