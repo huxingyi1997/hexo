@@ -1,5 +1,5 @@
 ---
- title:  Tic Tac Toe Extended 强化版井字棋
+title:  Tic Tac Toe Extended 强化版井字棋
 date:  2022-04-15 11:30:00
 categories: 
 - 计算机基础知识
