@@ -9,12 +9,12 @@ tags:
 - 题库
 ---
 
-国外前端会考察哪些问题？js函数、系统设计、TS类型体操的用法，大大拓宽了我的眼界，去思考和实战更加相关的问题吧，输入输出考验了对js语法的掌握程度，值得多次学习。
+国外前端会考察哪些问题？js函数、系统设计、TS类型体操的用法，大大拓宽了我的眼界，去思考和实战更加相关的问题吧，输入输出考验了对js语法的掌握程度，值得多次学习。虽然有的实际使用中不会碰到，但至少可以养成遇到问题查文档的好习惯。
 <!-- more -->
 
 # 输入输出
 
-综合考察对js的熟悉程度
+该部分综合考察对js的熟悉程度
 
 ## [1. Promise order](https://bigfrontend.dev/quiz/1-promise-order)
 
@@ -2000,15 +2000,19 @@ console.log(Object.is(0, false))
 true
 false
 false
+
 true
 true
 true
+
 true
 true
 false
+
 false
 false
 true
+
 true
 false
 false
@@ -2052,7 +2056,9 @@ console.log(Object.is(0, false)) // false
 
 
 
-## 25. zero
+## [25. zero](https://bigfrontend.dev/quiz/zero)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -2073,6 +2079,8 @@ console.log(1 / 0)
 console.log(1n / 0n)
 ```
 
+### 答案
+
 Object.is完全相等，区分0与-0，Math.round(-0.5)=-0， Math.sign(-0)=-0，bigInt除法会报错
 
 ```sh
@@ -2092,7 +2100,59 @@ Infinity
 Error
 ```
 
-### 26. true or false
+### 详细解析
+
+In Javascript, `number` data type has only one integer with multiple representations: 0 is represented as both -0 and +0 (where 0 is an alias for +0). In practice, there is almost no difference between the different representations; for example, +0 === -0 is true. However, you are able to notice this when you divide by zero
+
+```js
+console.log(42 / +0) // Infinity
+console.log(42 / -0) // -Infinity
+```
+
+[Object.is()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#description) method determines whether two values are the same value. This is not the same as being equal according to the == operator. The == operator applies various coercions to both sides (if they are not the same Type)
+
+[Math.sign()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign) function returns either a positive or negative +/- 1, indicating the sign of a number passed into the argument. If the number passed into Math.sign() is 0, it will return a +/- 0.
+
+```js
+console.log(1 / 0) // Infinity
+console.log(-1 / 0) // -Infinity
+console.log(0 / 0) // NaN
+console.log(0 === -0) // true
+
+// false. This is confusing so remember this case for
+// `Object.is`, `+0` & `-0` are different.
+console.log(Object.is(0, -0)) // false
+
+// false. This is confusing too. Remember `Math.round(-0.5)===-0`
+// & `Math.round(-0.51)===-1`. Here we have `Object.is(0,-0)`=> false
+console.log(Object.is(0, Math.round(-0.5))) // Object.is(0, -0) = false
+
+// false. This is confusing too. Remember `Math.round(0.5)===1`
+// & `Math.round(0.49)===0`. Here we have `Object.is(0,1)`=> false
+console.log(Object.is(0, Math.round(0.5))) // Object.is(0, 1) = false
+console.log(0 * Infinity) // NaN
+console.log(Infinity / Infinity) // NaN
+
+// true. Remember for negative number `Math.sign` gives `-1`, for
+// postive `1` & for zero `0`. Here we have `Object.is(0,0)`=> true
+console.log(Object.is(0, Math.sign(0))) // Object.is(0, 0) = true
+
+// false. we have `Object(0,-1)` => false
+console.log(Object.is(0, Math.sign(-0))) // Object.is(0, -0) = false
+console.log(1 / -0) // -Infinity
+console.log(1 / 0) // Infinity
+
+// Error. For bigInt divion by `0n` throw TypeError. Otherwise
+// other division just give us quotient just like other languages.
+// e.g. 5n/2n=2n
+console.log(1n / 0n) // gives RangeError in BigInt
+```
+
+
+
+## [26. true or false](https://bigfrontend.dev/quiz/true-or-false)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -2107,6 +2167,8 @@ console.log(Boolean(new Boolean([])))
 console.log(Boolean(new Boolean(false)))
 ```
 
+### 答案
+
 ==隐式转换
 
 ```sh
@@ -2120,7 +2182,36 @@ true
 true
 ```
 
-### 27. Hoisting I
+### 详细解析
+
+`==` follows certain rules when comparing operands. If the operands are of different types, try to convert them to the same type before comparing
+
+In `Boolean()`, if the value is omitted or is `0, -0, null, false, NaN, undefined, empty string ("")` it is falsy. All other values are truthy. Any object of which the value is not `undefined` or `null`, including a Boolean object whose value is `false`, evaluates to `true`
+
+```js
+// Number([]) // 0
+// Number(false) // 0
+
+console.log([] == 0)  // 0 == 0 is true, [] is converted to number [] => 0,
+console.log([] == false) // 0 == 0 is true, converted to number and then to boolean. 0 == false => false == false
+console.log(!![]) // !(![]) = !(!true) = !(false) = true, Boolean convertion, anything other than '', 0, false is true, !!true => !false => true
+console.log([1] == 1) // 1 == 1 = true. number convertion
+console.log(!![1]) // !(![1]) = !(false) =true
+console.log(Boolean([])) // true
+
+// new Boolean([]) returns an object
+// new Boolean(false) This also returns an object
+// Boolean(any object) will be true
+
+console.log(Boolean(new Boolean([]))) // Boolean(some object) is true
+console.log(Boolean(new Boolean(false))) // Boolean(some object) is true
+```
+
+
+
+## [27. Hoisting I](https://bigfrontend.dev/quiz/Hoisting-I)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -2139,6 +2230,8 @@ console.log(d)
 let d = 2
 ```
 
+### 答案
+
 变量提升
 
 ```sh
@@ -2148,7 +2241,28 @@ undefined
 Error
 ```
 
-### 28. Hoisting II
+### 详细解析
+
+```js
+const a = 1
+console.log(a)  // a will be 1 since initialised before this
+
+var b
+console.log(b) // b will be declared a value and not assigned
+b = 2
+
+console.log(c) // c is not declared with var below this so c default value will // be undefined even though it is declared after this
+var c = 3
+
+console.log(d) // d is not declared it is in Temporal Dead Zone so can't be used before assigned or declared
+let d = 2
+```
+
+
+
+## [28. Hoisting II](https://bigfrontend.dev/quiz/Hoisting-II)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -2171,6 +2285,8 @@ var func3 = function func4() {
 }
 ```
 
+### 答案
+
 变量提升
 
 ```sh
@@ -2179,7 +2295,41 @@ var func3 = function func4() {
 Error
 ```
 
-### 29. Hoisting III
+### 详细解析
+
+```js
+const func1 = () => console.log(1)
+
+func1() // 1
+
+func2() // 2
+
+function func2() {
+  console.log(2)
+}
+
+func3() // Error
+
+var func3 = function func4() {
+  console.log(3)
+}
+```
+
+> [Hoisting](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) is the process whereby the interpreter moves the declaration of functions, variables, or classes to the top of their scope, prior to execution of the code.
+
+`func1` is normal execution
+
+We are able to execute `func2` before declaring it because of hoisting.
+
+```
+func3` is a Function Expression. Only declarations are hoisted and not initialization, hence `func3` is available but it is `undefined` before initialization. When we try to run `func3()` it throws an error `Uncaught TypeError: func3 is not a function
+```
+
+
+
+## [29. Hoisting III](https://bigfrontend.dev/quiz/Hoisting-III)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -2203,6 +2353,8 @@ if (!('b' in window)) {
 console.log(b)
 ```
 
+### 答案
+
 变量提升，b提前声明
 
 ```sh
@@ -2211,7 +2363,56 @@ console.log(b)
 undefined
 ```
 
-### 30. Equal II
+### 详细解析
+
+> [Hoisting](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) is JavaScript's default behavior of moving all declarations to the top of the current scope (to the top of the current script or the current function).
+
+Here, in this example inside function `func` the `var a` gets hoisted to top and hence `a=2` in that function. More so, since `a` is declared in that function only it is having a function scope i.e. it doesn't leak outside. That's why outside `func`, `a` is still 1
+
+The variable `b` on the other hand is just declared inside a block so it gets hoisted to the top of the script. That's why `'b' in window` evaluates to true and its not going into `if` block and prints `undefined` instead
+
+```js
+var a = 1
+
+// variable declared with `var` are hoisted to the top of the function scope
+// which is just like:
+// function func() {
+// 	var a
+//  a = 2
+//  console.log(a)
+// }
+
+function func() {
+  a = 2
+  console.log(a)
+  var a
+}
+
+func() // 2 (inside the func)
+
+// the variable 'a' declared in function will be destoried as soon as the function exists
+// print 1, the global variable 'a' is printed out
+console.log(a) // 1 (outside value doesnt change)
+
+
+// the same as 'a', 'b' is hoisted, like:
+// var b
+// if (!('b' in window)) {
+//  b = 1
+// }
+if (!('b' in window)) { // b is present though its undefined
+  var b = 1
+}
+
+// b is declared but not defined
+console.log(b)
+```
+
+
+
+## [30. Equal II](https://bigfrontend.dev/quiz/Equal-II)
+
+### 题目
 
 What does the code snippet to the right output by `console.log`?
 
@@ -2232,6 +2433,8 @@ console.log(new Boolean(false) == [0])
 console.log(null == undefined)
 ```
 
+### 答案
+
 2个引用类型比较看是不是同一个地址
 
 ```sh
@@ -2248,6 +2451,8 @@ true
 false
 true
 ```
+
+
 
 ### 31. Math
 
