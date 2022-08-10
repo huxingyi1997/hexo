@@ -1,6 +1,6 @@
 ---
 title:  bigfrontend的React problems
-date: 2021-06-17 21:07:33
+date: 2022-06-17 21:07:33
 categories: 
 - web前端
 tags:
@@ -65,7 +65,7 @@ Create a hook to easily use `setTimeout(callback, delay)`.
 
 ### 我的答案
 
-```typescript
+```tsx
 import {useEffect, useRef} from 'react'
 
 export function useTimeout(callback: () => void, delay: number) {
@@ -97,7 +97,7 @@ export function useTimeout(callback: () => void, delay: number) {
 
 Create a hook to tell if it is the first render.
 
-```ts
+```tsx
 function App() {
   const isFirstRender = useIsFirstRender()
   // only true for the first render
@@ -107,7 +107,7 @@ function App() {
 
 ### 我的答案
 
-```typescript
+```tsx
 import {useEffect, useRef} from 'react'
 
 export function useIsFirstRender(): boolean {
@@ -131,7 +131,7 @@ export function useIsFirstRender(): boolean {
 
 或者不用useEffect
 
-```typescript
+```tsx
 import {useRef} from 'react'
 
 export function useIsFirstRender(): boolean {
@@ -157,7 +157,7 @@ export function useIsFirstRender(): boolean {
 
 Let's try to implement the basic usage by ourselves.
 
-```ts
+```tsx
 import React from 'react'
 
 function App() {
@@ -174,7 +174,7 @@ function App() {
 
 ### 我的答案
 
-```typescript
+```tsx
 import {useState, useEffect} from 'react'
 
 export function useSWR<T = any, E = any>(
@@ -207,7 +207,7 @@ export function useSWR<T = any, E = any>(
 
 使用useMemo
 
-```typescript
+```tsx
 import { useEffect, useMemo, useState } from "react";
 
 export function useSWR<T = any, E = any>(
@@ -242,7 +242,7 @@ Create a hook `usePrevious()` to return the previous value, with initial value o
 
 ### 我的答案
 
-```typescript
+```tsx
 import {useRef, useEffect} from 'react'
 
 export function usePrevious<T>(value: T): T | undefined {
@@ -278,7 +278,7 @@ function App() {
 
 ### 我的答案
 
-```typescript
+```tsx
 import { useRef, useState, useCallback, Ref } from 'react'
 
 export function useHover<T extends HTMLElement>(): [Ref<T>, boolean] {
@@ -324,7 +324,7 @@ function App() {
 
 ### 我的答案
 
-```typescript
+```tsx
 import { useState, useCallback } from 'react'
 
 export function useToggle(on: boolean): [boolean, () => void] {
@@ -361,7 +361,7 @@ The logic should be similar to [6. implement basic debounce()](https://bigfronte
 
 ### 我的答案
 
-```typescript
+```tsx
 import { useState, useEffect } from 'react'
 
 export function useDebounce<T>(value: T, delay: number): T {
@@ -389,7 +389,7 @@ Here is a simple problem, implement `useEffectOnce()` as the name says itself, i
 
 ### 我的答案
 
-```typescript
+```tsx
 import { useEffect, EffectCallback } from 'react'
 
 export function useEffectOnce(effect: EffectCallback) {
@@ -566,11 +566,11 @@ export function useArray<T>(initialValue: T[]): { value: T[] } & UseArrayActions
 // if you want to try your code on the right panel
 // remember to export App() component like below
 
-export function App() {
-  const { value } = useArray([1, 2, 3])
-  return <div>
-    {value}
-  </div>
-}
+// export function App() {
+// const { value } = useArray([1, 2, 3])
+// return <div>
+//   {value}
+// </div>
+// }
 ```
 
