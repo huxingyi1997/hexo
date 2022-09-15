@@ -1,5 +1,5 @@
 ---
-title:  bigfrontend的前端题目讨论
+title:  bigfrontend的Coding Problems讨论
 date: 2021-06-17 21:07:33
 categories: 
 - web前端
@@ -12,9 +12,11 @@ tags:
 国外前端会考察哪些问题？js函数、系统设计、TS类型体操的用法，大大拓宽了我的眼界，去思考和实战更加相关的问题吧
 <!-- more -->
 
-## js函数
+# [Coding Problems](https://bigfrontend.dev/problem)
 
-### 1. implement curry()
+## [1. implement curry()](https://bigfrontend.dev/problem/implement-curry)
+
+### 题目
 
 [Currying](https://en.wikipedia.org/wiki/Currying) is a useful technique used in JavaScript applications.
 
@@ -42,6 +44,12 @@ https://javascript.info/currying-partials
 
 https://lodash.com/docs/4.17.15#curry
 
+Related Problems
+
+[2. implement curry() with placeholder support ](https://bigfrontend.dev/problem/implement-curry-with-placeholder)
+
+### 答案
+
 使用闭包返回执行的结果，函数柯里化
 
 ```js
@@ -49,29 +57,42 @@ https://lodash.com/docs/4.17.15#curry
  * @param { (...args: any[]) => any } fn
  * @returns { (...args: any[]) => any }
  */
-function curry(fn) {
-  // your code here
-  return function curryInner(...args) {
-    if (args.length >= fn.length) return fn(...args);
-    return (...newArgs) => curryInner(...args, ...newArgs);
+function curry(func) {
+  // here ...args collects arguments as array (rest)
+  return function curriedFunc(...args) {
+    // Here we check if current args passed equals the number of args func expects
+    if(args.length >= func.length) {
+      // if yes, we spread args elements to pass into func (spread). This is our base case.
+      return func(...args)
+    } else {
+      /* if not, we return a function that collects the next arguments passed in next and 
+      we recursively call curriedFunc, accumalating and spreading the values of args first and then
+      the values of next. next will take into consideration a variable amount of next arguments
+      e.g (1, 2) (1) (1,2,3) */
+      return function(...next) {
+        return curriedFunc(...args,...next);
+      }
+    }
   }
 }
 
-
 const join = (a, b, c) => {
-   return `${a}_${b}_${c}`;
+   return `${a}_${b}_${c}`
 }
+const curriedJoin = curry(join)
 
-const curriedJoin = curry(join);
+// curriedJoin(1, 2, 3) // '1_2_3'
 
-console.log(curriedJoin(1, 2, 3)); // '1_2_3'
+// curriedJoin(1)(2, 3) // '1_2_3'
 
-console.log(curriedJoin(1)(2, 3)); // '1_2_3'
-
-console.log(curriedJoin(1, 2)(3)); // '1_2_3'
+curriedJoin(1, 2)(3) // '1_2_3'
 ```
 
-### 2. implement curry() with placeholder support
+
+
+## [2. implement curry() with placeholder support](https://bigfrontend.dev/problem/implement-curry-with-placeholder)
+
+### 题目
 
 This is a follow-up on [1. implement curry()](https://bigfrontend.dev/problem/implement-curry)
 
@@ -106,6 +127,8 @@ Related Problems
 
 [1. implement curry()](https://bigfrontend.dev/problem/implement-curry)
 
+### 答案
+
 ```js
 /**
  * @param { (...args: any[]) => any } fn
@@ -123,7 +146,67 @@ function curry(fn) {
 curry.placeholder = Symbol()
 ```
 
-### 3. implement Array.prototype.flat()
+完整版
+
+```js
+/**
+ * @param { Function } func
+ */
+function curry(func) {
+  
+  return function curried(...args) {   // we need to return a function to make it curry-able.
+    
+    // 1. If the arguments are extra then eliminate them
+    // we don't want to pass 6 arguments when the expected is 3.
+    // it will interfere with our placeholder logic
+    const sanitizedArgs = args.slice(0, func.length);
+    
+    // see if placeholder is available in arguments
+    const hasPlaceholder = sanitizedArgs.some(arg => arg == curry.placeholder);
+
+    // if no placeholder and arguements are equal to what expected then it is normal function call
+    if(!hasPlaceholder && sanitizedArgs.length == func.length) {
+      return func.apply(this, sanitizedArgs);
+    }
+    
+    // else we need to replace placeholders with actual values
+    // we call helper function `mergeArgs` for this
+    // we pass first and next arguments to helper function
+    return function next(...nextArgs) {
+      return curried.apply(this, mergeArgs(sanitizedArgs, nextArgs));
+    }
+    
+  } 
+}
+
+function mergeArgs(args, nextArgs) {
+
+  let result = [];
+
+  // iterate over args (because we need to replace from it) 
+  // in each iteration, if we find element == curry.placeholder
+  // then we replace that placeholder with first element from nextArgs
+  // else we put current element
+  args.forEach((arg, idx) => {
+    if(arg == curry.placeholder) {
+      result.push(nextArgs.shift());
+    } else {
+      result.push(arg);
+    }
+  });
+
+  // we merge both, because there might be chance that args < nextArgs
+  return [...result, ...nextArgs];
+}
+
+curry.placeholder = Symbol()
+```
+
+
+
+## [3. implement Array.prototype.flat()](https://bigfrontend.dev/problem/implement-Array-prototype.flat)
+
+### 题目
 
 There is already [Array.prototype.flat()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat) in JavaScript (ES2019), which reduces the nesting of Array.
 
@@ -147,6 +230,8 @@ flat(arr, 2)
 **follow up**
 
 Are you able to solve it both recursively and iteratively?
+
+### 答案
 
 直接递归展开
 

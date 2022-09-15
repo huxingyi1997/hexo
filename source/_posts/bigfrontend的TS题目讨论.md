@@ -1,6 +1,6 @@
 ---
 title:  bigfrontend的TS题目讨论
-date: 2021-06-17 21:07:33
+date: 2022-08-17 22:00:00
 categories: 
 - web前端
 tags:
@@ -1494,5 +1494,504 @@ type Slice<
       : O // index >= start && index >= end => index >= end => return
     : Slice<R, S, E, [...I, ''], O> // index < start
   : O // A == []
+```
+
+
+
+## [46. implement Subtract<A, B>](https://bigfrontend.dev/typescript/Subtract-A-B)
+
+### 题目
+
+Similar to [38. implement Add](https://bigfrontend.dev/typescript/implement-Add-A-B), please implement `Subtract<A, B>`.
+
+1. only need to consider positive integers
+2. B is guaranteed to be smaller or equal to A
+
+```ts
+type A = Subtract<1, 1> // 0
+type B = Subtract<10, 3> // 7
+type C = Subtract<3, 10> // never
+```
+
+### 答案
+
+```ts
+type LessThan<A extends number, B extends number, S extends any[] = []> =
+  S['length'] extends B
+  ? false
+  : S['length'] extends A
+    ? true
+    : LessThan<A, B, [...S, '']>
+
+type Subtract<A extends number, B extends number, I extends any[] = [], O extends any[] = []> =
+LessThan<A, B> extends true
+? never
+: LessThan<I['length'], A> extends true // i < a
+  ? Subtract<
+    A,
+    B,
+    [...I, ''], // i++
+      LessThan<I['length'], B> extends true ? O : [...O, ''] // !(i < b) => o++
+  >
+  : O['length'] // return o
+```
+
+
+
+## [47. implement Multiply<A, B>](https://bigfrontend.dev/typescript/Subtract-A-B)
+
+### 题目
+
+Implement `Multiply<A, B>`
+
+```ts
+type A = Multiply<1, 0> // 0
+type B = Multiply<4, 6> // 24
+```
+
+> Only need to consider non-negative integers.
+
+### 答案
+
+```ts
+type RepeatAny <B extends number , C extends any[] = []> =
+C['length'] extends B
+  ? C
+  : RepeatAny<B, [...C, any]>;
+
+type Multiply<A extends number, B extends number, L extends any[] = [], Sum extends any[] = []> =
+L["length"] extends A 
+?
+  Sum["length"]
+: 
+  Multiply<A, B, [...L, any], [...Sum, ...RepeatAny<B>]>;
+```
+
+
+
+## [48. implement Divide<A, B>](https://bigfrontend.dev/typescript/Divide-A-B)
+
+### 题目
+
+Implement `Divide<A, B>`
+
+```ts
+type A = Divide<1, 0> // never
+type B = Divide<4, 2> // 2
+type C = Divide<10, 3> // 3
+```
+
+> Only need to consider non-negative integers.
+
+### 答案
+
+通过减法实现除法
+
+```ts
+type Tuple<T extends number, U extends any[] = []> =
+  U['length'] extends T ? U : Tuple<T, [...U, any]>
+
+type Subtract<
+  A extends number,
+  B extends number
+> =
+  Tuple<A> extends [...Tuple<B>, ...infer R] ? R['length'] : never
+
+type SmallerThan<
+  A extends number,
+  B extends number,
+  S extends number[] = []
+> = S['length'] extends B
+  ? false
+  : S['length'] extends A
+  ? true
+  : SmallerThan<A, B, [A, ...S]>
+
+type Divide<A extends number, B extends number, S extends number[] = []> = 
+  B extends 0
+    ? never
+    : SmallerThan<A,B> extends true
+      ? S['length']
+      : Divide<Subtract<A, B>, B, [...S, any]>;
+```
+
+
+
+## [49. asserts never](https://bigfrontend.dev/typescript/asserts-never)
+
+### 题目
+
+In `switch`, it is easy for us to miss out some cases.
+
+```ts
+type Value = 'a' | 'b' | 'c';
+declare let value: Value
+
+switch (value) {
+  case 'a':
+    break;
+  case 'b':
+    break;
+  default:
+    break;
+}
+```
+
+We missed out case `'c'` in above code and compiler doesn't compain.
+
+Plase create function `assertsNever()` to check for exhaustiveness.
+
+```ts
+type Value = 'a' | 'b' | 'c';
+declare let value: Value
+
+switch (value) {
+  case 'a':
+    break;
+  case 'b':
+    break;
+  default:
+    assertsNever(value)
+    break;
+}
+```
+
+Now TypeScript would complaint the missing case `'c'`.
+
+### 答案
+
+断言函数输入
+
+```ts
+declare const assertsNever: (arg: never) => void;
+```
+
+或者
+
+```ts
+function assertsNever (arg: never) {
+  throw new TypeError(`Missing case ${arg}`);
+};
+```
+
+
+
+## [50. implement Sort\<T>](https://bigfrontend.dev/typescript/sort)
+
+### 题目
+
+You are able to compare two non-negative integers in [LargerThan](https://bigfrontend.dev/typescript/implement-LargerThan-A-B) and [SmallerThan](https://bigfrontend.dev/typescript/implement-SmallerThan-A-B), then you should be able to implement `Sort<T>` in ascending order.
+
+```ts
+type A = Sort<[100, 9, 20, 0, 0 55]>
+// [0, 0, 9, 55, 100]
+```
+
+### 答案
+
+选择排序
+
+```ts
+type LessThan<A, B, T extends any[] = []> = 
+T["length"] extends B
+  ? false
+  : T["length"] extends A
+    ? true
+    :  LessThan<A, B, [...T, any]>;
+
+type Smallest<T extends any[], S extends any = T[0]> =
+T extends [infer A,...infer R]
+  ? ( LessThan<A, S> extends true
+    ? Smallest<R, A>
+    : Smallest<R, S>
+  )
+  : S;
+
+type RemoveFirstOccurence<T extends any [], N extends any, R extends any[] = []> =
+T extends [infer A, ...infer Rest]
+  ? (A extends N
+    ? [...R, ...Rest]
+    : RemoveFirstOccurence<Rest, N, [...R, A]>) 
+  : R;
+
+type Sort<T extends any[], Sorted extends any[] = []> =
+T extends [infer A, ...infer B]
+  ? (
+    Sort<RemoveFirstOccurence<T, Smallest<[A, ...B]>>, [...Sorted, Smallest<[A, ...B]>]>
+  )
+  : Sorted;
+```
+
+或者
+
+插入排序
+
+判断数字是否在 number[] 中，剔除 number 中的该数字
+
+```ts
+type MyExclude<A extends any[], B extends number, N extends any[] = [], F extends boolean = false> = (
+  A extends [infer X, ...infer Y]
+    ? B extends X
+      ? (
+        F extends true
+          ? MyExclude<Y, B, [...N, X], F>
+          : MyExclude<Y, B, N, true>
+      )
+      : MyExclude<Y, B, [...N, X], F>
+    : N
+)
+
+
+type Sort<T extends number[], N extends any[] = [], I extends any[] = []> = (
+  T['length'] extends 0 
+    ? N
+    : (
+      I['length'] extends T[number]
+        ? Sort<MyExclude<T, I['length']>, [...N, I['length']]>
+        : Sort<T, N, [...I, any]>
+    )
+);
+```
+
+
+
+## [51. implement Capitalize\<T>](https://bigfrontend.dev/typescript/capitalize)
+
+### 题目
+
+Implement `MyCapitalize<T>` to capitalize strings.
+
+```ts
+type A = MyCapitalize<'bfe'> // 'Bfe'
+```
+
+> There is built-in `Capitalize<T>` in TypeScript, maybe you can try not to use it.
+
+### 答案
+
+利用Uppercase将首字母转化为大写
+
+```ts
+type MyCapitalize<T extends string> = 
+T extends `${infer P}${infer U}`
+ ? `${Uppercase<P>}${U}` : T;
+```
+
+
+
+## [52. implement Split\<S, D>](https://bigfrontend.dev/typescript/split)
+
+### 题目
+
+Just like `String.prototype.split()`, please implement `Split<S, D>`.
+
+```ts
+type A = Split<'BFE.dev', '.'> // ['BFE', 'dev']
+type B = Split<'bfe.dev', 'e'> // ['bf', '.d', 'v']
+type C = Split<'bfe.bfe.bfe', 'bfe'> // ['', '.', '.', '']
+```
+
+### 答案
+
+利用模板字符串分割
+
+```ts
+type Split<S extends string, D extends string, A extends string[] = []> =
+S extends `${infer P}${D}${infer R}`
+  ? Split<R, D, [...A, P]>
+  : [...A, S];
+```
+
+
+
+## [53. Implement SnakeCase\<S>](https://bigfrontend.dev/typescript/snakecase)
+
+### 题目
+
+Implement `SnakeCase<S>` to turn string in camel case to snake case.
+
+```ts
+type A = SnakeCase<'BigFrontEnd'> // big_front_end
+```
+
+### 答案
+
+将大写字母转成小写，且除首个之外前面加上`_`
+
+```ts
+type isUpperCase<T extends string> = 
+T extends ''
+  ? false
+  : (
+    Uppercase<T> extends T ? true : false
+  );
+
+type Prefix<T extends string, Skip extends boolean> = 
+Skip extends false
+  ? (
+    isUpperCase<T> extends true
+      ? `_${Lowercase<T>}` : T
+  ) : Lowercase<T>;
+
+type SnakeCase<S extends string, Skip extends boolean = true> =
+S extends `${infer A}${infer B}`
+  ? (
+    `${Prefix<A, Skip>}${SnakeCase<B, false>}`
+  ) : S
+```
+
+
+
+## [54. Implement CamelCase\<S>](https://bigfrontend.dev/typescript/camelcase)
+
+### 题目
+
+Implement `CamelCase<S>` to turn string in snake case to camel case.
+
+```ts
+type A = CamelCase<'big_front_end'> // BigFrontEnd
+```
+
+### 答案
+
+模板引擎替换首字母和第一个字母
+
+```ts
+type CamelCase<S extends string> = 
+S extends `${infer A}_${infer B}` ? 
+  `${Capitalize<A>}${CamelCase<B>}`
+  : Capitalize<S>
+```
+
+
+
+## [55. implement StringToNumber\<S>](https://bigfrontend.dev/typescript/implement-StringToNumber-S)
+
+### 题目
+
+Implement `StringToNumber<S>` to convert string to number. You can assume strings are all valid non-negative integers.
+
+```ts
+type A = StringToNumber<'12'> // 12
+```
+
+### 答案
+
+数组长度将字符串转数组转数字
+
+```ts
+type StringToNumber<S extends string, T extends any[] = []> =
+ `${T['length']}` extends S ? T['length'] : StringToNumber<S, [...T, any]> 
+```
+
+
+
+## [56. implement Abs\<N>](https://bigfrontend.dev/typescript/implement-Abs-N)
+
+### 题目
+
+Implement `Abs<N>` to get the absolute value of a number. You can assume the number are integers.
+
+### 答案
+
+负数转字符串再计算长度
+
+```ts
+type StringToNumber<S extends string, T extends any[] = []> =
+ `${T['length']}` extends S ? T['length'] : StringToNumber<S, [...T, any]> 
+
+type Abs<N extends number> =
+`${N}` extends `-${infer A}` ? Abs<StringToNumber<A>> : StringToNumber<`${N}`>
+```
+
+
+
+## [57. implement ObjectPaths\<O>](https://bigfrontend.dev/typescript/implement-ObjectPaths-O)
+
+### 题目
+
+Implement `ObjectPaths<O>` to return all valid paths to properties.
+
+```ts
+type Obj = {
+  a: {
+    b: {
+      c: 1,
+      d: 2
+    },
+    e: 1
+  },
+  f: 3
+}
+
+type A = ObjectPaths<Obj>
+// 'a.b.c' | 'a.b.d' | 'a.e' | 'f'
+```
+
+### 答案
+
+有难度，直接copy大佬的答案
+
+```ts
+type Key = string | number | symbol;
+
+type Join<L extends Key | undefined, R extends Key | undefined> = L extends
+  | string
+  | number
+  ? R extends string | number
+    ? `${L}.${R}`
+    : L
+  : R extends string | number
+  ? R
+  : undefined;
+
+type Union<
+  L extends unknown | undefined,
+  R extends unknown | undefined
+> = L extends undefined
+  ? R extends undefined
+    ? undefined
+    : R
+  : R extends undefined
+  ? L
+  : L | R;
+
+export type ObjectPaths<
+  T extends object,
+  Prev extends Key | undefined = undefined,
+  Path extends Key | undefined = undefined
+> = string &
+  {
+    [K in keyof T]: 
+      // T[K] is an object?.
+      T[K] extends object
+      ? // Continue extracting
+        ObjectPaths<T[K], Union<Prev, Path>, Join<Path, K>>
+      : // Return all previous paths, including current key.
+        Join<Path, K>;
+  }[keyof T];
+```
+
+
+
+## [58. implement Diff\<A, B>](https://bigfrontend.dev/typescript/implement-Diff-A-B)
+
+### 题目
+
+Implement `DiffKeys<A, B>` to return the keys either in A or B, but not in both.
+
+```ts
+type A = DiffKeys<{a: 1, b: 2}, {b: 1, c: 2}> // 'a' | 'c'
+```
+
+### 答案
+
+借助Exclude
+
+```ts
+type DiffKeys<
+  A extends Record<string, any>,
+  B extends Record<string, any>
+> = Exclude<keyof A, keyof B> | Exclude<keyof B, keyof A>
 ```
 
