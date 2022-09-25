@@ -274,7 +274,11 @@ function flat(arr, depth = 1) {
 }
 ```
 
-### 4. implement basic throttle()
+
+
+## [4. implement basic throttle()](https://bigfrontend.dev/problem/implement-basic-throttle)
+
+### 题目
 
 Throttling is a common technique used in Web Application, in most cases using [lodash solution](https://lodash.com/docs/4.17.15#throttle) would be a good choice.
 
@@ -334,13 +338,15 @@ Related Problems
 
 [7. implement debounce() with leading & trailing option](https://bigfrontend.dev/problem/implement-debounce-with-leading-and-trailing-option)
 
+### 答案
+
 利用标志位isWaiting保存状态，判断是否在等待，lastCallArgs保存上一次的参数。
 
 ```js
-
 /**
- * @param {Function} func
+ * @param {(...args:any[]) => any} func
  * @param {number} wait
+ * @returns {(...args:any[]) => any}
  */
 function throttle(func, wait) {
   // Track if we are waiting. Initially, we are not.
@@ -380,7 +386,11 @@ function throttle(func, wait) {
 }
 ```
 
-### 5. implement throttle() with leading & trailing option
+
+
+## [5. implement throttle() with leading & trailing option](https://bigfrontend.dev/problem/implement-basic-throttle)
+
+### 题目
 
 This is a follow up on [4. implement basic throttle()](https://bigfrontend.dev/problem/implement-basic-throttle), please refer to it for detailed explanation.
 
@@ -450,6 +460,8 @@ Related Problems
 
 [92. throttle Promises](https://bigfrontend.dev/problem/throttle-Promises)
 
+### 答案
+
 基于上一题的版本增加一个判断
 
 ```js
@@ -461,7 +473,6 @@ Related Problems
  * @param {boolean} option.trailing
  */
 function throttle(func, wait, option = {leading: true, trailing: true}) {
-  // your code here
   // Track if we are waiting. Initially, we are not.
   let isWaiting = false;
   // Track arguments of last call
@@ -500,7 +511,11 @@ function throttle(func, wait, option = {leading: true, trailing: true}) {
 }
 ```
 
-### 6. implement basic debounce()
+
+
+## [6. implement basic debounce()](https://bigfrontend.dev/problem/implement-basic-debounce)
+
+### 题目
 
 Debounce is a common technique used in Web Application, in most cases using [lodash solution](https://lodash.com/docs/4.17.15#debounce) would be a good choice.
 
@@ -557,19 +572,26 @@ Related Problems
 
 [7. implement debounce() with leading & trailing option](https://bigfrontend.dev/problem/implement-debounce-with-leading-and-trailing-option)
 
+### 答案
+
 基本版防抖，使用定时器
 
 ```js
 /**
- * @param {Function} func
+ * @param {(...args: any[]) => any} func
  * @param {number} wait
+ * @returns {(...args: any[]) => any}
  */
 function debounce(func, wait) {
-  // your code here
+  // definition: invoke function only when the last function has passed `wait` time
   let timer = null;
   return function debounced(...args) {
+    // clear timer (doesn't matter if the execution is going or has completed)
+    // 1. nothing will happen in the case when execution has completed
+    // 2. it will clear the timer and restart if an ongoing timer was running
     if (timer) clearTimeout(timer);
 
+    // call supplied function `func` after `wait` time
     timer = setTimeout(() => {
       func.apply(this, args);
     }, wait)
@@ -577,7 +599,11 @@ function debounce(func, wait) {
 }
 ```
 
-### 7. implement debounce() with leading & trailing option
+
+
+## [7. implement debounce() with leading & trailing option](https://bigfrontend.dev/problem/implement-debounce-with-leading-and-trailing-option)
+
+### 题目
 
 This is a follow up on [6. implement basic debounce()](https://bigfrontend.dev/problem/implement-basic-debounce), please refer to it for detailed explanation.
 
@@ -643,38 +669,54 @@ Related Problems
 
 [6. implement basic debounce() ](https://bigfrontend.dev/problem/implement-basic-debounce)
 
-```js
+### 答案
 
+```js
 /**
- * @param {Function} func
- * @param {number} wait
- * @param {boolean} option.leading
- * @param {boolean} option.trailing
- */
+   * @param {Function} func
+   * @param {number} wait
+   * @param {boolean} option.leading
+   * @param {boolean} option.trailing
+   */
 function debounce(func, wait, option = {leading: false, trailing: true}) {
-  // your code here
-  let timer = null;
-  let nextArgs = null;
+  
+  // in basic debounce, we kept only timerId
+  // here, we will keep lastArgs too as we trailing function call with last arguments
+  let timerId = null;
+  let lastArgs = null;
+
 
   return function debounced(...args) {
-    if (option.leading && !timer) {
+
+    // if timer is over and leading is true
+    // then immediately call supplied function
+    // else capture arguments in lastArgs
+    if(!timerId && option.leading) {
       func.apply(this, args);
     } else {
-      clearTimeout(timer);
-      nextArgs = args;
+      lastArgs = args;
     }
 
-    timer = setTimeout(() => {
-      if (option.trailing && nextArgs) {
-        func.apply(this, nextArgs);
-      }
-      timer = null;
+    // clear timer so that next call is exactly after `wait` time
+    clearTimeout(timerId);
+
+    timerId = setTimeout(() => {
+      // invoke only if lastArgs is present and trailing is true
+      if(option.trailing && lastArgs) func.apply(this, lastArgs); 
+      
+      // reset variables as they need to restart new life after calling this function 
+      lastArgs = null;
+      timerId = null;
     }, wait);
   }
 }
 ```
 
-### 8. can you shuffle() an array?
+
+
+## [8. can you shuffle() an array?](https://bigfrontend.dev/problem/can-you-shuffle-an-array)
+
+### 题目
 
 How would you implement a shuffle() ?
 
@@ -723,10 +765,21 @@ Your `shuffle()` will be called multiple times, to calculate the probability on 
 
 ref: https://javascript.info/task/shuffle
 
+### 答案
+
+In order to have a uniform distribution after `shuffle`, the probability of picking any items in the array should be the same. That means if there are **n** items, the probability should be **1/n**
+
+The probability of picking 1st random item when we use `getRandomInt` helper by passing arguments (0, n-1) is 1/n. Simple math.
+
+The probability of picking 2nd random item when we use `getRandomInt` helper by passing arguments (1, n-1) is 1/n as well. Why? Because the 2nd item was not picked at the first iteration and that probability is n-1/n. Multiplying those give us 1/n by `n-1/n * 1/n-1 => 1/n`
+
+The probability of picking 3rd item is 1/n as you expect already `n-1/n * n-2/n-1 * 1/n-2 => 1/n`
+
+Now all we need do is set the incremental insert position (starting form 0) and pick a random item, then swap them.
+
 采用从后向前的顺序
 
 ```js
-
 /**
   * @param {any[]} arr
   */
@@ -740,7 +793,11 @@ function shuffle(arr) {
 }
 ```
 
-### 9. decode message
+
+
+## [9. decode message](https://bigfrontend.dev/problem/decode-message)
+
+### 题目
 
 Your are given a 2-D array of characters. There is a hidden message in it.
 
@@ -765,6 +822,8 @@ for the input above, `IROCLED` should be returned.
 if no characters could be collected, return empty string
 
 [Source for this ](https://www.glassdoor.com/Interview/Given-a-grid-of-characters-output-a-decoded-message-The-message-for-the-following-would-be-IROCKA-diagonally-down-right-QTN_970049.htm)
+
+### 答案
 
 模拟碰到上下边界反弹
 
@@ -802,7 +861,11 @@ function decode(message) {
 }
 ```
 
-### 10. first bad version
+
+
+## [10. first bad version](https://bigfrontend.dev/problem/first-bad-version)
+
+### 题目
 
 Say you have multiple versions of a program, write a program that will find and return the first bad revision given a `isBad(version)` function.
 
@@ -814,6 +877,8 @@ Versions after first bad version are supposed to be all bad versions.
 2. if none found, return -1
 
 [Source for this ](https://www.glassdoor.com/Interview/If-you-have-500-revisions-of-a-program-write-a-program-that-will-find-and-return-the-FIRST-bad-revision-given-a-isBad-revi-QTN_1255475.htm)
+
+### 答案
 
 二分查找都搜索满足条件的下边界
 
@@ -847,7 +912,11 @@ function firstBadVersion(isBad) {
 }
 ```
 
-### 11. what is Composition? create a pipe()
+
+
+## [11. what is Composition? create a pipe()](https://bigfrontend.dev/problem/what-is-composition-create-a-pipe)
+
+### 题目
 
 what is Composition? It is actually not that difficult to understand, see [@dan_abramov 's explanation](https://whatthefuck.is/composition).
 
@@ -894,6 +963,8 @@ Related Problems
 
 [29. implement async helper - `sequence()`](https://bigfrontend.dev/problem/implement-async-helper-sequence)
 
+### 答案
+
 管道化，正向使用reduce进行计算
 
 ```js
@@ -906,7 +977,29 @@ function pipe(funcs) {
 }
 ```
 
-### 12. implement Immutability helper
+当然也可以直观迭代函数
+
+```js
+/**
+ * @param {Array<(arg: any) => any>} funcs 
+ * @return {(arg: any) => any}
+ */
+function pipe(funcs) {
+	return (arg) => {
+     let lastArg = arg;
+     for (const func of funcs) {
+       lastArg = func(lastArg);
+     }
+     return lastArg;
+  }
+}
+```
+
+
+
+## [12. implement Immutability helper](https://bigfrontend.dev/problem/implement-Immutability-helper)
+
+### 题目
 
 If you use React, you would meet the scenario to copy the state for a slight change.
 
@@ -1037,6 +1130,8 @@ const newArr = update(arr, {0: {$apply: (item) => item * 2}})
 // [2, 2, 3, 4]
 ```
 
+### 答案
+
 根据键名分别进行相应的函数处理
 
 ```js
@@ -1048,7 +1143,6 @@ const isObject = (data) => {
  * @param {Object} command
  */
 function update(data, command) {
-  // your code here
   if ('$push' in command) {
     if (!Array.isArray(data)) {
       throw new Error('not array');
@@ -1091,7 +1185,48 @@ function update(data, command) {
 }
 ```
 
-### 13. Implement a Queue by using Stack
+我觉得没有大佬写的这一版直观
+
+```js
+/**
+ * @param {any} data
+ * @param {Object} command
+ */
+function update(data, command) {
+  for (const [key, value] of Object.entries(command)) {
+    switch (key) {
+      case '$push':
+        return [...data, ...value];
+      case '$set':
+        return value;
+      case '$merge':
+        if (!(data instanceof Object)) {
+          throw Error("bad merge");
+        }
+        return {...data, ...value};
+      case '$apply':
+        return value(data);
+      default:
+        if (data instanceof Array) {
+          const res = [...data];
+          res[key] = update(data[key], value);
+          return res;
+        } else {
+          return {
+            ...data,
+            [key]: update(data[key], value)
+          }
+        }
+    }
+  }
+}
+```
+
+
+
+## [13. Implement a Queue by using Stack](https://bigfrontend.dev/problem/implement-a-queue-by-using-stack)
+
+### 题目
 
 In JavaScript, we could use array to work as both a Stack or a queue.
 
@@ -1141,6 +1276,8 @@ Related Problems
 
 [108. Implement a Stack by using Queue](https://bigfrontend.dev/problem/Implement-a-Stack-by-using-Queue)
 
+### 答案
+
 最后的代码使用了2个栈
 
 ```js
@@ -1158,7 +1295,7 @@ class Stack {
 
 // you need to complete the following Class
 class Queue {
-  constructor () {
+  constructor() {
     this.stack1 = new Stack();
     this.stack2 = new Stack();
   }
@@ -1193,7 +1330,11 @@ class Queue {
 }
 ```
 
-### 14. Implement a general memoization function - `memo()`
+
+
+## [14. Implement a general memoization function - `memo()](https://bigfrontend.dev/problem/implement-general-memoization-function)`
+
+### 题目
 
 [Memoization](https://whatthefuck.is/memoization) is a common technique to boost performance. If you use React, you definitely have used `React.memo` before.
 
@@ -1252,24 +1393,41 @@ Related Problems
  * @param {Function} func
  * @param {(args:[]) => string }  [resolver] - cache key generator
  */
+// With this context in mind, check test cases below.
 function memo(func, resolver) {
   // your code here
   const cache = new Map();
 
-  return function (...args) {
-    const key = resolver ? resolver(...args) : args.join('_');
-    if (cache.has(key)) {
-      return cache.get(key);
+  // Map<cacheKey, Map<context, value>>
+  return function() {
+    const cacheKey = resolver ?  resolver(...arguments) : Array.from(arguments).join(',');
+
+    const contextMap = cache.get(cacheKey);
+    // If there is a corresponding context map to cachekey
+    // Check if context is in the map, if so, return value.
+    // Else if no corresponding add contextMap, add new entry to the context map
+    if (!contextMap) {
+      const value = func.apply(this, arguments);
+      cache.set(cacheKey, new Map([[ this, value ]]));
+      return value;
     }
 
-    const result = func.apply(this, args);
-    cache.set(key, result);
-    return result;
+    if (contextMap.has(this)) {
+      return contextMap.get(this);
+    } 
+    // If context not in the map, calculate and add to context map.
+    const value = func.apply(this, arguments);
+    contextMap.set(this, value);
+    return value;
   }
 }
 ```
 
-### 15. implement a simple DOM wrapper to support method chaining like jQuery
+
+
+## [15. implement a simple DOM wrapper to support method chaining like jQuery](https://bigfrontend.dev/problem/implement-a-simple-DOM-wrapper-to-support-method-chaining-like-jQuery)
+
+### 题目
 
 I believe you've used jQuery before, we often chain the jQuery methods together to accomplish our goals.
 
@@ -1289,12 +1447,10 @@ The wrapper only needs to have `css(propertyName: string, value: any)`
 通过返回的闭包设置参数，返回this实现链式调用
 
 ```js
-
 /**
  * @param {HTMLElement} el - element to be wrapped
  */
 function $(el) {
-  // your code here
   return {
     css: function(property, value) {
       el.style[property] = value;
@@ -1304,7 +1460,34 @@ function $(el) {
 }
 ```
 
-### 16. create an Event Emitter
+或者通过class实现
+
+```js
+/**
+ * @param {HTMLElement} el - element to be wrapped
+ */
+function $(el) {
+  return new Wrapper(el);
+}
+
+class Wrapper {
+  constructor(el) {
+    this.el = el;
+  }
+
+  css(p, v) {
+    this.el.style[p] = v;
+
+    return this;
+  }
+}
+```
+
+
+
+## [16. create an Event Emitter](https://bigfrontend.dev/problem/create-an-Event-Emitter)
+
+### 题目
 
 There is [Event Emitter in Node.js](https://nodejs.org/api/events.html#events_class_eventemitter), Facebook once had [its own implementation](https://github.com/facebookarchive/emitter) but now it is archived.
 
@@ -1343,25 +1526,41 @@ sub3.release()
 
 [Source for this ](https://www.glassdoor.com/Interview/Flatten-Array-Create-Emitter-QTN_2559028.htm)
 
+### 答案
+
 发布订阅模式的简化版，subscribe订阅事件，emit发布事件
 
-```js
+Closures:  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
 
+```js
 // please complete the implementation
 class EventEmitter {
   constructor () {
+    // 维护一个订阅该对象的map
+    // map:  (eventName,[callback...]),key为eventName，value是由相同eventName的回调函数组成的数组
+    // key: eventName,value: An array of callback functions with the same eventName
     this.callbacks = new Map();
   }
   subscribe(eventName, callback) {
   	if (this.callbacks.has(eventName)) {
+      // 存在则向对应value里增加callback
+      // eventName exists,add callback to the corresponding value
       const callbacks = this.callbacks.get(eventName);
       callbacks.push(callback)
     } else {
+      // eventName不存在，则添加
+      // eventName does not exist,add
       this.callbacks.set(eventName, [callback]);
     }
 
     return {
+      // 返回一个包含release方法的对象
+      // return an object containing the release method
       release: () => {
+        // 找到对应的callback，删除
+        // find the corresponding callback and delete it
+        // 此时利用闭包，使用的是第10行的watcher
+        // At this point,the Closures is used,and the watcher on line 10 is used
         const callbacks = this.callbacks.get(eventName);
         const index = callbacks.indexOf(callback);
         callbacks.splice(index, 1);
@@ -1372,7 +1571,8 @@ class EventEmitter {
   emit(eventName, ...args) {
   	const callbacks = this.callbacks.get(eventName);
     if (!callbacks.length) return;
-
+    // eventName存在则依此调用watcher里的callback
+    // if eventName exists,call the callback in watcher accordingly
     for (const callback of callbacks) {
       callback.apply(this, args);
     }
@@ -1380,7 +1580,11 @@ class EventEmitter {
 }
 ```
 
-### 17. Create a simple store for DOM element
+
+
+## [17. Create a simple store for DOM element](https://bigfrontend.dev/problem/create-a-simple-store-for-DOM-node)
+
+### 题目
 
 We have `Map` in es6, so we could use any data as key, such as DOM element.
 
@@ -1420,7 +1624,14 @@ What is the Time / Space cost of your solution?
 
 [Source for this ](https://www.glassdoor.com/Interview/Implement-a-simple-store-class-with-set-Node-value-get-Node-and-has-Node-methods-which-store-a-given-Nodes-with-corre-QTN_2435822.htm)
 
+### 答案
+
 使用对象存储节点
+
+1. Use the Object as a memory.
+2. Because object keys can contain only strings or Symbol, for 100% elimination of collisions with node properties it is better to use Symbol.
+3. For each node, add a property with a value from Symbol and save there a serial number (or another unique id, for example, uuid)
+4. Save the value with this id in memo.
 
 ```js
 class NodeStore {
@@ -1453,7 +1664,11 @@ class NodeStore {
 }
 ```
 
-### 18. Improve a function
+
+
+## [18. Improve a function](https://bigfrontend.dev/problem/improve-a-function)
+
+### 题目
 
 ```js
 // Given an input of array, 
@@ -1492,6 +1707,14 @@ we only judge by the result, not the time cost. please submit the best approach 
 
 [Source for this ](https://www.glassdoor.com/Interview/Given-input-could-be-potentially-more-than-3-keys-in-the-object-above-items-color-red-type-tv-age-18-QTN_2372314.htm)
 
+### 答案
+
+Let's assume the `n` is the length of `items`, `k` is the number of properties in an item, `m` is the length of `excludes`
+
+Time complexity: **O(m) + O(nk)** for 1) building `excludesMap` takes `O(m)` and for 2) filtering `items` take `O(nk)`
+
+Space complexity: **O(m)**
+
 建立map，过滤需要进行过滤的key
 
 ```js
@@ -1523,7 +1746,11 @@ function excludeItems(items, excludes) {
 }
 ```
 
-### 19. find corresponding node in two identical DOM tree
+
+
+## [19. find corresponding node in two identical DOM tree](https://bigfrontend.dev/problem/find-corresponding-node-in-two-identical-DOM-tree)
+
+### 题目
 
 Given two same DOM tree **A**, **B**, and an Element **a** in **A**, find the corresponding Element **b** in **B**.
 
@@ -1545,6 +1772,8 @@ Related Problems
 
 [58. get DOM tree height](https://bigfrontend.dev/problem/get-DOM-tree-height)
 
+### 答案
+
 使用迭代法进行操作，用队列保存层级节点
 
 ```js
@@ -1555,9 +1784,8 @@ Related Problems
  * @param {HTMLElement} nodeA
  */
 const findCorrespondingNode = (rootA, rootB, target) => {
-  // your code here
-  let stackA = [rootA];
-  let stackB = [rootB];
+  const stackA = [rootA];
+  const stackB = [rootB];
 
   while (stackA.length > 0) {
     const nodeA = stackA.pop();
@@ -1575,7 +1803,144 @@ const findCorrespondingNode = (rootA, rootB, target) => {
 }
 ```
 
-### 20. Detect data type in JavaScript
+递归
+
+```c++
+
+/**
+ * @param {HTMLElement} rootA
+ * @param {HTMLElement} rootB - rootA and rootB are clone of each other
+ * @param {HTMLElement} nodeA
+ */
+const findCorrespondingNode = (rootA, rootB, target) => {
+  if(rootA === target){
+    return rootB;
+  }
+  
+  for(let i = 0; i < rootA.children.length; i++){
+    const res = findCorrespondingNode(rootA.children[i], rootB.children[i], target);
+    if (res) {
+      return res;
+    }
+  }
+}
+```
+
+一个大佬写的其他方法
+
+```js
+// Approach 1: Recursive
+const findCorrespondingNode = (rootA, rootB, target) => {
+    
+    if(rootA == target){
+        return rootB;
+    }
+    
+    for(let i = 0; i < rootA.children.length; i++){
+        const res = findCorrespondingNode(rootA.children[i], rootB.children[i], target)
+        if(res){
+            return res;
+        }
+    }
+}
+
+//Approach 2: Iterative DFS: Using stack
+const findCorrespondingNode = (rootA, rootB, target) => {
+    const stack = [[rootA, rootB]];
+    
+    while(stack.length > 0) {
+        const [leftNode, rightNode] = stack.pop();
+        if (leftNode === target) return rightNode;
+        
+        for (let i = 0; i < leftNode.children.length; i++) {
+            stack.push([leftNode.children[i], rightNode.children[i]]);
+        }
+    }
+}
+
+/**
+* Approach 3: Iterative BFS: Using Queue
+*/
+const findCorrespondingNode = (rootA, rootB, target) => {
+    if (rootA === target) {
+        return rootB;
+    }
+    
+    const queueA = [rootA];
+    const queueB = [rootB];
+    
+    while(queueA.length) {
+        // removes the first element from an array and returns that removed element
+        const currentElementA = queueA.shift(); 
+        const currentElementB = queueB.shift();
+        
+        if (currentElementA === target) {
+            return currentElementB;
+        }
+        // adds one or more elements to the end of an array and returns the new length of the array.
+        queueA.push(...currentElementA.children); 
+        queueB.push(...currentElementB.children);    
+    }
+    return null;    
+}
+
+/**
+* Approach 4: Using DOM API
+*/
+
+const findCorrespondingNode = (rootA, rootB, target) => {
+    // if 'target' is itself rootA then directly return rootA, this will make 'path' array empty, and it will return rootB in reduceRight
+    if (rootA === target)
+    return rootB;
+    
+    // we can track 'target' in rootB using indexes stored during tracing 'target' in rootA
+    let path = getRootAPath(rootA, target);
+    
+    // reduceRight is same as reduce but it iterate values from right to left
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight
+    return path.reduceRight((accumulator, currentValue, index) => {
+        return accumulator.children[currentValue];
+    }, rootB) // rootB pointing to initialValue from where start the processing, this will be the accumulator when we start
+}
+
+// get path from target to rootA in the form of index arr, index pointing to position of a node in its parent HTML collection
+function getRootAPath(rootA, target) {
+    let path = [];
+    
+    let node = target;
+    
+    while (node !== rootA && node.parentNode) { // we will iterate till we reach top of the DOM tree
+        const children = Array.from(node.parentNode.children); // convert HTMLCollection into Array
+        path.push(children.indexOf(node)); // push index where 'node' found
+        node = node.parentNode; // this will make sure we move from down to top
+    }
+    return path;
+}
+
+
+/**
+* Approach 5: Using Tree Walker API
+* https://developer.mozilla.org/en-US/docs/Web/API/Document/createTreeWalker
+*/
+const findCorrespondingNode = (rootA, rootB, target) => {
+    const rootAWalker = document.createTreeWalker(rootA, NodeFilter.SHOW_ELEMENT);
+    const rootBWalker = document.createTreeWalker(rootB, NodeFilter.SHOW_ELEMENT);
+    
+    let currentNodes = [rootAWalker.currentNode, rootBWalker.currentNode];
+    
+    while (currentNodes[0] !== target) {
+        currentNodes = [rootAWalker.nextNode(), rootBWalker.nextNode()];
+    }
+    
+    return currentNodes[1];
+}
+```
+
+
+
+## [20. Detect data type in JavaScript](https://bigfrontend.dev/problem/detect-data-type-in-JavaScript)
+
+### 题目
 
 This is an easy problem.
 
@@ -1596,10 +1961,11 @@ detectType(null) // 'null'
 // more in judging step
 ```
 
+### 答案
+
 除了常规的判断，测试用例中有一个FileReader需要返回`object`
 
 ```js
-
 /**
  * @param {any} data
  * @return {string}
@@ -1613,7 +1979,24 @@ function detectType(data) {
 }
 ```
 
-### 21. implement JSON.stringify()
+简化版
+
+```js
+/**
+ * @param {any} data
+ * @return {string}
+ */
+function detectType(data) {
+  if(data instanceof FileReader) return 'object';
+  return Object.prototype.toString.call(data).slice(1, -1).split(' ')[1].toLowerCase();
+}
+```
+
+
+
+## [21. implement JSON.stringify()](https://bigfrontend.dev/problem/implement-JSON-stringify)
+
+### 题目
 
 I believe you've used `JSON.stringify()` before, do you know the details of how it handles arbitrary data?
 
@@ -1635,10 +2018,11 @@ Related Problems
 
 [22. implement JSON.parse()](https://bigfrontend.dev/problem/implement-JSON-parse)
 
+### 答案
+
 分类进行判断，注意不能枚举的键
 
 ```js
-
 /**
  * @param {any} data
  * @return {string}
@@ -1681,7 +2065,41 @@ function stringify(data) {
 }
 ```
 
-### 22. implement JSON.parse()
+严谨一点的写法
+
+```js
+/**
+ * @param {any} data
+ * @return {string}
+ */
+function stringify(data) {
+  if ([NaN, null, undefined, Infinity].includes(data)) {
+    return 'null';
+  }
+  const type = typeof data;
+  switch (type) {
+    case 'function': return undefined;
+    case 'bigint': throw Error('bigints are not supported');
+    case 'string': return `"${data}"`;
+    case 'object': {
+      if (Array.isArray(data)) {
+        return `[${data.map(e => ((typeof e) == 'symbol') ? 'null' : stringify(e)).join()}]`;
+      }
+      if (data instanceof Date) {
+        return `"${data.toISOString()}"`;
+      }
+      return '{' + Object.keys(data).filter(key => data[key] !== undefined).map(key => `"${key}":${stringify(data[key])}`).join() + '}';
+    }
+    default: return String(data);
+  }
+}
+```
+
+
+
+## [22. implement JSON.parse()](https://bigfrontend.dev/problem/implement-JSON-parse)
+
+### 题目
 
 I believe you've used `JSON.stringify()` before, do you know the details of how it handles arbitrary data?
 
@@ -1700,6 +2118,8 @@ Attention to the circular reference.
 Related Problems
 
 [21. implement JSON.stringify() ](https://bigfrontend.dev/problem/implement-JSON-stringify)
+
+### 答案
 
 使用eval，注意有可能失败，重新JSON.stringify()转化后不同于自身
 
@@ -1726,120 +2146,53 @@ function parse(str) {
  * @return {object | Array | string | number | boolean | null}
  */
 function parse(str) {
-  const dataType = detectDataType(str);
-
-  if (dataType === 'object') {
-    return parseObj(str);
+  if(str === '') {
+    throw Error();
   }
-
-  if (dataType === 'array') {
-    return parseArr(str);
+  if(str[0] === "'") {
+    throw Error();
   }
-
-  return parsePrimitive(str);
-}
-
-// 检查类型
-function detectDataType(str) {
-  if (str.startsWith('{') && str.endsWith('}')) {
-    return 'object';
+  if(str === 'null') {
+    return null;
   }
-
-  if (str.startsWith('[') && str.endsWith(']')) {
-    return 'array';
+  if(str === '{}') {
+    return {};
   }
-
-  return 'primitive';
-}
-
-function parseObj(str) {
-  const obj = {};
-
-  str = removeQuotationMarks(str);
-  if (str.endsWith(':')) {
-    throw new Error();
+  if(str === '[]') {
+    return [];
   }
-
-  while (str.length > 0) {
-    const regex = /^".+?"(?=:)/;
-    let key = str.match(regex);
-    if (!key) {
-      throw new Error();
-    }
-    key = key[0];
-
-    const rest = str.slice(key.length + 1);
-    let val = rest.match(/\w+(?=,"\w+":)/);
-    if (!val) {
-      val = rest;
-    } else {
-      val = val[0];
-    }
-
-    const trimmedKey = removeQuotationMarks(key);
-    obj[trimmedKey] = parse(val);
-
-    str = rest.slice(val.length);
-  }
-
-  return obj;
-}
-
-function parseArr(str) {
-  const arr = [];
-
-  str = removeQuotationMarks(str);
-  if (str.endsWith(',')) {
-    throw new Error();
-  }
-
-  while (str.length > 0) {
-    let item = str.match(/.+?,(?!"\w+":)/);
-    if (!item) {
-      item = str;
-    } else {
-      item = item[0].slice(0, -1);
-    }
-    arr.push(parse(item));
-
-    str = str.slice(item.length + 1);
-  }
-
-  return arr;
-}
-
-function parsePrimitive(str) {
-  if (str.startsWith('"')) {
-    return removeQuotationMarks(str);
-  }
-
-  if (!isNaN(str)) {
-    return Number(str);
-  }
-
-  if (str === 'true') {
+  if(str === 'true') {
     return true;
   }
-
-  if (str === 'false') {
+  if(str === 'false') {
     return false;
   }
-
-  if (str === 'undefined') {
-    return undefined;
+  if(str[0] === '"') {
+    return str.slice(1, -1);
   }
-
-  return null;
-}
-
-function removeQuotationMarks(str) {
-  return str.slice(1, -1);
+  if(+str === +str) {
+    return Number(str);
+  }
+  if(str[0] === '{') {
+    return str.slice(1, -1).split(',').reduce((acc, item) => {
+      const index = item.indexOf(':');
+      const key = item.slice(0, index)
+      const value = item.slice(index + 1);
+      acc[parse(key)] = parse(value);
+      return acc;
+    }, {});
+  }
+  if(str[0] === '[') {
+    return str.slice(1, -1).split(',').map((value) => parse(value));
+  }
 }
 ```
 
 
 
-### 23. create a sum()
+## [23. create a sum()](https://bigfrontend.dev/problem/create-a-sum)
+
+### 题目
 
 Create a `sum()`, which makes following possible
 
@@ -1851,6 +2204,8 @@ sum(1)(2)(3) == 6 // true
 sum(5)(-1)(2) == 6 // true
 ```
 
+### 答案
+
 函数柯里化+valueOf求值
 
 ```js
@@ -1858,14 +2213,79 @@ sum(5)(-1)(2) == 6 // true
  * @param {number} num
  */
 function sum(num) {
-  // your code here
-  const add = newNum => newNum ? sum(num + newNum) : num;
-  add.valueOf = () => num;
-  return add;
+  const func = function(num2) { // #4
+    return num2 ? sum(num + num2) : num; // #3
+  }
+  
+  func.valueOf = () => num; // #2
+  return func; // #1
+}
+/*** ==== Explanation  ====
+
+We know that `sum(1)(2)` can be done by returning a function from a function. Example:
+
+
+function sum(num) {
+  return function(num2) {
+    return num+num2;
+  }
+}
+
+
+but we can have `sum(1)(2)....(n)` up to `n`.
+
+How do we solve such problems? We first see a pattern, the pattern is that we need to return function `n` times.
+When we see a pattern then we can write concise code using recursion. <br />
+
+So I solved this problem using recursion. But before that let's demystify these 8 lines of code. <br />
+
+#1: Why do we need to use `func` variable, why can't we just directly return `function(num2)...` (#4)? <br />
+
+Because we are comparing non-primitive (Object, functions are Objects in JS) value against a primitive value (Number). <br />
+`sum(1)(2)(3) == 6`
+
+When we do such comparisons then JS has to do "type coercion". How does JS do this?
+
+It has `valueOf` and `toString` to do that. Essentially, one of them will be called. 
+What we do here is that we override that method and tell the JS engine to return our custom value (which is `num`) in our case.
+That's why we needed to store #4 in a variable so that we can override the `valueOf` method.
+
+#2: Okay, I get it that you wanted to use the `valueOf` method, but why do you on this beautiful earth want to do that? 
+Because if `sum(1)(2)` will return us another function and we can't compare below -
+
+`function(num2) { return num2 ? sum(num+num2) : num }  == 3`
+
+So what we do is we tell the JS engine to use our `valueOf` method to return value, which is 'num'.
+So we can now compare `3 == 3`
+
+#3: Okay, then why do we have ternary on #3?
+Because in case you want to use call `sum` function normally and get value out of it.
+`sum(1)(2)()` will return 3
+
+***/
+```
+
+With Symbol
+
+```js
+/**
+ * @param {number} num
+ */
+function sum(num) {
+  const func = function(num2) { // #4
+    return num2 ? sum(num + num2) : num; // #3
+  }
+  
+  func[Symbol.toPrimitive] = () => num; // #2
+  return func; // #1
 }
 ```
 
-### 24. create a sum()
+
+
+## [24. create a sum()](https://bigfrontend.dev/problem/create-a-priority-queue-in-JavaScript)
+
+### 题目
 
 [Priority Queue](https://storm.cis.fordham.edu/~yli/documents/CISC2200Spring15/Graph.pdf) is a commonly used data structure in algorithm problem. Especially useful for **Top K** problem with a huge amount of input data, since it could avoid sorting the whole but keep a fixed-length sorted portion of it.
 
@@ -1937,7 +2357,9 @@ pq.poll()
 // 2 is removed, only 5 is left
 ```
 
-实现堆，这个直接抄了，感觉比较复杂，主要是上移和下移操作
+### 答案
+
+实现堆，这个直接抄了，比较复杂，主要是上移和下移操作，参考算法导论中的内容
 
 ```js
 
@@ -2046,7 +2468,11 @@ class PriorityQueue {
 }
 ```
 
-### 25. Reorder array with new indexes
+
+
+## [25. Reorder array with new indexes](https://bigfrontend.dev/problem/reorder-array-with-new-indexes)
+
+### 题目
 
 Suppose we have an array of items - `A`, and another array of indexes in numbers - `B`
 
@@ -2071,7 +2497,9 @@ It is fairly easy to do this by using extra `O(n)` space, could you solve it wit
 
 [Source for this ](https://www.glassdoor.com/Interview/Given-an-input-array-and-another-array-that-describes-a-new-index-for-each-element-mutate-the-input-array-so-that-each-ele-QTN_446534.htm)
 
-一次遍历重新排序索引和数据，保证当前位置是正确的数
+### 答案
+
+**The key insight is that you have to swap the newOrder array when you swap the items array so that order information is preserved. Notice the inner while loop as well, the current testcase is not the best**
 
 ```js
 /**
@@ -2080,22 +2508,24 @@ It is fairly easy to do this by using extra `O(n)` space, could you solve it wit
  * @return {void}
  */
 function sort(items, newOrder) {
-  // reorder items inline
   for (let i = 0; i < newOrder.length; i++) {
-    const newIndex = newOrder[i];
-    if (newIndex !== i) {
-      swap(newOrder, newIndex, i);
-      swap(items, newIndex, i);
+    while (newOrder[i] !== i) {
+      swap(items, i, newOrder[i]);
+      swap(newOrder, i, newOrder[i]);
     }
   }
 }
 
 function swap(arr, i, j) {
   [arr[i], arr[j]] = [arr[j], arr[i]];
-}
+} 
 ```
 
-### 26. implement Object.assign()
+
+
+## [26. implement Object.assign()](https://bigfrontend.dev/problem/implement-object-assign)
+
+### 题目
 
 *The `Object.assign()` method copies all enumerable own properties from one or more source objects to a target object. It returns the target object.* (source: [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign))
 
@@ -2116,35 +2546,41 @@ Related Problems
 
 [27. implement completeAssign()](https://bigfrontend.dev/problem/implement-completeAssign)
 
+### 答案
+
 ```js
-function completeAssign(target, ...sources) {
-  // your code here
-  if (!target) {
-    throw new Error();
+/**
+ * @param {any} target
+ * @param {any[]} sources
+ * @return {object}
+ */
+function objectAssign(target, ...sources) {
+  if (target === null || target === undefined) {
+    throw new Error('Not an object');
   }
-
-  if (typeof target !== 'object') {
-    const constructor = Object.getPrototypeOf(target).constructor;
-    target = new constructor(target);
+  
+  if (typeof target !== `object`) {
+    target = new target.__proto__.constructor(target); 
   }
-
-  for(const source of sources) {
-    if (!source) {
+  
+  for (const source of sources) {
+    if (source === null || source === undefined) {
       continue;
     }
-
+    
     Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     
     for (const symbol of Object.getOwnPropertySymbols(source)) {
       target[symbol] = source[symbol];
-    }
+    } 
   }
-
   return target;
 }
 ```
 
-### 27. implement completeAssign()
+
+
+## [27. implement completeAssign()](https://bigfrontend.dev/problem/implement-completeAssign)
 
 This is a follow-up on [26. implement Object.assign()](https://bigfrontend.dev/problem/implement-object-assign).
 
