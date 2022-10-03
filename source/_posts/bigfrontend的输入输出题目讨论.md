@@ -7420,3 +7420,103 @@ console.log(017 - 011) // 15 - 9 = 6
 console.log(018 - 011) // 18 - 9 = 9
 console.log(019 - 011) // 19 - 9 = 10
 ```
+
+
+
+## [96. comparison](https://bigfrontend.dev/quiz/comparison)
+
+### 题目
+
+What does the code snippet to the right output by `console.log`
+
+```js
+// This is a JavaScript quiz from BFE.dev
+
+console.log(10 > 9)
+console.log(10 > '9')
+console.log('10' > 9)
+console.log('10' > '9')
+```
+
+### 答案
+
+```sh
+true
+true
+true
+false
+```
+
+### 详细解析
+
+Reference to https://zh.javascript.info/comparison The number is compared directly. Otherwise, convert the other to number if possible. The last one, compare by dictionary order.
+
+When using `>` to compare two operands, if either operand is a `number`, Javascript will first convert the string to its equivalent number and then numerically compare.
+
+Only when both operands are `string`, they are compared lexicographically. i.e. character by character until they are not equal or there aren't any characters left. The first character of '10' is less than the first character of '9' hence '10' is < '9'
+
+```js
+console.log(10 > 9) // true
+console.log(10 > '9') // true
+console.log('10' > 9) // true
+console.log('10' > '9') // false
+```
+
+
+
+## [97. `this` V](https://bigfrontend.dev/quiz/this-V)
+
+### 题目
+
+What does the code snippet to the right output by `console.log`
+
+```js
+// This is a JavaScript quiz from BFE.dev
+
+const obj = {
+  prefix: 'BFE',
+  list: ['1', '2', '3'],
+  log() {
+    this.list.forEach(function (item) {
+      console.log(this.prefix + item);
+    });
+  },
+};
+
+obj.log();
+```
+
+### 答案
+
+```sh
+"undefined1"
+"undefined2"
+"undefined3"
+```
+
+### 详细解析
+
+Please pay attention to the callback of `forEach`, it isn't an arrow function, so the `this` inside of callback point to the `window`, so `window.prefix` is equal to `undefined`.
+
+Here, `this` inside the `log` function will point to `obj` as it's a normal function. Thus, `this.list.forEach` loops over the array ['1','2','3'].
+
+However, inside the `forEach` callback function, since it's not the `obj` invoking callback, `this` will not point to `obj`. Rather, it will refer to `window` hence `this.prefix` will be `undefined`
+
+```js
+const obj = {
+  prefix: 'BFE',
+  list: ['1', '2', '3'],
+  log() {
+    this.list.forEach(function (item) {
+      // the `this` here is point to the `window`, not the `obj`
+      console.log(this.prefix + item);
+    });
+  },
+};
+
+obj.log();
+
+// "undefined1"
+// "undefined2"
+// "undefined3"
+```

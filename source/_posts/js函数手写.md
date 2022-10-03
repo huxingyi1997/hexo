@@ -2743,7 +2743,7 @@ function backtrack(arr) {
 			}
 		}
         return list;
-	}, [])
+	}, [''])
 }
 
 console.log(backtrack([['a', 'b'], ['n', 'm'], ['0', '1']]));

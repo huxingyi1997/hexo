@@ -1386,6 +1386,8 @@ Related Problems
 
 [122. implement memoizeOne()](https://bigfrontend.dev/problem/implement-memoizeOne)
 
+### 答案
+
 使用了map+闭包保存之前计算的数据
 
 ```js
@@ -1443,6 +1445,8 @@ $('#button')
 The chaining makes the code simple to read, could you create a simple wrapper `$` to make above code work as expected?
 
 The wrapper only needs to have `css(propertyName: string, value: any)`
+
+### 答案
 
 通过返回的闭包设置参数，返回this实现链式调用
 
@@ -2582,6 +2586,8 @@ function objectAssign(target, ...sources) {
 
 ## [27. implement completeAssign()](https://bigfrontend.dev/problem/implement-completeAssign)
 
+### 题目
+
 This is a follow-up on [26. implement Object.assign()](https://bigfrontend.dev/problem/implement-object-assign).
 
 `Object.assign()` assigns the enumerable properties, so getters are not copied, non-enumerable properties are ignored.
@@ -2643,11 +2649,12 @@ Related Problems
 
 [26. implement Object.assign() ](https://bigfrontend.dev/problem/implement-object-assign)
 
+### 答案
+
 类似的做法
 
 ```js
 function completeAssign(target, ...sources) {
-  // your code here
   if (target === null || target === undefined) throw Error('target cannot be null or undefined');
 
   target = Object(target);
@@ -2668,7 +2675,11 @@ function completeAssign(target, ...sources) {
 }
 ```
 
-### 28. implement clearAllTimeout()
+
+
+## [28. implement clearAllTimeout()](https://bigfrontend.dev/problem/implement-clearAllTimeout)
+
+### 题目
 
 `window.setTimeout()` could be used to schedule some task in the future.
 
@@ -2693,6 +2704,8 @@ You need to keep the interface of `window.setTimeout` and `window.clearTimeout` 
 
 [Source for this ](https://www.glassdoor.com/Interview/by-phone-what-is-a-difference-between-Object-and-Array-call-and-apply-what-is-DOM-structure-what-is-time-complexity-of-QTN_2882315.htm)
 
+### 答案
+
 ```js
 /**
  * cancel all timer from window.setTimeout
@@ -2709,14 +2722,17 @@ window.setTimeout = (cb, delay) => {
 }
 
 function clearAllTimeout() {
-  // your code here
   for (const timer of timerCache) {
     clearTimeout(timer);
   }
 }
 ```
 
-### 29. implement async helper - `sequence()`
+
+
+## [29. implement async helper - `sequence()`](https://bigfrontend.dev/problem/implement-async-helper-sequence)
+
+### 题目
 
 This problem is similar to [11. what is Composition? create a pipe()](https://bigfrontend.dev/problem/what-is-composition-create-a-pipe).
 
@@ -2771,6 +2787,8 @@ Related Problems
 [30. implement async helper - `parallel()`](https://bigfrontend.dev/problem/implement-async-helper-parallel)
 
 [async helper - `race()`](https://bigfrontend.dev/problem/implement-async-helper-race)
+
+### 答案
 
 使用promise实现
 
@@ -2828,7 +2846,6 @@ function promisify(callback) {
 不使用promise实现
 
 ```js
-
 /*
 type Callback = (error: Error, data: any) => void
 
@@ -2866,7 +2883,11 @@ function sequence(funcs) {
 }
 ```
 
-### 30. implement async helper - `parallel()`
+
+
+## [30. implement async helper - `parallel()](https://bigfrontend.dev/problem/implement-async-helper-parallel)`
+
+### 题目
 
 This problem is related to [29. implement async helper - `sequence()`](https://bigfrontend.dev/problem/implement-async-helper-sequence).
 
@@ -2925,6 +2946,8 @@ Related Problems
 
 [31. implement async helper - `race()`](https://bigfrontend.dev/problem/implement-async-helper-race)
 
+### 答案
+
 promisify+promise.all
 
 ```js
@@ -2944,7 +2967,6 @@ type AsyncFunc = (
  * @return {(callback: Callback) => void}
  */
 function parallel(funcs){
-  // your code here
   return function(callback, ...args) {
     Promise.all(funcs.map(func => promisify(func)(...args)))
     .then((res) => callback(undefined, res))
@@ -2968,6 +2990,37 @@ function promisify(callback) {
 }
 ```
 
+我看了大佬的简化版写法，很是优雅
+
+```js
+/*
+type Callback = (error: Error, data: any) => void
+
+type AsyncFunc = (
+   callback: Callback,
+   data: any
+) => void
+
+*/
+
+/**
+ * @param {AsyncFunc[]} funcs
+ * @return {(callback: Callback) => void}
+ */
+const promisify = fn => input => new Promise((res, rej) => {
+  fn((err, output) => err ? rej(err) : res(output), input);
+})
+
+function parallel(fns) {
+  return (cb, input) => {
+    Promise
+      .all(fns.map(fn => promisify(fn)(input)))
+      .then(outputs => cb(undefined, outputs))
+      .catch(err => cb(err, undefined));
+  };
+}
+```
+
 不使用的话其实就是参考了Promise.all的原理
 
 ```js
@@ -2987,7 +3040,6 @@ type AsyncFunc = (
  * @return {(callback: Callback) => void}
  */
 function parallel(funcs){
-  // your code here
   return (finalCallback, input) => {
     const results = Array(funcs.length);
     let count = 0;
@@ -3017,7 +3069,11 @@ function parallel(funcs){
 }
 ```
 
-### 31. implement async helper - `race()`
+
+
+## [31. implement async helper - `race()`](https://bigfrontend.dev/problem/implement-async-helper-race)
+
+### 题目
 
 This problem is related to [30. implement async helper - `parallel()`](https://bigfrontend.dev/problem/implement-async-helper-parallel).
 
@@ -3075,6 +3131,8 @@ Related Problems
 [29. implement async helper - `sequence()` ](https://bigfrontend.dev/problem/implement-async-helper-sequence)
 [30. implement async helper - `parallel()` ](https://bigfrontend.dev/problem/implement-async-helper-parallel)
 
+### 答案
+
 使用Promise.race
 
 ```js
@@ -3117,7 +3175,7 @@ function promisify(callback) {
 }
 ```
 
-直接使用其逻辑
+直接使用Promise.race逻辑
 
 ```js
 /*
@@ -3135,7 +3193,6 @@ type AsyncFunc = (
  * @return {(callback: Callback) => void}
  */
 function race(funcs){
-  // your code here
   return (finalCallback, input) => {
     let isExecuted = false;
     for (const func of funcs) {
@@ -3150,7 +3207,11 @@ function race(funcs){
 }
 ```
 
-### 32. implement `Promise.all()`
+
+
+## [32. implement `Promise.all()`](https://bigfrontend.dev/problem/implement-Promise-all)
+
+### 题目
 
 > The Promise.all() method takes an iterable of promises as an input, and returns a single Promise that resolves to an array of the results of the input promises
 
@@ -3166,16 +3227,16 @@ Related Problems
 
 [30. implement async helper - `parallel()`](https://bigfrontend.dev/problem/implement-async-helper-parallel)plement `Promise.allSettled()`](https://bigfrontend.dev/problem/implement-Promise-allSettled)[34. implement `Promise.any()`](https://bigfrontend.dev/problem/implement-Promise-any)ment `Promise.race()`](https://bigfrontend.dev/problem/implement-Promise-race)
 
+### 答案
+
 记录完成的数组
 
 ```js
-
 /**
  * @param {Array<any>} promises - notice input might have non-Promises
  * @return {Promise<any[]>}
  */
 function all(promises) {
-  // your code here
   return new Promise((resolve, reject) => {
     const n = promises.length;
     if (n === 0) {
@@ -3193,12 +3254,15 @@ function all(promises) {
         reject(error);
       })
     })
-
   })
 }
 ```
 
-### 33. implement `Promise.allSettled()`
+
+
+## [33. implement `Promise.allSettled()`](https://bigfrontend.dev/problem/implement-Promise-all)
+
+### 题目
 
 > The Promise.allSettled() method returns a promise that resolves after all of the given promises have either fulfilled or rejected, with an array of objects that each describes the outcome of each promise.
 
@@ -3219,16 +3283,16 @@ Related Problems
 [34. implement `Promise.any()`](https://bigfrontend.dev/problem/implement-Promise-any)
 [35. implement `Promise.race()`](https://bigfrontend.dev/problem/implement-Promise-race)
 
+### 答案
+
 需要标记任务
 
 ```js
-
 /**
  * @param {Array<any>} promises - notice that input might contains non-promises
  * @return {Promise<Array<{status: 'fulfilled', value: any} | {status: 'rejected', reason: any}>>}
  */
 function allSettled(promises) {
-  // your code here
   if (promises.length === 0) {
     return Promise.resolve([]);
   }
@@ -3272,7 +3336,11 @@ function allSettled(promises) {
 }
 ```
 
-### 34. implement `Promise.any()`
+
+
+## [34. implement `Promise.any()`](https://bigfrontend.dev/problem/implement-Promise-any)
+
+### 题目
 
 > Promise.any() takes an iterable of Promise objects and, as soon as one of the promises in the iterable fulfils, returns a single promise that resolves with the value from that promise
 
@@ -3297,16 +3365,16 @@ Related Problems
 [33. implement `Promise.allSettled()` ](https://bigfrontend.dev/problem/implement-Promise-allSettled)
 [35. implement `Promise.race()`](https://bigfrontend.dev/problem/implement-Promise-race)
 
+### 答案
+
 类似的写法
 
 ```js
-
 /**
  * @param {Array<Promise>} promises
  * @return {Promise}
  */
 function any(promises) {
-  // your code here
   return new Promise((resolve, reject) => {
     const errors = [];
     const len = promises.length;
@@ -3339,7 +3407,11 @@ function any(promises) {
 }
 ```
 
-### 35. implement `Promise.race()`
+
+
+## [35. implement `Promise.race()`](https://bigfrontend.dev/problem/implement-Promise-race)
+
+### 题目
 
 This problem is similar to [31. implement async helper - `race()`](https://bigfrontend.dev/problem/implement-async-helper-race), but with Promise.
 
@@ -3353,14 +3425,14 @@ Related Problems
 [33. implement `Promise.allSettled()` ](https://bigfrontend.dev/problem/implement-Promise-allSettled)
 [34. implement `Promise.any()` ](https://bigfrontend.dev/problem/implement-Promise-any)
 
-```js
+### 答案
 
+```js
 /**
  * @param {Array<Promise>} promises
  * @return {Promise}
  */
 function race(promises) {
-  // your code here
   if (promises.length === 0) return Promise.resolve();
   return new Promise((resolve, reject) => {
     for (const promise of promises) {
@@ -3371,7 +3443,27 @@ function race(promises) {
 }
 ```
 
-### 36. create a fake timer(setTimeout)
+还可以更简单，不考虑是否是promise实例
+
+```js
+/**
+ * @param {Array<Promise>} promises
+ * @return {Promise}
+ */
+function race(promises) {
+  return new Promise((resolve, reject) => {
+    promises.forEach((promise) => {
+      promise.then(resolve, reject);
+    });
+  });
+}
+```
+
+
+
+## [36. create a fake timer(setTimeout)](https://bigfrontend.dev/problem/create-a-fake-timer)
+
+### 题目
 
 `setTimeout` adds task in to a task queue to be handled later, the time actually is no accurate. ([Event Loop](https://javascript.info/event-loop)).
 
@@ -3436,6 +3528,8 @@ Related Problems
 
 [84. create a fake timer (setInterval)](https://bigfrontend.dev/problem/create-a-fake-timer-setInterval)
 
+### 答案
+
 使用队列存储任务，记录时间
 
 ```js
@@ -3494,7 +3588,11 @@ class FakeTimer {
 }
 ```
 
-### 37. implement Binary Search (unique)
+
+
+## [37. implement Binary Search (unique)](https://bigfrontend.dev/problem/implement-Binary-Search-Unique)
+
+### 题目
 
 Even in Front-End review, basic algorithm technique like [Binary Search](https://en.wikipedia.org/wiki/Binary_search_algorithm) are likely to be asked.
 
@@ -3513,6 +3611,8 @@ Related Problems
 [50. search element right before target with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-element-right-before-target-with-Binary-Search-possible-duplicate-array)
 [51. search element right after target with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-element-right-after-target-with-Binary-Search-possible-duplicate-array)
 
+### 答案
+
 二分查找
 
 ```js
@@ -3523,7 +3623,6 @@ Related Problems
  * @return {number}
  */
 function binarySearch(arr, target){
-  // your code here
   let left = 0, right = arr.length - 1;
   while (left <= right) {
     const mid = left + ((right - left) >> 1);
@@ -3539,7 +3638,11 @@ function binarySearch(arr, target){
 }
 ```
 
-### 38. implement `jest.spyOn()`
+
+
+## [38. implement `jest.spyOn()`](https://bigfrontend.dev/problem/implement-spyOn)
+
+### 题目
 
 If you did unit test before, you must be familiar with `Spy`.
 
@@ -3574,16 +3677,16 @@ console.log(spy.calls)
 // [ [1], [2] ]
 ```
 
+### 答案
+
 返回一个spy对象
 
 ```js
-
 /**
  * @param {object} obj
  * @param {string} methodName
  */
 function spyOn(obj, methodName) {
-  // your code here
   const spy = {
     calls: [],
   };
@@ -3602,7 +3705,35 @@ function spyOn(obj, methodName) {
 }
 ```
 
-### 39. implement range()
+或者直接用proxy，参考https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/apply
+
+```js
+/**
+ * @param {object} obj
+ * @param {string} methodName
+ */
+function spyOn(obj, methodName) {
+  const spy = {
+    calls: [],
+  };
+
+  const proxyedObj = new Proxy(obj[methodName], {
+    apply: function (target, thisArg, args) {
+      spy.calls.push(args);
+      return target.apply(thisArg, args);
+    }
+  })
+  obj[methodName] = proxyedObj;
+
+  return spy;
+}
+```
+
+
+
+## [39. implement range()](https://bigfrontend.dev/problem/implement-range)
+
+### 题目
 
 Can you create a `range(from, to)` which makes following work?
 
@@ -3620,10 +3751,11 @@ This is a simple one, could you think **more fancy approaches other than for-loo
 
 Notice that you are not required to return an array, but something [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterator_protocol) would be fine
 
+### 答案
+
 自己手写一版迭代器
 
 ```js
-
 /**
  * @param {integer} from
  * @param {integer} to
@@ -3679,7 +3811,23 @@ function range(from, to) {
 }
 ```
 
-### 40. implement Bubble Sort
+直接返回数组
+
+```js
+/**
+ * @param {integer} from
+ * @param {integer} to
+ */
+function range(from, to) {
+  return new Array(to - from + 1).fill(0).map((_, i) => i + from);
+}
+```
+
+
+
+## [40. implement Bubble Sort](https://bigfrontend.dev/problem/implement-Bubble-Sort)
+
+### 题目
 
 Even for Front-End Engineer, it is a must to understand how basic sorting algorithms work.
 
@@ -3698,15 +3846,15 @@ Related Problems
 [43. implement Quick Sort](https://bigfrontend.dev/problem/implement-Quick-Sort)
 [44. implement Selection Sort](https://bigfrontend.dev/problem/implement-Selection-Sort)
 
+### 答案
+
 冒泡排序
 
 ```js
-
 /**
  * @param {number[]} arr
  */
 function bubbleSort(arr) {
-  // your code here
   const len = arr.length;
   for (let i = 0; i < len - 1; i++) {
     let swaped = false;
@@ -3721,7 +3869,11 @@ function bubbleSort(arr) {
 }
 ```
 
-### 41. implement Merge Sort
+
+
+## [41. implement Merge Sort](https://bigfrontend.dev/problem/implement-Merge-Sort)
+
+### 题目
 
 Even for Front-End Engineer, it is a must to understand how basic sorting algorithms work.
 
@@ -3740,13 +3892,13 @@ Related Problems
 [43. implement Quick Sort](https://bigfrontend.dev/problem/implement-Quick-Sort)
 [44. implement Selection Sort](https://bigfrontend.dev/problem/implement-Selection-Sort)
 
-```js
+### 答案
 
+```js
 /**
  * @param {number[]} arr
  */
 function mergeSort(arr) {
-  // your code here
   mergeSortImpl(arr, 0, arr.length - 1);
 }
 
@@ -3802,7 +3954,33 @@ function merge(arr, start, mid, end) {
 }
 ```
 
-### 42. implement Insertion Sort
+简化版
+
+```js
+/**
+ * @param {number[]} arr
+ */
+function mergeSort(arr) {
+  if (arr.length < 2) return;
+  let mid = Math.floor(arr.length / 2);
+  const left = arr.slice(0, mid), right = arr.slice(mid);
+  mergeSort(left);
+  mergeSort(right);
+  let l = 0, r = 0;
+  while (l < left.length || r < right.length) {
+    if (r === right.length || (l < left.length && left[l] <= right[r]))
+      arr[l + r] = left[l++];
+    else
+      arr[l + r] = right[r++];
+  }
+}
+```
+
+
+
+## 42. implement Insertion Sort
+
+### 题目
 
 Even for Front-End Engineer, it is a must to understand how basic sorting algorithms work.
 
@@ -3821,15 +3999,15 @@ Related Problems
 [43. implement Quick Sort](https://bigfrontend.dev/problem/implement-Quick-Sort)
 [44. implement Selection Sort](https://bigfrontend.dev/problem/implement-Selection-Sort)
 
+### 答案
+
 插入排序
 
 ```js
-
 /**
  * @param {number[]} arr
  */
 function insertionSort(arr) {
-  // your code here
   for (let i = 0; i < arr.length; i++) {
     let currentVal = arr[i];
     let j = i - 1;
@@ -3842,7 +4020,30 @@ function insertionSort(arr) {
 }
 ```
 
-### 43. implement Quick Sort
+简单版
+
+```js
+/**
+ * @param {number[]} arr
+ */
+function insertionSort(arr) {
+  for(let i = 1; i < arr.length; i++) {
+    for(let j = 0; j < i; j++) {
+      const insert = arr[i];
+      const curr = arr[j];
+      if(curr > insert) {
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+  }
+}
+```
+
+
+
+## [43. implement Quick Sort](https://bigfrontend.dev/problem/implement-Quick-Sort)
+
+### 题目
 
 Even for Front-End Engineer, it is a must to understand how basic sorting algorithms work.
 
@@ -3861,15 +4062,15 @@ Related Problems
 [42. implement Insertion Sort ](https://bigfrontend.dev/problem/implement-Insertion-Sort)
 [44. implement Selection Sort](https://bigfrontend.dev/problem/implement-Selection-Sort)
 
+### 答案
+
 快速排序
 
 ```js
-
 /**
  * @param {number[]} arr
  */
 function quickSort(arr) {
-  // your code here
   quickSortImpl(arr, 0, arr.length - 1);
 }
 
@@ -3895,7 +4096,55 @@ function partition(arr, low, high) {
 }
 ```
 
-### 44. implement Selection Sort
+随机种子
+
+```js
+/**
+ * @param {number[]} arr
+ */
+function quickSort(arr, lo = 0, hi = arr.length - 1) {
+  if (lo >= hi) return;
+  const pivot = partition(arr, lo, hi) ;
+  quickSort(arr, lo, pivot-1);
+  quickSort(arr, pivot + 1, hi);
+}
+
+function partition(arr, lo, hi) {
+  const p = random(lo, hi + 1);
+  const pivotNum = arr[p];
+  
+  // move pivot to the rightmost
+  swap(arr, p, hi);
+
+  let insertIndex = lo;
+  for (let i = lo; i < hi; i++) {
+    if (arr[i] <= pivotNum) {
+      swap(arr, insertIndex, i);
+      insertIndex++;
+    }
+  }
+
+  // move pivot back to insertIndex
+  swap(arr, insertIndex, hi);
+  return insertIndex;
+}
+
+function swap(arr, i, j) {
+  const tmp = arr[i];
+  arr[i] = arr[j];
+  arr[j] = tmp;
+}
+
+function random(lo, hi) {
+  return Math.floor(Math.random() * (hi - lo)) + lo;
+}
+```
+
+
+
+## [44. implement Selection Sort](https://bigfrontend.dev/problem/implement-Selection-Sort)
+
+### 题目
 
 Even for Front-End Engineer, it is a must to understand how basic sorting algorithms work.
 
@@ -3914,12 +4163,13 @@ Related Problems
 [42. implement Insertion Sort ](https://bigfrontend.dev/problem/implement-Insertion-Sort)
 [43. implement Quick Sort ](https://bigfrontend.dev/problem/implement-Quick-Sort)
 
+### 答案
+
 ```js
 /**
  * @param {number[]} arr
  */
 function selectionSort(arr) {
-  // your code here
   for (let i = 0; i < arr.length; i++) {
     let smallestIndex = i;
     for (let j = i + 1; j < arr.length; j++) {
@@ -3934,7 +4184,11 @@ function selectionSort(arr) {
 }
 ```
 
-### 45. find the K-th largest element in an unsorted array
+
+
+## [45. find the K-th largest element in an unsorted array](https://bigfrontend.dev/problem/find-the-K-th-largest-element-in-an-unsorted-array)
+
+### 题目
 
 You are given an unsorted array of numbers, which might have duplicates, find the K-th largest element.
 
@@ -3944,8 +4198,10 @@ Maybe you can recall what is happening in [Quick Sort](https://bigfrontend.dev/p
 
 Related Problems
 
-[24. create a Priority Queue in JavaScript ](https://bigfrontend.dev/problem/create-a-priority-queue-in-JavaScript)
 [43. implement Quick Sort ](https://bigfrontend.dev/problem/implement-Quick-Sort)
+
+### 答案
+
 快速选择
 
 ```js
@@ -3954,7 +4210,6 @@ Related Problems
  * @param {number} k
  */
 function findKThLargest(arr, k) {
-  // your code here
   if (k === 0 || arr.length === 0) return [];
   return quickSelect(arr, 0, arr.length - 1, k - 1);
 }
@@ -3982,6 +4237,35 @@ function partition(arr, lo, hi) {
 }
 ```
 
+简化版
+
+```js
+
+/**
+ * @param {number[]} arr
+ * @param {number} k
+ */
+function findKThLargest(arr, k, lo = 0, hi = arr.length - 1) {
+  const pivot = partition(arr, lo, hi);
+  if (pivot === arr.length - k) return arr[pivot];
+  if (pivot < arr.length - k) return findKThLargest(arr, k, pivot + 1, hi);
+  else return findKThLargest(arr, k, lo, pivot - 1);
+}
+
+function partition(arr, lo, hi) {
+  let pivot = lo;
+  for (let i = lo; i < hi; i++) {
+    if (arr[i] < arr[hi]) swap(i, pivot++, arr);
+  }
+  swap(pivot, hi, arr);
+  return pivot;
+}
+
+function swap(a, b, arr) {
+  [arr[a], arr[b]] = [arr[b], arr[a]];
+}
+```
+
 或者使用小根堆，保证堆顶是第k小的元素
 
 ```js
@@ -3991,7 +4275,6 @@ function partition(arr, lo, hi) {
  * @param {number} k
  */
 function findKThLargest(arr, k) {
-  // your code here
   if (!k || !arr.length || k > arr.length) {
       return [];
   }
@@ -4029,7 +4312,11 @@ function findKThLargest(arr, k) {
 }
 ```
 
-### 46. implement `_.once()`
+
+
+## [46. implement `_.once()`](https://bigfrontend.dev/problem/implement-once)
+
+### 题目
 
 [_.once(func)](https://lodash.com/docs/4.17.15#once) is used to force a function to be called only once, later calls only returns the result of first call.
 
@@ -4053,6 +4340,8 @@ Related Problems
 
 [14. Implement a general memoization function - `memo()` ](https://bigfrontend.dev/problem/implement-general-memoization-function)
 
+### 答案
+
 本质就是单例模式
 
 ```js
@@ -4061,7 +4350,6 @@ Related Problems
  * @return {Function}
  */
 function once(func) {
-  // your code here
   let instance = null;
   let isExcuted = false;
   return function(...args) {
@@ -4074,7 +4362,11 @@ function once(func) {
 }
 ```
 
-### 47. reverse a linked list
+
+
+## [47. reverse a linked list](https://bigfrontend.dev/problem/Reverse-a-linked-list)
+
+### 题目
 
 Another basic algorithm even for Front End developers.
 
@@ -4107,6 +4399,8 @@ Now how can you reverse it to 3 → 2 → 1 ? you can modify the `next` property
 
 Could you solve it with and without recursion?
 
+### 答案
+
 常规反转链表
 
 ```js
@@ -4123,7 +4417,6 @@ Could you solve it with and without recursion?
  * @return {Node} 
  */
 const reverseLinkedList = (list) => {
-    // your code
     let pre = null;
     let curr = list;
 
@@ -4138,7 +4431,45 @@ const reverseLinkedList = (list) => {
 }
 ```
 
-### 48. search first index with Binary Search(possible duplicate array)
+用解构赋值非常优雅的一版
+
+In this problem, temporary variables are required so you don't overwrite variable values that you still need later on in the loop. (e.g. (1) `prev = node;` (2) `node.next = prev;` Here, `prev` was overwritten in (1), therefore `node.next` is incorrectly assigned).
+
+Notice the use of array destructuring here to efficiently store temporary variables: The array on the right is a 'temporary variable array', which holds the references stored in the *current* `prev`, `node.next`, and `node` variables. For each iteration of the while loop:
+
+- the `node.next` variable points to the temporary `prev` reference - i.e. the current node's next will point to the previous node, reversing the link
+- the `node` variable points to the temporary `node.next` reference - the 'node' runner variable will progress to the next node in the linked list
+- the `prev` variable points to temporary `node` reference - the 'prev' runner variable will progress to the previous node.
+
+Following this process to the end of the list will reverse all the links, hence reversing the linked list
+
+```js
+/** 
+ * class Node {
+ *  new(val: number, next: Node);
+ *    val: number
+ *    next: Node
+ * }
+ */
+
+/**
+ * @param {Node} list
+ * @return {Node} 
+ */
+const reverseLinkedList = (list) => {
+    let cur = list, prev = null;
+    while (cur !== null) {
+        [cur.next, cur, prev] = [prev, cur.next, cur];
+    }
+    return prev;
+}
+```
+
+
+
+## [48. search first index with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-first-index-with-Binary-Search-duplicate-array)
+
+### 题目
 
 This is a variation of [37. implement Binary Search (unique)](https://bigfrontend.dev/problem/implement-Binary-Search-Unique).
 
@@ -4157,17 +4488,17 @@ Related Problems
 [50. search element right before target with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-element-right-before-target-with-Binary-Search-possible-duplicate-array)
 [51. search element right after target with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-element-right-after-target-with-Binary-Search-possible-duplicate-array)
 
-leftbound函数
+### 答案
+
+lowerbound函数
 
 ```js
-
 /**
  * @param {number[]} arr - ascending array with duplicates
  * @param {number} target
  * @return {number}
  */
 function firstIndex(arr, target){
-  // your code here
   let left = 0, right = arr.length - 1;
   while (left <= right) {
     const mid = left + Math.floor((right - left) / 2);
@@ -4181,7 +4512,11 @@ function firstIndex(arr, target){
 }
 ```
 
-### 49. search last index with Binary Search(possible duplicate array)
+
+
+## [49. search last index with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-last-index-with-Binary-Search-possible-duplicate-array)
+
+### 题目
 
 This is a variation of [37. implement Binary Search (unique)](https://bigfrontend.dev/problem/implement-Binary-Search-Unique).
 
@@ -4198,17 +4533,17 @@ Related Problems
 [37. implement Binary Search (unique) ](https://bigfrontend.dev/problem/implement-Binary-Search-Unique)
 [48. search first index with Binary Search(possible duplicate array) ](https://bigfrontend.dev/problem/search-first-index-with-Binary-Search-duplicate-array)
 
-类似的rightbound
+### 答案
+
+类似的upperbound
 
 ```js
-
 /**
  * @param {number[]} arr - ascending array with duplicates
  * @param {number} target
  * @return {number}
  */
 function lastIndex(arr, target){
-  // your code here
   let left = 0, right = arr.length - 1;
   while (left <= right) {
     const mid = left + Math.floor((right - left) / 2);
@@ -4222,7 +4557,11 @@ function lastIndex(arr, target){
 }
 ```
 
-### 50. search element right before target with Binary Search(possible duplicate array)
+
+
+## [50. search element right before target with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-element-right-before-target-with-Binary-Search-possible-duplicate-array)
+
+### 题目
 
 This is a variation of [37. implement Binary Search (unique)](https://bigfrontend.dev/problem/implement-Binary-Search-Unique).
 
@@ -4241,17 +4580,17 @@ Related Problems
 [49. search last index with Binary Search(possible duplicate array) ](https://bigfrontend.dev/problem/search-last-index-with-Binary-Search-possible-duplicate-array)
 [51. search element right after target with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-element-right-after-target-with-Binary-Search-possible-duplicate-array)
 
-使用了leftbound找到左边界，然后找到左边界左边的数
+### 答案
+
+使用了lowerbound找到左边界，然后找到左边界左边的数
 
 ```js
-
 /**
  * @param {number[]} arr - ascending array with duplicates
  * @param {number} target
  * @return {number}
  */
 function elementBefore(arr, target){
-  // your code here
   let left = 0, right = arr.length - 1;
   while (left <= right) {
     const mid = left + Math.floor((right - left) / 2);
@@ -4265,7 +4604,11 @@ function elementBefore(arr, target){
 }
 ```
 
-### 51. search element right after target with Binary Search(possible duplicate array)
+
+
+## [51. search element right after target with Binary Search(possible duplicate array)](https://bigfrontend.dev/problem/search-element-right-after-target-with-Binary-Search-possible-duplicate-array)
+
+### 题目
 
 This is a variation of [37. implement Binary Search (unique)](https://bigfrontend.dev/problem/implement-Binary-Search-Unique).
 
@@ -4284,10 +4627,11 @@ Related Problems
 [49. search last index with Binary Search(possible duplicate array) ](https://bigfrontend.dev/problem/search-last-index-with-Binary-Search-possible-duplicate-array)
 [50. search element right before target with Binary Search(possible duplicate array) ](https://bigfrontend.dev/problem/search-element-right-before-target-with-Binary-Search-possible-duplicate-array)
 
-使用了rightbound找到右边界，然后找到右边界右边的数
+### 答案
+
+使用了upperbound找到右边界，然后找到右边界右边的数
 
 ```js
-
 /**
  * @param {number[]} arr - ascending array with duplicates
  * @param {number} target
@@ -4308,7 +4652,11 @@ function elementAfter(arr, target){
 }
 ```
 
-### 52. create a middleware system
+
+
+## [52. create a middleware system](https://bigfrontend.dev/problem/create-a-middleware-system)
+
+### 题目
 
 Have you ever used [Express Middleware](http://expressjs.com/en/guide/using-middleware.html#using-middleware) before?
 
@@ -4403,6 +4751,8 @@ middleware.start({})
 // {a: 1}
 ```
 
+### 答案
+
 直接调用中间件
 
 ```js
@@ -4452,7 +4802,115 @@ class Middleware {
 }
 ```
 
-### 53. write your own `extends` in es5
+放入队列时执行错误
+
+```js
+class Middleware {
+  /**
+   * @param {MiddlewareFunc} func
+   */
+  constructor() {
+    this.callbacks = [];
+    this.errHandlers = [];
+  }
+
+  use(func) {
+    if (func.length === 2) {
+      this.callbacks.push(func);
+    }
+    if (func.length === 3) {
+      this.errHandlers.push(func);
+    }
+  }
+
+  /**
+   * @param {Request} req
+   */
+  start(req) {
+    let idx = 0;
+    let errIdx = 0;
+    let self = this;
+    function next(nextError) {
+      let args = [req, next];
+      let func;
+      if (nextError) {
+        func = self.errHandlers[errIdx++];
+        args.unshift(nextError);
+      } else {
+        func = self.callbacks[idx++];
+      }
+      try {
+        func && func(...args);
+      } catch(error) {
+        next(error);
+      }
+    }
+    next();
+  }
+}
+```
+
+l另一版简化答案
+
+```js
+class Middleware {
+  /**
+   * @param {MiddlewareFunc} func
+   */
+  constructor() {
+    // Create a function queue to help with execution
+    this.funcs = [];
+    this.req = null;
+  }
+  use(func) {
+    // Push the function into Queue
+    this.funcs.push(func);
+  }
+
+  /**
+   * @param {Request} req
+   */
+  start(req) {
+    this.req = req;
+    // Start the chain
+    this.next();
+  }
+
+  next = (err) => {
+    // take out the function to execute from the queue
+    const toExecute = this.funcs.shift();
+    // Catch execution error when a function throw an error
+    try {
+      // args length tells us if its a normal call or an error call
+      if (toExecute.length === 2) {
+        // there is no error, execute the function with current request and next()
+        if (!err) {
+          toExecute(this.req, this.next);
+        }
+        // There is an error, call next() immediately for error handling. This will now keep on dequeuing funs queue 
+        // till we get an error handler function with 3 args 
+        else{
+          this.next(err);
+        }
+      }
+      // There's an error and now we got a func with more than 2 args, i.e. an error handler
+      else {
+        toExecute(err, this.req, this.next);
+      }
+    }
+    catch (e) {
+      this.next(e);
+    }
+
+  }
+}
+```
+
+
+
+## [53. write your own `extends` in es5](https://bigfrontend.dev/problem/write-your-own-extends-in-es5)
+
+### 题目
 
 I believe you've used [extends](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/extends) keyword in you JavaScript programs before.
 
@@ -4498,11 +4956,12 @@ SubType.prototype.method = function() {}
 SubType.staticSub = 'staticSub'
 ```
 
+### 答案
+
 改变原型链
 
 ```js
 const myExtends = (SuperType, SubType) => {
-  // your code here
   const constructor = function(...args) {
     // Call the original Constructors with the constructor
     // instance as their context
@@ -4519,7 +4978,11 @@ const myExtends = (SuperType, SubType) => {
 }
 ```
 
-### 54. flatten Thunk
+
+
+## [54. flatten Thunk](https://bigfrontend.dev/problem/flatten-Thunk)
+
+### 题目
 
 Suppose we have a Callback type
 
@@ -4566,32 +5029,31 @@ Once error occurs, the rest uncalled functions should be skipped
 
 [Source for this ](https://github.com/kolodny/exercises/tree/master/flatten-thunk)
 
+### 答案
+
 返回一个闭包
 
 ```js
-
 /**
  * @param {Thunk} thunk
  * @return {Thunk}
  */
-function flattenThunk(thunk) {
-  // your code here
-  return function(callback) {
-    const callbackWrapper = (err, data) => {
-      if (err) {
-        callback(err);
-      } else if (typeof data === 'function') {
-        data(callbackWrapper);
-      } else {
-        callback(err, data);
-      }
+// 简单来说就是劫持callback,自己实现一个支持链式调用的callback;
+function flattenThunk(thunk) { // thunk: 即案例的func3
+  return function(cb) { // cb: 给定的回调
+    function wrapper(err, res) {
+      typeof res === "function" ? res(wrapper) : cb(err, res); // 如果data是一个"Thunk"即函数
     }
-    thunk(callbackWrapper);
+    thunk(wrapper);
   }
 }
 ```
 
-### 55. highlight keywords in HTML string
+
+
+## [55. highlight keywords in HTML string](https://bigfrontend.dev/problem/highlight-keywords-in-HTML-string)
+
+### 题目
 
 Suppose you are implementing an auto-complete in search input.
 
@@ -4627,7 +5089,9 @@ highlightKeywords(
 
 note that `space` should not be included.
 
-分隔单词，进行操作
+### 答案
+
+分隔单词，进行操作，正则表达式
 
 ```js
 /**
@@ -4635,7 +5099,6 @@ note that `space` should not be included.
  * @param {string[]} keywords
  */
 function highlightKeywords(html, keywords) {
-  // your code here
   const regexp = new RegExp(keywords.join('|'), 'gi');
   return html.split(' ').map((word) => {
     if (keywords.includes(word)) return `<em>${word}</em>`;
@@ -4644,7 +5107,55 @@ function highlightKeywords(html, keywords) {
 };
 ```
 
-### 56. call APIs with pagination
+This fails when using words with the same letters.
+
+```javascript
+highlightKeywords(
+  'Hello JavaScript Lovers', 
+  ['Hello', 'Front', 'Scrip', 'vaScript', 'Java']
+)
+```
+
+字符串操作
+
+```js
+/**
+ * @param {string} html
+ * @param {string[]} keywords
+ */
+function highlightKeywords(html, keywords) {
+  const  bold = new Array(html.length + 1);
+    
+  keywords.forEach(w => {
+      let start = html.indexOf(w, 0);
+      // until you keep getting valid pattern mark bold array true at those spots
+      while (start != -1) {
+          bold.fill(true, start, start + w.length);
+          start = html.indexOf(w, start + 1);
+      }
+  });
+  
+  let res = (bold[0] ? "<em>" : "");
+  
+  for (let i = 0; i < bold.length - 1; i++) {
+      res += html.charAt(i);
+      
+      // notbold && bold we start new tag
+      if (!bold[i] && bold[i + 1])
+      res += "<em>";
+      // bold && notbold we end current tag
+      else if (bold[i] && !bold[i + 1])
+      res += "</em>";
+  }
+  return res;
+};
+```
+
+
+
+## [56. call APIs with pagination](https://bigfrontend.dev/problem/call-APIs-with-pagination)
+
+### 题目
 
 Have you ever met some APIs with pagination, and needed to recursively fetch them based on response of previous request ?
 
@@ -4672,6 +5183,8 @@ const fetchListWithAmount = (amount: number = 5) { }
 
 You can achieve this by regular loop, even fancier solutions with [async iterators or async generators](https://javascript.info/async-iterators-generator). You should try them all.
 
+### 答案
+
 记录顺序
 
 ```js
@@ -4679,10 +5192,11 @@ You can achieve this by regular loop, even fancier solutions with [async iterato
 // const fetchList = (since?: number) => 
 //   Promise<{items: Array<{id: number}>}>
 
-
+/**
+ * Using async/await loop 
+ */
 // you can change this to generator function if you want
 const fetchListWithAmount = async (amount = 5) => {
-  // your code here
   const items = [];
   let lastItemId = null;
 
@@ -4697,10 +5211,126 @@ const fetchListWithAmount = async (amount = 5) => {
 
   return items.slice(0, amount);
 }
-
 ```
 
-### 57. create an Observable
+重写异步迭代逻辑
+
+```js
+// fetchList is provided for you
+// const fetchList = (since?: number) => 
+//   Promise<{items: Array<{id: number}>}>
+
+/**
+ * Using async iterator 
+ */
+// you can change this to generator function if you want
+const fetchListWithAmount = async (amount = 5) => {
+  const result = [];
+
+  function fetchListIterator() {
+    let totalAmountFetched = 0;
+    let cursor;
+
+    return {
+      [Symbol.asyncIterator]() {
+        return {
+          async next() {
+            const { items } = await fetchList(cursor);
+            // If API is exhausted OR we reached desired amount -> stop
+            if (items.length === 0 || totalAmountFetched > amount) {
+              return {
+                done: true
+              };
+            }
+
+            totalAmountFetched += items.length;
+            cursor = items[items.length - 1].id;
+
+            return {
+              done: false,
+              value: items
+            }
+          }
+        }
+      }
+    }
+  }
+
+  for await (const nextItems of fetchListIterator()) {
+    result.push(...nextItems);
+  }
+  return result.slice(0, amount);
+}
+```
+
+设计异步生成器
+
+```js
+// fetchList is provided for you
+// const fetchList = (since?: number) => 
+//   Promise<{items: Array<{id: number}>}>
+
+/**
+ * Using async generator 
+ */
+// you can change this to generator function if you want
+const fetchListWithAmount = async (amount = 5) => {
+  const result = [];
+
+  async function* fetchListGenerator() {
+    let totalAmountFetched = 0;
+    let cursor;
+
+    while (totalAmountFetched < amount) {
+      const { items } = await fetchList(cursor);
+      if (items.length === 0) break;
+      cursor = items[items.length - 1].id;
+      totalAmountFetched += items.length;
+      yield items;
+    }
+  }
+
+  for await (const nextItems of fetchListGenerator()) {
+    result.push(...nextItems);
+  }
+  return result.slice(0, amount);
+}
+```
+
+使用异步promise
+
+```js
+// fetchList is provided for you
+// const fetchList = (since?: number) => 
+//   Promise<{items: Array<{id: number}>}>
+
+/**
+ * Using recursion and Promise
+ */
+// you can change this to generator function if you want
+const fetchListWithAmount = async (amount = 5) => {
+  return new Promise((resolve) => {
+    const result = [];
+    getItems();
+
+    function getItems(cursor) {
+      fetchList(cursor).then(({ items }) => {
+        result.push(...items);
+        if (items.length === 0 || items.length >= amount) {
+          return resolve(result.slice(0, amount));
+        }
+        getItems(items[items.length - 1].id);
+      });
+    }
+  });
+}
+```
+
+
+
+## [57. create an Observable](https://bigfrontend.dev/problem/create-an-Observable)
+
+### 题目
 
 Have you ever used [RxJS](https://rxjs-dev.firebaseapp.com/guide/overview) before? The most important concept in it is [Observable](https://rxjs-dev.firebaseapp.com/guide/observable) and [Observer](https://rxjs-dev.firebaseapp.com/guide/observer).
 
@@ -4790,6 +5420,18 @@ Related Problems
 [70. implement Observable.from()](https://bigfrontend.dev/problem/implement-Observable-from)
 [71. implement Observable Subject](https://bigfrontend.dev/problem/implement-Observable-Subject)
 
+### 答案
+
+If you were not familiar with Observable pattern like me, I think it's important to have a good understanding of how Observable works. Then looking at this question, it's just adding a wrapper function to present a different interface mentioned below
+
+After watching Javascript Design Patterns #5 - Observer Pattern, by DevSage on Youtube, it helped me understand the basics
+
+Now looking at the problem prompt, I realized that observer and subscriber are exactly the same thing.
+
+So the problem now is, how can we add some functionalities (unsubscribe) and state (unsubscribed) to the subscriber provided to us via the subscribe method? We use a wrapper function (or decorator for fancy name) -> I read https://javascript.info/call-apply-decorators to understand what a decorator is.
+
+and then the code
+
 ```js
 class Observable {
   
@@ -4798,55 +5440,46 @@ class Observable {
   }
  
   subscribe(subscriber) {
-    const originalNext = typeof subscriber === 'function' ? subscriber : subscriber.next;
-    const originalError = subscriber.error;
-    const originalComplete = subscriber.complete;
-
-    let isUnsubscribed = false;
-
-    subscriber.next = (value) => {
-      if (isUnsubscribed) {
-        return ;
-      }
-
-      if (typeof originalNext === 'function') {
-        originalNext(value);
-      }
-    };
-
-    subscriber.error = (error) => {
-      if (isUnsubscribed) {
-        return ;
-      }
-
-      isUnsubscribed = true;
-      if (typeof originalError === 'function') {
-        originalError(error);
-      }
-    };
-
-    subscriber.complete = () => {
-      if (isUnsubscribed) {
-        return;
-      }
-
-      isUnsubscribed = true;
-      if (typeof originalComplete === 'function') {
-        originalComplete();
-      }
-    };
-
-    this.setup(subscriber);
-    return {
-      unsubscribe() {
-        isUnsubscribed = true;
+    // equivalent to fire
+    // a wrapper function/ object 
+    // is used to share the closure of outer function and modify the logics
+    const subscriberWrapper = {
+      unsubscribed: false,
+      next(value) {
+        if (this.unsubscribed) return;
+        // we are relying on the scope of subscriber
+        if (subscriber instanceof Function) {
+          return subscriber(value);
+        }
+        return subscriber.next ? subscriber.next(value) : null;
       },
-    };
+      error(value) {
+        if (this.unsubscribed) return;
+        this.unsubscribe();
+        return subscriber.error ? subscriber.error(value) : null;
+      },
+      complete() {
+        if (this.unsubscribed) return;
+        this.unsubscribe();
+        return subscriber.complete ? subscriber.complete() : null;
+      },
+      unsubscribe() {
+        this.unsubscribed = true;
+      }
+    }
+    this.setup(subscriberWrapper);
+    return subscriberWrapper;
   }
 }
 ```
 
-### 58. get DOM tree height
+** [if you watched the youtube video and can't figure out how that applies to the problem] In the video, the subscribers/observers is an array of functions, which are iterated to trigger the observer to do its thing. the reason that observers is an array is because observable pattern is a one to many pattern, meaning one observable can be subscribed by many observers. We should note that for this question, we are implementing a 1-1 relationship, with the only subscriber provided to you
+
+
+
+## [58. get DOM tree height](https://bigfrontend.dev/problem/get-DOM-tree-height)
+
+### 题目
 
 Height of a tree is the maximum depth from root node. Empty root node have a height of 0.
 
@@ -4873,6 +5506,8 @@ Related Problems
 
 [19. find corresponding node in two identical DOM tree ](https://bigfrontend.dev/problem/find-corresponding-node-in-two-identical-DOM-tree)
 
+### 答案
+
 使用递归层次DFS
 
 ```js
@@ -4881,7 +5516,6 @@ Related Problems
  * @return {number}
  */
 function getHeight(tree) {
-  // your code here
   if (tree === null) return 0;
 
   let maxHeight = 0;
@@ -4903,7 +5537,6 @@ function getHeight(tree) {
  * @return {number}
  */
 function getHeight(tree) {
-  // your code here
   if (tree === null) {
     return 0;
   }
@@ -4924,7 +5557,11 @@ function getHeight(tree) {
 }
 ```
 
-### 59. create a browser history
+
+
+## [59. create a browser history](https://bigfrontend.dev/problem/create-a-browser-history)
+
+### 题目
 
 I believe you are very familiar about your browser you are currently visiting [https://bigfrontend.dev](https://bigfrontend.dev/) with.
 
@@ -4970,6 +5607,8 @@ Now if we visit a new url D, since we are currently at B, C is truncated.
 ```
 
 You are asked to implement a `BrowserHistory` class to mimic the behavior.
+
+### 答案
 
 ```js
 class BrowserHistory {
@@ -5020,7 +5659,56 @@ class BrowserHistory {
 }
 ```
 
-### 60. create your own `new` operator
+简化版
+
+```js
+class BrowserHistory {
+  
+  /**
+   * @param {string} url
+   * if url is set, it means new tab with url
+   * otherwise, it is empty new tab
+   */
+  constructor(url) {
+    this.history = [];
+    this.pointer = 0;
+    if(url !== undefined) {
+        this.history.push(url);
+    }
+  }
+  /**
+   * @param { string } url
+   */
+  visit(url) {
+    this.history.length = this.pointer+1;
+    this.history.push(url);
+    this.pointer++;
+  }
+  
+  /**
+   * @return {string} current url
+   */
+  get current() {
+    return this.history[this.pointer];
+  }
+  
+  // go to previous entry
+  goBack() {
+     this.pointer = Math.max(0, --this.pointer);
+  }
+  
+  // go to next visited url
+  forward() {
+     this.pointer = Math.min(this.history.length - 1, ++this.pointer);
+  }
+}
+```
+
+
+
+## [60. create your own `new` operator](https://bigfrontend.dev/problem/create-your-own-new-operator)
+
+### 题目
 
 [`new` operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new) is used to create new instance objects.
 
@@ -5030,6 +5718,10 @@ You are asked to implement `myNew()`, which should return an object just as what
 
 Pay attention to the return type of constructor.
 
+### 答案
+
+**Important:** https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new
+
 ```js
 /**
  * @param {Function} constructor
@@ -5037,7 +5729,6 @@ Pay attention to the return type of constructor.
  * `myNew(constructor, ...args)` should return the same as `new constructor(...args)`
  */
 const myNew = (constructor, ...args) => {
-  // your code here
   // The `Object.create()` method creates a new empty object, using the
   // specified object as the prototype of the newly created object.
   const obj = Object.create(constructor.prototype);
@@ -5056,7 +5747,11 @@ const myNew = (constructor, ...args) => {
 }
 ```
 
-### 61. create your own `Function.prototype.call`
+
+
+## [61. create your own `Function.prototype.call](https://bigfrontend.dev/problem/create-call-method)`
+
+### 题目
 
 [Function.prototype.call](https://tc39.es/ecma262/#sec-function.prototype.call) is very useful when we want to alter the `this` of a function.
 
@@ -5068,9 +5763,10 @@ Your implementation should follow above spec and do what *non* Strict Mode does.
 
 `Function.prototype.cal/apply/bind` and [Reflect.apply](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Reflect/apply) should not be used.
 
+### 答案
+
 ```js
 Function.prototype.mycall = function(thisArg, ...args) {
-  // your code here
   // thisArg can be null or defined.
   thisArg = thisArg || window;
 
@@ -5092,7 +5788,11 @@ Function.prototype.mycall = function(thisArg, ...args) {
 }
 ```
 
-### 62. implement BigInt addition
+
+
+## [62. implement BigInt addition](https://bigfrontend.dev/problem/add-BigInt-string)
+
+### 题目
 
 Luckily we have [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) in JavaScript so handle big numbers.
 
@@ -5113,10 +5813,11 @@ Related Problems
 [76. implement BigInt addition with sign](https://bigfrontend.dev/problem/implement-BigInt-addition-with-sign)
 [77. implement BigInt subtraction with sign](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign)
 
+### 答案
+
 双指针
 
 ```js
-
 /**
  * @param {string} num1
  * @param {string} num2
@@ -5155,7 +5856,11 @@ function add(num1, num2) {
 }
 ```
 
-### 63. create `_.cloneDeep()`
+
+
+## [63. create `_.cloneDeep()`](https://bigfrontend.dev/problem/create-cloneDeep)
+
+### 题目
 
 `Object.assign()` could be used to do shallow copy, while for recursive deep copy, [_.cloneDeep](https://lodash.com/docs/4.17.15#cloneDeep) could be very useful.
 
@@ -5167,12 +5872,13 @@ The lodash implementation actually covers a lot of data types, for simplicity, y
 2. Plain Objects (Object literal) with all enumerable properties
 3. Array
 
+### 答案
+
 处理循环引用
 
 ```js
 // Use WeakMap that stores cloned results to handle circular reference.
 function cloneDeep(data, map = new WeakMap()) {
-  // your code here
   if (data === null || typeof data !== 'object') {
     return data;
   }
@@ -5201,7 +5907,11 @@ function cloneDeep(data, map = new WeakMap()) {
 }
 ```
 
-### 64. auto-retry Promise on rejection
+
+
+## [64. auto-retry Promise on rejection](https://bigfrontend.dev/problem/retry-promise-on-rejection)
+
+### 题目
 
 For a web application, fetching API data is a common task.
 
@@ -5213,6 +5923,10 @@ You are asked to create a `fetchWithAutoRetry(fetcher, count)`, which automatica
 
 For the problem here, there is no need to detect network error, you can just retry on all promise rejections.
 
+### 答案
+
+循环迭代
+
 ```js
 /**
  * @param {() => Promise<any>} fetcher
@@ -5220,7 +5934,6 @@ For the problem here, there is no need to detect network error, you can just ret
  * @return {Promise<any>}
  */
 function fetchWithAutoRetry(fetcher, maximumRetryCount) {
-  // your code here
   return new Promise((resolve, reject) => {
     const retry = () => {
       fetcher()
@@ -5242,7 +5955,30 @@ function fetchWithAutoRetry(fetcher, maximumRetryCount) {
 }
 ```
 
-### 65. add comma to number
+递归
+
+```js
+/**
+ * @param {() => Promise<any>} fetcher
+ * @param {number} maximumRetryCount
+ * @return {Promise<any>}
+ */
+function fetchWithAutoRetry(fetcher, maximumRetryCount) {
+  return fetcher().catch((e) => {
+    if (maximumRetryCount === 0) {
+      throw e;
+    } else {
+      return fetchWithAutoRetry(fetcher, maximumRetryCount - 1);
+    }
+  })
+}
+```
+
+
+
+## [65. add comma to number](https://bigfrontend.dev/problem/add-comma-to-number)
+
+### 题目
 
 Given a number, please create a function to add commas as thousand separators.
 
@@ -5255,6 +5991,8 @@ addComma(12345678.12345) // '12,345,678.12345'
 
 Input are all valid numbers.
 
+### 答案
+
 正则表达式
 
 ```js
@@ -5263,7 +6001,6 @@ Input are all valid numbers.
  * @return {string}
  */
 function addComma(num) {
-  // your code here
   let str = Number(num).toString();
   return str.replace(/(?<!\d+\.\d*)(\d)(?=(\d{3})+(\.\d+)?$)/g, '$1,');
 }
@@ -5277,7 +6014,6 @@ function addComma(num) {
  * @return {string}
  */
 function addComma(num) {
-  // your code here
   num = Number(num).toString().split('.');
   let res = Number(num[0]).toLocaleString();
   if (num[1]) {
@@ -5290,7 +6026,6 @@ function addComma(num) {
 自带字符串函数操作
 
 ```js
-
 /**
  * @param {number} num
  * @return {string}
@@ -5317,13 +6052,19 @@ function addComma(num) {
 }
 ```
 
-### 66. remove duplicates from an array
+
+
+## [66. remove duplicates from an array](https://bigfrontend.dev/problem/remove-duplicates-from-an-array)
+
+### 题目
 
 Given an array containing all kinds of data, please implement a function `deduplicate()` to remove the duplicates.
 
 You should modify the array in place. Order doesn't matter.
 
 > What is time & space cost of your approach?
+
+### 答案
 
 利用set
 
@@ -5338,9 +6079,13 @@ function deduplicate(arr) {
 }
 ```
 
-还有别的方法
+还有别的方法，如排序+双指针
 
-### 67. create your own Promise
+
+
+## [67. create your own Promise](https://bigfrontend.dev/problem/create-your-own-Promise)
+
+### 题目
 
 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) is widely used nowadays, hard to think how we handled [Callback Hell](http://callbackhell.com/) in the old times.
 
@@ -5355,10 +6100,160 @@ At least it should match following requirements
 
 This is a challenging problem. Recommend you read about Promise thoroughly first.
 
+### 答案
+
+#### Explanation
+
+##### The Constructor of `MyPromise`
+
+The `promise` object created by the class `Promise` has a `state` property. The `state` is initially `pending`. So in the constructor of the `MyPromise` class, I need to define a property `state` and set it to `pending`.
+
+```js
+class MyPromise {
+  constructor() {
+    this.state = 'pending';
+  }
+}
+```
+
+##### Handling the function that is passed to `new Promise`
+
+The function is called the **executor**. It is executed immediately and automatically by `new Promise` and is able to `resolve` or `reject` the promise. So I should call it in the `constructor` of the `MyPromise` class with the arguments `resolve` and `reject`.
+
+🙋‍♀️🙋‍♂️ Error thrown by the executor function should be handled. If there is an error, the promise should be rejected.
+
 ```js
 class MyPromise {
   constructor(executor) {
-    // your code here
+    // ...
+    try {
+      executor(/* resolve */, /* reject */);
+    } catch (error) {
+      // reject the promise
+    }
+  }
+}
+```
+
+#### Implementing `resolve` and `reject` that are passed to the executor function
+
+A executor function that resolves the promise looks like this:
+
+```js
+function(resolve, reject) {
+  setTimeout(() => {
+    resolve('Done!');
+  }, 1000);
+}
+```
+
+A executor function that rejects the promise looks like this:
+
+```js
+function(resolve, reject) {
+  setTimeout(() => {
+    reject(new Error('Something went wrong!'));
+  }, 1000);
+}
+```
+
+`resolve` and `reject` are both functions which receive one argument. So I should define the two methods in the class `MyPromise`.
+
+When `resolve` is called, the `state` of the `promise` is changed to `fulfilled`; when `reject` is called, the `state` is changed to `rejected`.
+
+Besides the `state` property, the `promise` object should also have a `result` property to store the promise result. Initially, it is set to `undefined`. Its value changes either to the resolved value if `resolve(value)` is called, or to the rejected value if `reject(error)` is called.
+
+A `Promise` can only be resolved or rejected once.
+
+Thus, I can define my `resolve` and `reject` like the following:
+
+```js
+_resolve(value) {
+  // Ensure Promise is only resolved or rejected once.
+  if (this.state !== 'pending') return;
+
+  this.state = 'fulfilled';
+  this.result = value;
+}
+
+_reject(error) {
+  // Ensure Promise is only resolved or rejected once.
+  if (this.state !== 'pending') return;
+
+  this.state = 'rejected';
+  this.result = error;
+}
+```
+
+Since `MyPromise` will also have two static methods `resolve` and `reject`, use underscores to differentiate them.
+
+Because class methods are not bound by default and `_resolve` or `_reject` will be called in the executor function with a plain, undecorated function reference, `this` inside both methods will be lost. Therefore I need to `bind` both methods in the `constructor` or use the experimental fat arrow class methods.
+
+ 
+
+#### Implementing `then` method
+
+`Promise.prototype.then()` takes up to two arguments:
+
+1. The first argument is a function that is invoked when the promise is resolved, and receives the result. If it is not a function, it is replaced with a function that simply returns the received result.
+2. The second argument is a function that runs when the promise is rejected, and receives the error. If it is not a function, it is replaced with a "Thrower" function.
+
+The syntax is:
+
+```js
+promise.then(
+  (result) => {
+    // handle a successful result
+  },
+  (error) => {
+    // handle an error
+  }
+);
+```
+
+Both arguments are optional.
+
+The `Promise.prototype.then()` returns a `Promise`:
+
+```js
+const promise = Promise.resolve('from promise');
+const thenPromise = promise.then((result) => {});
+
+console.log(promise);
+// Promise {
+//   [[PromiseState]]: 'fulfilled',
+//   [[PromiseResult]]: 'from promise',
+// }
+console.log(thenPromise);
+// Promise {
+//   [[PromiseState]]: 'pending',
+//   [[PromiseResult]]: undefined,
+// }
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'fulfilled',
+//   [[PromiseResult]]: undefined,
+// }
+```
+
+So the `then` method of the class `MyPromise` should be look like this:
+
+```js
+then(onFulfilled, onRejected) {
+  return new MyPromise((resolve, reject) => {});
+}
+```
+
+##### Handling the first argument in my `then` method
+
+Since the callback function runs when the promise is resolved, it cannot be executed within the `then`. For example:
+
+```js
+class MyPromise {
+  constructor(executor) {
     this.state = 'pending';
     try {
       executor(this._resolve.bind(this), this._reject.bind(this));
@@ -5366,7 +6261,593 @@ class MyPromise {
       this._reject(error);
     }
   }
-   _resolve(value) {
+
+  _resolve(result) {
+    // ...
+    this.state = 'fulfilled';
+    this.result = result;
+  }
+
+  then(onFulfilled) {
+    onFulfilled(this.result);
+    // Call onFulfilled asynchronously.
+    // queueMicrotask(() => {
+    //   onFulfilled(this.result);
+    // });
+  }
+}
+
+const p = new MyPromise((resolve) => {
+  resolve(10);
+}).then((result) => {
+  console.log(result); // 10
+});
+```
+
+Although the code above seems to work, it doesn't work as intended when the promise is resolved asynchronously, even if the `onFulfilled` is called asynchronously:
+
+```js
+const p = new MyPromise((resolve) => {
+  setTimeout(() => {
+    resolve(10);
+  }, 0);
+}).then((result) => {
+  console.log(result); // undefined
+});
+```
+
+Therefore, the `onFulfilled` function should be called in the `_resolve` method, and the `then` method just registers the `onFulfilled` function. The `onFulfilled` function is like a subscriber, subscribing to the promised result, and the `then` method is kind of like the function `subscribe` in the Publisher/Subscriber Pattern, which receives subscriber callbacks and stores/registers them in certain data structures.
+
+```js
+class MyPromise {
+  constructor(executor) {
+    // ...
+  }
+
+  _resolve(value) {
+    //...
+    this.onFulfilled(this.result);
+  }
+
+  then(onFulfilled) {
+    // If onFulfilled is not a function, replace it with a function
+    // that simply returns the received result.
+    const isOnFulfilledFunction = typeof onFulfilled === 'function';
+    this.onFulfilled = isOnFulfilledFunction ? onFulfilled : (value) => value;
+
+    return new Promise((resolve, reject) => {});
+  }
+}
+```
+
+Although the `then` method will be triggered instantly, the callback functions (handlers) will be invoked asynchronously. `Promise` uses the microtask queue to run the callbacks. When a promise is settled, its `.then` handlers are add into the microtask queue. Immediately after every *macrotask*, all tasks from *microtask* queue get executed, prior to any other macrotask runs.
+
+```js
+console.log('Start!');
+
+setTimeout(() => {
+  console.log('Timeout!');
+}, 0);
+
+Promise.resolve('Promise!').then((result) => {
+  console.log(result);
+});
+
+console.log('End!');
+
+// Logs, in order:
+// 'Start!'
+// 'End!'
+// 'Promise!'
+// 'Timeout!'
+```
+
+To queue an function for execution in the microtask queue, I can use the function [queueMicrotask()](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/queueMicrotask).
+
+```js
+_resolve(value) {
+  //...
+  queueMicroTask(() => {
+    this.onFulfilled(this.result);
+  });
+}
+```
+
+Next, I need to handle the return value returned by the `onFulfilled` function. In the `Promise`, if the `onFulfilled` function:
+
+- returns a value, the promise returned by `then` gets resolved with the returned value as its value.
+
+```js
+const promise = Promise.resolve('from promise');
+
+const thenPromise = promise.then((result) => {
+  return 'from then handler';
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'fulfilled',
+//   [[PromiseResult]]: 'from then handler',
+// }
+```
+
+- doesn't return anything, the promise returned by `then` gets resolved with an `undefined` value.
+
+```js
+const promise = Promise.resolve('from promise');
+
+const thenPromise = promise.then((result) => {
+  console.log(result); // 'from promise'
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'fulfilled',
+//   [[PromiseResult]]: undefined,
+// }
+```
+
+- throws an error, the promise returned by `then` gets rejected with the error as its value.
+
+```js
+const promise = Promise.resolve('from promise');
+
+const thenPromise = promise.then((result) => {
+  throw new Error('error from then handler');
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'rejected',
+//   [[PromiseResult]]: Error: error from then handler.
+// }
+```
+
+- returns an already fulfilled promise, the promise returned by `then` gets resolved with that promise's value as its value.
+
+```js
+const promise = Promise.resolve('from promise');
+
+const thenPromise = promise.then((result) => {
+  return Promise.resolve('resolved promise returned by then handler');
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'fulfilled',
+//   [[PromiseResult]]: 'resolved promise returned by then handler',
+// }
+```
+
+- returns an already rejected promise, the promise returned by `then` gets rejected with that promise's value as its value.
+
+```js
+const promise = Promise.resolve('promise');
+
+const thenPromise = promise.then((result) => {
+  return Promise.reject('rejected promise returned by then handler');
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'rejected',
+//   [[PromiseResult]]: 'rejected promise returned by then handler',
+// }
+```
+
+- returns a **pending** promise, the promise returned by `then` gets resolved or rejected after the the promise returned by the handler gets resolved or rejected. The resolved value of the promise returned by `then` will be the same as the resolved value of the promise returned by the handler.
+
+```js
+const promise = Promise.resolve('promise');
+
+const thenPromise = promise.then((result) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('resolved promise returned by then handler');
+    }, 3000);
+  });
+});
+
+setTimeout(() => {
+  console.log(thenPromise); // Promise {<pending>}
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+  // Promise {<fulfilled>: "resolved promise returned by then handler"}
+}, 4000);
+```
+
+Therefore, I need to make the `resolve` and `reject` of the promise returned by `then` available in `_resolve` method, so that they can be invoked after the `onFulfilled` function is completed and receive the value returned by the `onFulfilled` function. We can create two properties in current promise object to store both functions:
+
+```js
+then(onFulfilled) {
+  // ...
+  return new Promise((resolve, reject) => {
+    this.thenPromiseResolve = resolve;
+    this.thenPromiseReject = reject;
+  });
+}
+```
+
+In `_resolve` I can use `try...catch` to catch the error thrown by the `onFulfilled` method. In the `catch` block, call `this.thenPromiseReject()` with the error as argument to reject the promise returned by `then`. In the `try` block, store the value returned by the `onFulfilled` method. If the returned value is a promise, the promise returned by `then` will only get fulfilled or rejected once that promise gets resolved or rejected. To accomplish this, I can call the `then` method of the returned value and pass `this.thenPromiseResolve()` and `this.thenPromiseReject()` as the `then` handlers. If the return value is not a promise, call `this.thenPromiseResolve()` with the return value as argument to resolve the promise returned by `then`.
+
+```js
+_resolve(value) {
+  // ...
+  queueMicroTask(() => {
+    try {
+      const returnValue = this.onFulfilled(this.result);
+      const isReturnValuePromise = returnValue instanceof MyPromise;
+
+      if (!isReturnValuePromise) {
+        this.thenPromiseResolve(returnValue);
+      } else {
+        returnValue.then(
+          this.thenPromiseResolve,
+          this.thenPromiseReject,
+        );
+      }
+    } catch (error) {
+      this.thenPromiseReject(error);
+    }
+  });
+}
+```
+
+In addition, before I call `this.onFulfilled`, I also need to ensure it is not `undefined`, since `.then()` might not be called:
+
+```js
+const promise = Promise.resolve('foo');
+
+promise.then((result) => {
+  return 'bar';
+});
+// The promise returned by `then` is resolved, but there
+// is no further action with the promise. Therefore, when
+// the method `_resolve` of the returned promise runs,
+// `this.onFulfilled` is undefined.
+```
+
+Add the check:
+
+```js
+_resolve(value) {
+  // ...
+  queueMicroTask(() => {
+    if (this.onFulfilled === undefined) return;
+
+    // ...
+  });
+}
+```
+
+##### Handling the second argument in my `then` method
+
+The second callback function runs when the promise is rejected. Like the first argument, `then` should register the second callback function, so that `_reject` can execute it asynchronously whenever the promise is rejected.
+
+```js
+then(onFulfilled, onRejected) {
+  // ...
+  this.onRejected = onRejected;
+  // ...
+}
+_reject(error) {
+  // ...
+  queueMicrotask(() => {
+    try {
+      this.onRejected(error);
+    } catch (error) {
+
+    }
+  })
+}
+```
+
+Now I need to handle the consequences of calling `onRejected`. In the `Promise`, if the `onRejected` :
+
+- is not a function, the `onRejected` is replaced with a function that throws the received argument, and the promise returned by `then` gets rejected with that promise's value as its value.
+
+```js
+const promise = Promise.reject('error from promise');
+
+const thenPromise = promise.then((result) => {});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Uncaught (in promise) error from promise
+// Promise {
+//   [[PromiseState]]: 'rejected',
+//   [[PromiseResult]]: 'error from promise',
+// }
+```
+
+- throws an error, the promise returned by `then` gets rejected with the thrown error as its value.
+
+```js
+const promise = Promise.reject('error from promise');
+
+const thenPromise = promise.then(null, (reason) => {
+  throw new Error('Error from onRejected');
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'rejected',
+//   [[PromiseResult]]: Error: Error from onRejected
+// }
+```
+
+- doesn't return anything, the promise returned by `then` gets resolved with an `undefined` value.
+
+```js
+const promise = Promise.reject('error from promise');
+
+const thenPromise = promise.then(null, (reason) => {
+  console.log(reason);
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'fulfilled',
+//   [[PromiseResult]]: undefined
+// }
+```
+
+- returns a value, the promise returned by `then` gets resolved with the returned value as its value.
+
+```js
+const promise = Promise.reject('error from promise');
+
+const thenPromise = promise.then(null, (reason) => {
+  return 'value returned by onRejected handler';
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'fulfilled',
+//   [[PromiseResult]]: 'value returned by onRejected handler'
+// }
+```
+
+- returns an already fulfilled promise, the promise returned by `then` gets resolved with that promise's value as its value.
+
+```js
+const promise = Promise.reject('error from promise');
+
+const thenPromise = promise.then(null, (reason) => {
+  return Promise.resolve('resolved promise returned by onRejected handler');
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'fulfilled',
+//   [[PromiseResult]]: 'resolved promise returned by onRejected handler'
+// }
+```
+
+- returns an already rejected promise, the promise returned by `then` gets rejected with that promise's value as its value.
+
+```js
+const promise = Promise.reject('error from promise');
+
+const thenPromise = promise.then(null, (reason) => {
+  return Promise.reject('rejected promise returned by onRejected handler');
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+});
+// Promise {
+//   [[PromiseState]]: 'rejected',
+//   [[PromiseResult]]: 'rejected promise returned by onRejected handler'
+// }
+```
+
+- returns a **pending** promise, the promise returned by `then` gets resolved or rejected after the promise returned by the handler gets resolved or rejected.
+
+```js
+const promise = Promise.reject('error from promise');
+
+const thenPromise = promise.then(null, (reason) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('resolved promise returned by onRejected handler');
+    }, 3000);
+  });
+});
+
+setTimeout(() => {
+  console.log(thenPromise); // Promise {<pending>}
+});
+
+setTimeout(() => {
+  console.log(thenPromise);
+  // Promise {<fulfilled>: "resolved promise returned by onRejected handler"}
+}, 4000);
+```
+
+In my `then` method, I need to replace `onRejected` with a function that throws the 'value' it receives as argument.
+
+```js
+then(onFulfilled, onRejected) {
+  // ...
+  const isOnRejectedFunction = typeof onRejected === 'function';
+  this.onRejected = isOnRejectedFunction ? onRejected : (error) => { throw error };
+  // ...
+}
+```
+
+And in my `_reject` method, I first try to call `this.onRejected()` and store its return value. If the returned value is not an instance of `MyPromise`, resolve the promise returned by `then` by calling `this.thenPromiseResolve()` with the returned value as argument. Otherwise call the `then` method of the returned value with `this.thenPromiseResolve()` and `this.thenPromiseReject()` as arguments. Catch any errors thrown by `this.OnRejected()`; call `this.thenPromiseReject()` and pass the error. I also need to ensure `this.onRejected` is not `undefined`.
+
+```js
+_reject(error) {
+  // ...
+  queueMicrotask(() => {
+    if (this.onRejected === undefined) return;
+
+    try {
+      const returnValue = this.onRejected(this.result);
+      const isReturnValuePromise = returnValue instanceof MyPromise;
+
+      if (!isReturnValuePromise) {
+        this.thenPromiseResolve(returnValue);
+      } else {
+        returnValue.then(
+          this.thenPromiseResolve;
+          this.thenPromiseReject;
+        );
+      }
+    } catch (error) {
+      this.thenPromiseReject(error);
+    }
+  })
+}
+```
+
+ 
+
+Implementing `catch` method
+
+In `Promise`, we can also use the `catch` method to handle rejected cases, and the `catch` method also returns a `Promise`.
+
+The syntax is:
+
+```js
+const promise1 = new Promise((resolve, reject) => {
+  throw 'Uh-oh!';
+});
+
+promise1.catch((error) => {
+  console.error(error);
+});
+// expected output: Uh-oh!
+```
+
+It is exactly the same as calling `Promise.prototype.then(null, errorHandlingFunction)`. [In fact, calling obj.catch(onRejected) internally calls obj.then(undefined, onRejected)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch).
+
+So I can define my `catch` method this way:
+
+```js
+catch(onRejected) {
+  return this.then(null, onRejected);
+}
+```
+
+ 
+
+#### Implementing the static method `MyPromise.resolve()`
+
+The static method `Promise.resolve()` returns a `Promise` object that is resolved with a given value:
+
+- Resolving a string:
+
+```js
+Promise.resolve('Success').then(
+  function (value) {
+    console.log(value); // "Success"
+  },
+  function (value) {
+    // not called
+  }
+);
+```
+
+- Resolving another `Promise`:
+
+```js
+const original = Promise.resolve(33);
+const cast = Promise.resolve(original);
+cast.then(function (value) {
+  console.log('value: ' + value);
+});
+console.log('original === cast ? ' + (original === cast));
+
+// logs, in order:
+// original === cast ? true
+// value: 33
+```
+
+[Promise.resolve() also handle the case where the value is a thenable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve#resolving_thenables_and_throwing_errors), but I don't need to cover it here.
+
+In `MyPromise.resolve`, first check if the value received is a promise; if it is a promise, return the promise; otherwise return a new instance of `MyPromise` and resolve the promise with the given value.
+
+```js
+static resolve(value) {
+  const isValuePromise = value instanceof MyPromise;
+
+  if (isValuePromise) {
+    return value;
+  }
+
+  return new MyPromise((resolve) => {
+    resolve(value);
+  })
+}
+```
+
+ 
+
+#### Implementing the static method `MyPromise.reject()`
+
+The static method `Promise.reject()` returns a `Promise` object that is rejected with a given reason:
+
+```js
+Promise.reject(new Error('fail')).then(
+  (result) => {
+    // not called
+  },
+  (reason) => {
+    console.log(reason); // Error: fail
+  }
+);
+```
+
+`MyPromise.reject()`:
+
+```js
+static reject(value) {
+  return new MyPromise((_, reject) => {
+    reject(value);
+  });
+}
+```
+
+ 
+
+#### Solution
+
+```js
+class MyPromise {
+  constructor(executor) {
+    this.state = 'pending';
+    try {
+      executor(this._resolve.bind(this), this._reject.bind(this));
+    } catch (error) {
+      this._reject(error);
+    }
+  }
+
+  _resolve(value) {
     if (this.state !== 'pending') return;
 
     this.state = 'fulfilled';
@@ -5415,7 +6896,7 @@ class MyPromise {
   }
 
   then(onFulfilled, onRejected) {
-    // your code here
+    // Register consuming functions.
     const isOnFulfilledFunction = typeof onFulfilled === 'function';
     this.onFulfilled = isOnFulfilledFunction ? onFulfilled : (value) => value;
 
@@ -5434,38 +6915,56 @@ class MyPromise {
       this.thenPromiseReject = reject;
     });
   }
-  
+
   catch(onRejected) {
-    // your code here
     return this.then(undefined, onRejected);
   }
-  
+
   static resolve(value) {
-    // your code here
     const isValuePromise = value instanceof MyPromise;
+
     if (isValuePromise) {
       return value;
     }
 
     return new MyPromise((resolve) => {
       resolve(value);
-    })
+    });
   }
-  
+
   static reject(value) {
-    // your code here
     return new MyPromise((_, reject) => {
       reject(value);
-    })
+    });
   }
 }
 ```
 
-### 68. get DOM tags
+ 
+
+#### Reference
+
+- [Promises](https://javascript.info/promise-basics)
+- [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+- [Promise.prototype.then()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)
+- [Promise.prototype.catch()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)
+- [Promise.resolve()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve)
+- [Promise.reject()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject)
+- [Using microtasks in JavaScript with queueMicrotask()](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide)
+- [Event loop: microtasks and macrotasks](https://javascript.info/event-loop)
+- [Microtasks](https://javascript.info/microtask-queue)
+
+
+
+## [68. get DOM tags](https://bigfrontend.dev/problem/get-DOM-tags)
+
+### 题目
 
 Given a DOM tree, please return all the tag names it has.
 
 Your function should return a unique array of tags names in lowercase, order doesn't matter.
+
+### 答案
 
 遍历节点，用set保存
 
@@ -5475,7 +6974,6 @@ Your function should return a unique array of tags names in lowercase, order doe
  * @return {string[]}
  */
 function getTags(tree) {
-  // your code here
   const set = new Set();
 
   const stack = [tree];
@@ -5489,7 +6987,30 @@ function getTags(tree) {
 }
 ```
 
-### 69. implement deep equal `_.isEqual()`
+或者队列
+
+```js
+/**
+ * @param {HTMLElement} tree
+ * @return {string[]}
+ */
+function getTags(tree) {
+  const treeWalker = document.createTreeWalker(tree, NodeFilter.SHOW_ELEMENT = true);
+  ans = new Set();
+  let cur = treeWalker.currentNode;
+  while (cur) {
+    ans.add(cur.tagName.toLowerCase());
+    cur = treeWalker.nextNode();
+  }
+  return Array.from(ans);
+}
+```
+
+
+
+## [69. implement deep equal `_.isEqual()`](https://bigfrontend.dev/problem/implement-deep-equal-isEqual)
+
+### 题目
 
 [_.isEqual](https://lodash.com/docs/4.17.15#isEqual) is useful when you want to compare complex data types by value not the reference.
 
@@ -5545,6 +7066,8 @@ _.isEqual(d, e) // true
 
 Setting aside the performance concerns mentioned by lodash, **your implement should not have above problem**, which means above all returns **true** and call stack should not exceed the maximum.
 
+### 答案
+
 深度遍历，找到最后的结果
 
 ```js
@@ -5554,7 +7077,6 @@ Setting aside the performance concerns mentioned by lodash, **your implement sho
  * @return {boolean}
  */
 function isEqual(a, b, map = new WeakMap()) {
-  // your code here
   if (a === null || b === null) return a === b;
   if (typeof a !== 'object' || typeof b !== 'object') {
     return a === b;
@@ -5571,7 +7093,11 @@ function isEqual(a, b, map = new WeakMap()) {
 }
 ```
 
-### 70. implement Observable.from()
+
+
+## [70. implement Observable.from()](https://bigfrontend.dev/problem/implement-Observable-from)
+
+### 题目
 
 This is a follow-up on [57. create an Observable](https://bigfrontend.dev/problem/create-an-Observable).
 
@@ -5599,6 +7125,10 @@ Related Problems
 
 [57. create an Observable ](https://bigfrontend.dev/problem/create-an-Observable)
 [71. implement Observable Subject](https://bigfrontend.dev/problem/implement-Observable-Subject)
+
+### 答案
+
+分类讨论
 
 ```js
 /**
@@ -5648,7 +7178,80 @@ function from(input) {
 }
 ```
 
-### 71. implement Observable Subject
+直接根据每种情况写出对应的函数
+
+```js
+/**
+ * @param {Array | ArrayLike | Promise | Iterable | Observable} input
+ * @return {Observable}
+ */
+function from(input) {
+  if (input instanceof Observable) {
+    return observableFromObservable(input);
+  }
+  if (input instanceof Promise) {
+    return observableFromPromise(input);
+  }
+  if(Array.isArray(input) || typeof input[Symbol.iterator] === 'function') {
+    return observableFromIterable(input);
+  }
+  if('length' in input) {
+    return observableFromArrayLike(input);
+  }
+  throw new Error('Incorrect input type');
+}
+
+
+function observableFromObservable(input) {
+  return new Observable((sub) => {
+    input.subscribe(sub)
+  });
+}
+
+function observableFromPromise(input) {
+  return new Observable((sub) => {
+      input.then((val) => {
+        sub.next(val);
+      }, (err) => {
+        sub.error(err);
+      }).then(() => {
+        sub.complete();
+      });
+  });
+}
+
+function observableFromIterable(input) {
+  return new Observable((sub) => {
+    try {
+      for(let el of input) {
+        sub.next(el);
+      }
+    } catch (err) {
+      sub.error(err);
+    }
+    sub.complete();
+  });
+}
+
+function observableFromArrayLike(input) {
+  return new Observable((sub) => {
+    try {
+      for(let i = 0; i < input.length; i++) {
+        sub.next(input[i]);
+      }
+    } catch (err) {
+      sub.error(err);
+    }
+    sub.complete();
+  });
+}
+```
+
+
+
+## [71. implement Observable Subject](https://bigfrontend.dev/problem/implement-Observable-Subject)
+
+### 题目
 
 This is a follow-up on [57. create an Observable](https://bigfrontend.dev/problem/create-an-Observable).
 
@@ -5701,6 +7304,8 @@ Related Problems
 [57. create an Observable ](https://bigfrontend.dev/problem/create-an-Observable)
 [70. implement Observable.from() ](https://bigfrontend.dev/problem/implement-Observable-from)
 
+### 答案
+
 每个需要绑定this，然后执行函数
 
 ```js
@@ -5745,7 +7350,56 @@ class Subject {
 }
 ```
 
-### 72. implement Observable interval()
+也可以利用箭头函数实现this指向实例对象
+
+```js
+// You can use Observer which is bundled to your code
+
+// class Observer {
+//   // subscriber could one next function or a handler object {next, error, complete}
+//   constructor(subscriber) { }
+//   next(value) { }
+//   error(error) { }
+//   complete() {}
+// }
+
+
+class Subject {
+  constructor() {
+    this.subscribers = [];
+  }
+  subscribe(subscriber) {
+    const sub = new Observer(subscriber);
+    this.subscribers.push(sub);
+    return {
+      unsubscribe: () => {
+        this.subscribers = this.subscribers.filter(s => s !== sub);
+      }
+    }
+  }
+  next = (value) => {
+    this.subscribers.forEach((subscriber) => {
+      subscriber.next(value);
+    });
+  }
+  error = (err) => {
+    this.subscribers.forEach((subscriber) => {
+      subscriber.error(err);
+    });
+  }
+  complete = () => {
+    this.subscribers.forEach((subscriber) => {
+      subscriber.complete();
+    });
+  }
+}
+```
+
+
+
+## [72. implement Observable interval()](https://bigfrontend.dev/problem/implement-Observable-interval)
+
+### 题目
 
 This is a follow-up on [57. create an Observable](https://bigfrontend.dev/problem/create-an-Observable).
 
@@ -5763,7 +7417,9 @@ Above code prints 0, 1, 2 .... with an interval of 1 seconds.
 
 **Note** Observable is already given for you, no need to create it.
 
-使用闭包保存数据
+### 答案
+
+使用闭包保存数据，返回一个observe变量
 
 ```js
 /**
@@ -5771,7 +7427,6 @@ Above code prints 0, 1, 2 .... with an interval of 1 seconds.
  * @return {Observable}
  */
 function interval(period) {
-  // your code here
   let num = 0;
   return new Observable((subscriber) => {
     setInterval(() => {
@@ -5783,7 +7438,34 @@ function interval(period) {
 }
 ```
 
-### 73. implement Observable fromEvent()
+只要将数据初始化放在定时器外面即可
+
+```js
+/**
+ * @param {number} period
+ * @return {Observable}
+ */
+/**
+ * @param {number} period
+ * @return {Observable}
+ */
+function interval(period) {
+  return new Observable((subscriber) => {
+    let num = 0;
+    setInterval(() => {
+      // subscriber.next(num++);
+      subscriber.next(num);
+      num++;
+    }, period);
+  })
+}
+```
+
+
+
+## [73. implement Observable fromEvent()](https://bigfrontend.dev/problem/implement-Observable-fromEvent)
+
+### 题目
 
 This is a follow-up on [57. create an Observable](https://bigfrontend.dev/problem/create-an-Observable).
 
@@ -5817,7 +7499,6 @@ Related Problems
 增加新的订阅
 
 ```js
-
 /**
  * @param {HTMLElement} element
  * @param {string} eventName
@@ -5825,7 +7506,6 @@ Related Problems
  * @return {Observable}
  */
 function fromEvent(element, eventName, capture = false) {
-  // your code here
   return new Observable((subscriber) => {
     element.addEventListener(
       eventName,
@@ -5838,7 +7518,11 @@ function fromEvent(element, eventName, capture = false) {
 }
 ```
 
-### 74. implement Observable Transformation Operators
+
+
+## [74. implement Observable Transformation Operators](https://bigfrontend.dev/problem/implement-Observable-transformation-operators)
+
+### 题目
 
 This is a follow-up on [57. create an Observable](https://bigfrontend.dev/problem/create-an-Observable).
 
@@ -5880,17 +7564,17 @@ Related Problems
 [72. implement Observable interval() ](https://bigfrontend.dev/problem/implement-Observable-interval)
 [73. implement Observable fromEvent() ](https://bigfrontend.dev/problem/implement-Observable-fromEvent)
 
+### 答案
+
 重新修改事件
 
 ```js
-
 /**
  * @param {any} input
  * @return {(observable: Observable) => Observable}
  * returns a function which trasnform Observable
  */
 function map(transform) {
-  // your code here
   return (source) => {
     return new Observable((subscriber) => {
       const originalNext = subscriber.next;
@@ -5904,7 +7588,11 @@ function map(transform) {
 }
 ```
 
-### 75. implement BigInt subtraction
+
+
+## [75. implement BigInt subtraction](https://bigfrontend.dev/problem/implement-BigInt-subtraction)
+
+### 题目
 
 Luckily we already have built-in support of [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) in JavaScript, at least in some browsers.
 
@@ -5930,17 +7618,17 @@ Related Problems
 [76. implement BigInt addition with sign](https://bigfrontend.dev/problem/implement-BigInt-addition-with-sign)
 [77. implement BigInt subtraction with sign](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign)
 
+### 答案
+
 其实本质和大数加法没有不同
 
 ```js
-
 /**
  * @param {string} num1
  * @param {string} num2
  * @return {string}
  */
 function subtract(num1, num2) {
-  // your code here
   if (!num1 || !num2) return num1 || num2;
 
   let i = num1.length - 1, j = num2.length - 1;
@@ -5961,7 +7649,11 @@ function subtract(num1, num2) {
 }
 ```
 
-### 76. implement BigInt addition with sign
+
+
+## [76. implement BigInt addition with sign](https://bigfrontend.dev/problem/implement-BigInt-addition-with-sign)
+
+### 题目
 
 This is a follow-up on [62. implement BigInt addition](https://bigfrontend.dev/problem/add-BigInt-string).
 
@@ -5983,6 +7675,8 @@ Related Problems
 [75. implement BigInt subtraction ](https://bigfrontend.dev/problem/implement-BigInt-subtraction)
 [77. implement BigInt subtraction with sign](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign)
 
+### 答案
+
 先判断符号，再进行计算
 
 ```js
@@ -5998,7 +7692,6 @@ function add(num1, num2) {
  * @return {string}
  */
 function add(num1, num2) {
-  // your code here
   const isNum1Negative = num1[0] == '-';
   const isNum2Negative = num2[0] == '-';
   // remove sign
@@ -6083,9 +7776,121 @@ function absSub(num1, num2) {
 }
 ```
 
-### 77. implement BigInt subtraction with sign
+大佬写的方法
 
-This is a follow-up on [75. implement BigInt subtraction](https://bigfrontend.dev/problem/implement-BigInt-subtraction).
+```js
+/**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+function add(num1, num2) {
+  const isNum1Negative = num1[0] === '-';
+  const isNum2Negative = num2[0] === '-';
+  
+  // remove sign
+  num1 = num1.replace(/^[+|-]/, '');
+  num2 = num2.replace(/^[+|-]/, '');
+  
+  //case 1: Both same sign we just add numbers
+  //        1.1: +,+ 
+  //        1.2: -,- mark result -
+
+  // case 2: Diff sign we subtract
+  //      2.1 : (-,+)
+  //          2.1.1    (n1 < n2) : subtractAbs result will be - , Ex: (-8)+(9) = + (remove '-' sign from final res)
+  //          2.1.2    (n1 > n2) : subtractAbs result will be + , Ex: (-9)+(8) = - (add '-' sign to final res)
+  //      2.2 : (+,-) 
+  //          2.2.1    (n1 < n2) : subtractAbs result will be - , Ex: (8)+(-9) = - (keep subtractAbs result as it is)
+  //          2.2.2    (n1 > n2) : result will be - , Ex: (9)+(-8) = + (keep subtractAbs result as it is)
+
+  if (isNum1Negative === isNum2Negative) {
+    return (isNum1Negative ? '-' : '') + addAbs(num1, num2); // case 1.1, 1.2
+  } else {
+    const res = subtractAbs(num1, num2);
+
+    if (res[0] === '-' && isNum1Negative) { // case: 2.1.1
+      return res.slice(1);
+    }
+    // case 2.1.2 & case 2.2.1/2.2.2
+    return (isNum1Negative ? '-' : '') + res;
+  }
+}
+
+
+// prb: 62
+function addAbs(num1, num2) {
+  num1 = num1.split('');
+  num2 = num2.split('');
+  let res = [], carry = 0;
+  
+  while (num1.length || num2.length || carry) {
+    let sum = (Number(num1.pop()) || 0) + (Number(num2.pop()) || 0) + carry;
+    carry = Math.floor(sum / 10);
+    res.unshift(sum % 10);
+  }
+  
+  return res.join('');
+}
+
+// prb: 75
+function subtractAbs(num1, num2) {
+  let negative = false;
+  // Before proceeding further, make sure num1 is bigger
+  if (isSmaller(num1, num2)) {
+    negative = true;
+    [num1, num2] = [num2, num1];
+  }
+  num1 = num1.split('');
+  num2 = num2.split('');
+  
+  let borrow = 0, result = [];
+  
+  while (num1.length || num2.length || borrow) {
+    // Check the value of 1st number after it has been borrowed from
+    const val1 = Number(num1.pop() || 0) - borrow;
+    const val2 = Number(num2.pop()) || 0;
+    borrow = val2 > val1 ? 1 : 0; // if num2 is smaller then no need for another borrow and we can set it as zero
+    
+    // Difference would be borrow*10 with val1
+    const diff = ((borrow * 10) + val1) - val2;
+    //Add the result to start of array;
+    result.unshift(diff);
+  }
+  // Remove leading zeroes, if numbers are equal we add 0 to result so remove them now
+  // we can do like this too
+  // result = result.replace(/^0*/g, ''); result = !!result ? result : '0';
+  while (result[0] === 0 && result.length !== 1) {
+    result.shift();
+  };
+  result = result.join('')
+  return negative ? '-' + result : result;
+}
+
+// Returns true if num1 is smaller than num2.
+function isSmaller(num1, num2) {
+  // Calculate lengths of both string
+  let n1 = num1.length, n2 = num2.length;
+  if (n1 < n2) return true;
+  if (n2 < n1) return false;
+  
+  // if we are here num1 and num2 have same length, we start comparring from MSB
+  for (let i = 0; i < n1; i++) {
+    if (num1[i] < num2[i]) return true;
+    else if (num1[i] > num2[i]) return false;
+  }
+  
+  return false;
+}
+```
+
+
+
+## [77. implement BigInt subtraction with sign](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign)
+
+### 题目
+
+This is a follow-up on [75. implement BigInt subtraction](https://bigfrontend.dev/problem/implement-BigInt-subtraction).j
 
 You are asked to implement a string substraction function, **with possible negative integers**. Also, '+' plus sign should also be supported
 
@@ -6105,17 +7910,17 @@ Related Problems
 [75. implement BigInt subtraction ](https://bigfrontend.dev/problem/implement-BigInt-subtraction)
 [76. implement BigInt addition with sign ](https://bigfrontend.dev/problem/implement-BigInt-addition-with-sign)
 
+### 答案
+
 和上题中的加法类似
 
 ```js
-
 /**
  * @param {string} num1
  * @param {string} num2
  * @return {string}
  */
 function subtract(num1, num2) {
-  // your code here// your code here
   const isNum1Negative = num1[0] == '-';
   const isNum2Negative = num2[0] == '-';
   // remove sign
@@ -6136,6 +7941,7 @@ function subtract(num1, num2) {
   }
 }
 
+// prb: 62
 function absAdd(num1, num2) {
   const maxLen = Math.max(num1.length, num2.length);
   num1 = num1.padStart(maxLen, '0')
@@ -6157,6 +7963,7 @@ function absAdd(num1, num2) {
   return ans;
 }
 
+// prb: 75
 function absSub(num1, num2) {
   if (num1 == num2) return '0';
 
@@ -6204,7 +8011,109 @@ function absSub(num1, num2) {
 }
 ```
 
-### 78. convert HEX color to RGBA
+大佬的解法
+
+```js
+
+/**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+function subtract(num1, num2) {
+  const isNum1Negative = num1[0] === '-';
+  const isNum2Negative = num2[0] === '-' ? false: true; // treat it as if we are doing bigIntAddition
+  
+  // remove sign
+  num1 = num1.replace(/^[+|-]/, '');
+  num2 = num2.replace(/^[+|-]/, '');
+
+  if (isNum1Negative === isNum2Negative) {
+      return (isNum1Negative ? '-' : '') + addAbs(num1, num2);
+  } else {
+    const res = subtractAbs(num1, num2);
+
+    if (res[0] === '-' && isNum1Negative) {
+      return res.slice(1);
+    }
+    return (isNum1Negative && res[0] !== '0' ? '-' : '') + res; // (-9 - (-9)) check res[0] != 0 otherwise we get -0
+  }
+}
+
+
+// prb: 62
+function addAbs(num1, num2) {
+  num1 = num1.split('');
+  num2 = num2.split('');
+  let res = [], carry = 0;
+  
+  while(num1.length || num2.length || carry){
+      
+    let sum = (Number(num1.pop()) || 0) + (Number(num2.pop()) || 0) + carry;
+    carry = Math.floor(sum / 10);
+    res.unshift(sum % 10);
+  }
+  
+  return res.join('');
+}
+
+// prb: 75
+function subtractAbs(num1, num2) {
+  let negative = false;
+  // Before proceeding further, make sure num1 is bigger
+  if (isSmaller(num1, num2)) {
+    negative = true;
+    [num1, num2] = [num2, num1];
+  }
+  // your code here
+  num1 = num1.split('');
+  num2 = num2.split('');
+  
+  let borrow = 0, result = [];
+  
+  while (num1.length || num2.length || borrow) {
+    // Check the value of 1st number after it has been borrowed from
+    const val1 = Number(num1.pop() || 0) - borrow;
+    const val2 = Number(num2.pop()) || 0;
+    borrow = val2 > val1 ? 1 : 0; // if num2 is smaller then no need for another borrow and we can set it as zero
+    
+    // Difference would be borrow*10 with val1
+    const diff = ((borrow * 10) + val1) - val2;
+    //Add the result to start of array;
+    result.unshift(diff);
+  }
+  // Remove leading zeroes, if numbers are equal we add 0 to result so remove them now
+  // we can do like this too
+  // result = result.replace(/^0*/g, ''); result = !!result ? result : '0';
+  while (result[0] === 0 && result.length !== 1) {
+    result.shift();
+  };
+  result = result.join('');
+  return negative ? '-' + result : result;
+}
+
+// Returns true if num1 is smaller than num2.
+function isSmaller(num1, num2) {
+  // Calculate lengths of both string
+  let n1 = num1.length, n2 = num2.length;
+  if (n1 < n2) return true;
+  if (n2 < n1) return false;
+  
+  // if we are here num1 and num2 have same length, we start comparring from MSB
+  for (let i = 0; i < n1; i++) {
+    if (num1[i] < num2[i]) return true;
+    else if (num1[i] > num2[i]) return false;
+  }
+  
+  return false;
+}
+```
+
+
+
+## [78. convert HEX color to RGBA](https://bigfrontend.dev/problem/convert-HEX-color-to-RGBA)
+
+### 题目
 
 Suppose you write some CSS code, you need to set [colors](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value). You can choose hexadecimal notation `#fff` or Functional notation `rgba(255,255,255,1)`.
 
@@ -6218,7 +8127,7 @@ hexToRgb('#fff')
 1. Alpha channel should have **maximum 2 digits after decimal point, round up if needed.**
 2. Don't forget to do input validation
 
-[prev](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign)
+### 答案
 
 强行判断并转换
 
@@ -6247,7 +8156,6 @@ function roundUp(num: number): string {
 }
 
 function hexToRgba(hex: string): string {
-  // your code here
   // 1. validate payload
   const regValidHexColor = /^#[0-9a-fA-F]+$/;
   let len = hex.length;
@@ -6265,7 +8173,34 @@ function hexToRgba(hex: string): string {
 }
 ```
 
-### 79. convert snake_case to camelCase
+简化版
+
+```js
+function hexToRgba(hex: string): string {
+  const validChars = /^#[a-fA-F\d]+$/.test(hex);
+  const validLength = [4, 5, 7, 9].includes(hex.length);
+
+  if (!validLength || !validChars) {
+    throw new Error('Invalid HEX');
+  }
+
+  const [r, g, b, a = 255] = hex
+    .toLowerCase()
+    .split('')
+    .slice(1)
+    .reduce((a, c) => `${a}${hex.length < 7 ? c.repeat(2) : c}`, '')
+    .match(/(..)/g)!
+    .map((hex) => parseInt(hex, 16));
+
+  return `rgba(${r},${g},${b},${Math.round(a / 255 * 100) / 100})`;
+}
+```
+
+
+
+## [79. convert snake_case to camelCase](https://bigfrontend.dev/problem/convert-snake_case-to-camelCase)
+
+### 题目
 
 Do you prefer [snake_case](https://en.wikipedia.org/wiki/Snake_case) or [camelCase](https://en.wikipedia.org/wiki/Camel_case) ?
 
@@ -6288,7 +8223,9 @@ snakeToCamel('_double__underscore_')
 
 contiguous underscore `__`, leading underscore` _a`, and trailing underscors `a_` should be kept untouched.
 
-找到中间的"_"
+### 答案
+
+正则表达式找到中间的"_"
 
 ```js
 /**
@@ -6296,14 +8233,58 @@ contiguous underscore `__`, leading underscore` _a`, and trailing underscors `a_
  * @return {string}
  */
 function snakeToCamel(str) {
-  // your code here
   return str.replace(/[a-z]_[a-z]/gi, match => {
     return match[0] + match[2].toUpperCase();
-  })
+  });
 }
 ```
 
-### 80. implement your own URLSearchParams
+继续简化写法
+
+```js
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function snakeToCamel(str) {
+  return str.replace(/([a-z])_([a-z])/gi, (_, left, right) => left + right.toUpperCase());
+}
+```
+
+也可以用常规的字符串操作
+
+```js
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function snakeToCamel(str) {
+  let result = str[0]; // in any case we want to keep first char as it is
+
+  for (let i = 1; i < str.length; i++) { // begin from i=1 as we already have 0th index char
+
+    /** main logic: Details explanation is coming soon.
+    1. current char `i` must be '_'
+    2. previous char must not be '_'
+    3. next char must not be '_'
+    4. current char must less than 2nd last of string
+    **/
+    if (str[i] === '_' && str[i - 1] !== '_' && str[i + 1] !== '_' && i < str.length - 1) {
+      result += str[i+1].toUpperCase();
+      i++; // increment because we already consider i+1 in previous line.
+    } else {
+      result += str[i]; // else just add in the result string
+    }
+  }
+  return result; // 🍻 return the camelCase because that's the way
+}
+```
+
+
+
+## [80. implement your own URLSearchParams](https://bigfrontend.dev/problem/implement-your-own-URLSearchParams)
+
+### 题目
 
 When we want to extract parameters from query string, [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) could be very handy.
 
@@ -6324,14 +8305,16 @@ params.toString() // 'a=1&a=2&b=3&a=3'
 
 There are [a few methods](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) on URLSearchParams, please implement them all.
 
-返回所有的表格
+### 答案
+
+返回所有的键值对
 
 ```js
- class MyURLSearchParams {
-   /**
-    * @params {string} init
-    */
-   constructor(init) {
+class MyURLSearchParams {
+  /**
+  * @params {string} init
+  */
+  constructor(init) {
     this.map = new Map();
     const queryString = init.split('?')[1] || init;
     const qsPairs = queryString.split('&');
@@ -6344,27 +8327,27 @@ There are [a few methods](https://developer.mozilla.org/en-US/docs/Web/API/URLSe
         this.set(key, value);
       }
     }));
-   }
-   
-   /** 
-    * @params {string} name
-    * @params {any} value
-    */
-   append(name, value) {
+  }
+  
+  /** 
+  * @params {string} name
+  * @params {any} value
+  */
+  append(name, value) {
     this.map.get(name).push(String(value));
-   }
-   
-   /**
-    * @params {string} name
-    */
-   delete(name) {
-     this.map.delete(name);
-   }
-   
-   /**
-    * @returns {Iterator} 
-    */
-   entries() {
+  }
+  
+  /**
+  * @params {string} name
+  */
+  delete(name) {
+    this.map.delete(name);
+  }
+  
+  /**
+  * @returns {Iterator} 
+  */
+  entries() {
     let that = this;
     return (function* () {
       let pairs = [];
@@ -6377,67 +8360,67 @@ There are [a few methods](https://developer.mozilla.org/en-US/docs/Web/API/URLSe
         yield pairs.shift();
       }
     })();
-   }
-   
-   /**
-    * @param {(value, key) => void} callback
-    */
-   forEach(callback) {
+  }
+  
+  /**
+  * @param {(value, key) => void} callback
+  */
+  forEach(callback) {
     this.map.forEach((value, key) => {
       value.forEach(val => callback.call(this, val, key));
     });
-   }
-   
-   /**
-    * @param {string} name
-    * returns the first value of the name
-    */
-   get(name) {
+  }
+  
+  /**
+  * @param {string} name
+  * returns the first value of the name
+  */
+  get(name) {
     name = name.split('?')[1] || name;
     return this.map.has(name) ? this.map.get(name)[0] : null;
-   }
-   
-   /**
-    * @param {string} name
-    * @return {string[]}
-    * returns the value list of the name
-    */
-   getAll(name) {
+  }
+  
+  /**
+  * @param {string} name
+  * @return {string[]}
+  * returns the value list of the name
+  */
+  getAll(name) {
     return this.map.get(name) || [];
-   }
-   
-   /**
-    * @params {string} name
-    * @return {boolean}
-    */
-   has(name) {
+  }
+  
+  /**
+  * @params {string} name
+  * @return {boolean}
+  */
+  has(name) {
     return Boolean(this.map.has(name));
-   }
-   
-   /**
-    * @return {Iterator}
-    */
-   keys() {
+  }
+  
+  /**
+  * @return {Iterator}
+  */
+  keys() {
     return this.map.keys();
-   }
-   
-   /**
-    * @param {string} name
-    * @param {any} value
-    */
-   set(name, value) {
+  }
+  
+  /**
+  * @param {string} name
+  * @param {any} value
+  */
+  set(name, value) {
     this.map.set(String(name), [String(value)]);
-   }
-   
-   // sor all key/value pairs based on the keys
-   sort() {
+  }
+  
+  // sor all key/value pairs based on the keys
+  sort() {
     this.map = new Map([...this.map].sort());
-   }
-   
-   /**
-    * @return {string}
-    */
-   toString() {
+  }
+  
+  /**
+  * @return {string}
+  */
+  toString() {
     let result = '';
     let index = 0;
     this.map.forEach((value, key) => {
@@ -6447,12 +8430,12 @@ There are [a few methods](https://developer.mozilla.org/en-US/docs/Web/API/URLSe
       index++;
     });
     return result;
-   }
-   
-   /**
-    * @return {Iterator} values
-    */
-   values() {
+  }
+  
+  /**
+  * @return {Iterator} values
+  */
+  values() {
     const that = this;
     return function* () {
       let valueArray = [];
@@ -6461,11 +8444,15 @@ There are [a few methods](https://developer.mozilla.org/en-US/docs/Web/API/URLSe
         yield valueArray.shift();
       }
     }();
-   }
- }
+  }
+}
 ```
 
-### 81. merge sorted arrays
+
+
+## [81. merge sorted arrays](https://bigfrontend.dev/problem/merge-sorted-arrays)
+
+### 题目
 
 You are given a list of sorted non-descending integer arrays, write a function to merge them into one sorted non-descending array.
 
@@ -6485,17 +8472,17 @@ What is time complexity of your solution?
 
 [Source for this](https://www.glassdoor.com/Interview/ByteDance-Front-End-Developer-Interview-Questions-EI_IE1624196.0,9_KO10,29.htm?filter.jobTitleFTS=Front+End+Developer)
 
-分到2个队列进行合并
+### 答案
+
+22归并合并
 
 ```js
-
 /**
  * @param {number[][]} arrList
  * non-descending integer array
  * @return {number[]} 
  */
 function merge(arrList) {
-  // your code here
   return mergeImpl(arrList, 0, arrList.length - 1);
 }
 
@@ -6531,7 +8518,45 @@ function mergeSort(arrOne, arrTwo) {
 }
 ```
 
-### 82. find available meeting slots
+别人写的更有条理
+
+```js
+/**
+ * @param {number[][]} arrList
+ * non-descending integer array
+ * @return {number[]} 
+ */
+function merge(arrList) {
+  if (arrList.length === 0) return [];
+  if (arrList.length === 1) return arrList[0];
+  if (arrList.length === 2) return merge2Lists(arrList[0], arrList[1]);
+  const mid = Math.floor(arrList.length / 2)
+  const left = merge(arrList.slice(0, mid));
+  const right = merge(arrList.slice(mid, arrList.length));
+  return merge2Lists(left, right);
+}
+
+function merge2Lists(arr1, arr2) {
+  let [i, j] = [0, 0];
+  let res = []
+  while (i < arr1.length || j < arr2.length) {
+    if (i >= arr1.length || arr1[i] > arr2[j]) {
+      res.push(arr2[j]);
+      j++;
+    } else {
+      res.push(arr1[i]);
+      i++;
+    }
+  }
+  return res;
+}
+```
+
+
+
+## [82. find ava ilable meeting slots](https://bigfrontend.dev/problem/find-available-meeting-slots)
+
+### 题目
 
 `[start, end]` is a time interval, with all integers from 0 to 24.
 
@@ -6558,6 +8583,8 @@ For the input above, below slots should be returned
 1. the input schedule intervals might be unsorted
 2. one member's schedule might have overlapping intervals.
 
+### 答案
+
 排序+贪心
 
 ```js
@@ -6568,7 +8595,6 @@ For the input above, below slots should be returned
  * @return {Interval[]}
  */
 function findMeetingSlots(schedules) {
-  // your code here
   const mergedSchedules = mergeSchedules(schedules);
   mergedSchedules.sort((a, b) => a[0] - b[0]);
 
@@ -6603,7 +8629,45 @@ function mergeSchedules(schedules) {
 }
 ```
 
-### 83. create an interval
+也可以利用Array自带的flat方法
+
+```js
+// type Interval = [number, number]
+
+/**
+ * @param {Interval[][]} schedules
+ * @return {Interval[]}
+ */
+function findMeetingSlots(schedules) {
+  let times = schedules.flat();
+
+  times.sort((a, b) => a[0] - b[0]);
+
+  let result = [];
+
+  let prevEnd = 0;
+  times.forEach(t => {
+    let [start, end] = t;
+    if (prevEnd < start) {
+      result.push([prevEnd, start]);
+    }
+
+    prevEnd = Math.max(end, prevEnd);
+  })
+
+  if (prevEnd !== 24) {
+    result.push([prevEnd, 24]);
+  }
+
+  return result;
+}
+```
+
+
+
+## [83. create an interval](https://bigfrontend.dev/problem/create-an-interval)
+
+### 题目
 
 You are asked to create a new `mySetInterval(a, b)` which has a different behavior from `window.setInterval`, the time between calls is a linear function, growing larger and larger `period = a + b * count`.
 
@@ -6666,7 +8730,9 @@ expect(run(100, 200, 450)).toEqual([100,400])
 expect(run(100, 200, 50)).toEqual([])
 ```
 
-设置时间
+### 答案
+
+设置时间，用map保存定时器id
 
 ```js
 const timerIds = new Map();
@@ -6677,7 +8743,6 @@ const timerIds = new Map();
  * @return {number}
  */
 function mySetInterval(func, delay, period) {
-  // your code here
   let multiplier = 0;
 
   const initialTimerId = setTimeout(run, delay + period * multiplier);
@@ -6704,7 +8769,11 @@ function myClearInterval(id) {
 }
 ```
 
-### 84. create a fake timer (setInterval)
+
+
+## [84. create a fake timer (setInterval)](https://bigfrontend.dev/problem/create-a-fake-timer-setInterval)
+
+### 题目
 
 This is a follow-up on [36. create a fake timer(setTimeout)](https://bigfrontend.dev/problem/create-a-fake-timer)
 
@@ -6771,6 +8840,8 @@ Related Problems
 
 [36. create a fake timer(setTimeout)](https://bigfrontend.dev/problem/create-a-fake-timer)
 
+### 答案
+
 保存原生的函数
 
 ```js
@@ -6826,7 +8897,11 @@ class FakeTimer {
 }
 ```
 
-### 85. implement `_.get()`
+
+
+## [85. implement `_.get()](https://bigfrontend.dev/problem/implement-lodash-get)`
+
+### 题目
 
 [_.get(object, path, [defaultValue\])](https://lodash.com/docs/4.17.15#get) is a handy method to help retrieving data from an arbitrary object. if the resolved value from `path` is `undefined`, `defaultValue` is returned.
 
@@ -6853,6 +8928,8 @@ Related Problems
 
 [156. implement `_.set()`](https://bigfrontend.dev/problem/lodash-set)
 
+### 答案
+
 切割路径，然后迭代或递归得到最后的结果
 
 ```js
@@ -6863,7 +8940,6 @@ Related Problems
  * @return {any}
  */
 function get(source, path, defaultValue = undefined) {
-  // your code here
   path = Array.isArray(path) ? path : path.split(/\.|\[|\]/);
 
   if (path[path.length - 1] === '') path.pop();
@@ -6882,7 +8958,30 @@ function get(source, path, defaultValue = undefined) {
 }
 ```
 
-### 86. Generate Fibonacci Number
+使用replaceAll
+
+```js
+/**
+ * @param {object} source
+ * @param {string | string[]} path
+ * @param {any} [defaultValue]
+ * @return {any}
+ */
+function get(source, path, defaultValue = undefined) {
+  const props = Array.isArray(path) ? path : path.replaceAll('[', '.').replaceAll(']', '').split('.');
+  let curNode = source;
+  for (let i = 0; i < props.length; i++) {
+    let k = props[i];
+    if (curNode[k] === undefined) return defaultValue;
+    if (i === props.length - 1) return curNode[k];
+    else curNode = curNode[k];
+  }
+}
+```
+
+
+
+## [86. Generate Fibonacci Number](https://bigfrontend.dev/problem/fibonacci-number)
 
 ```js
 0
