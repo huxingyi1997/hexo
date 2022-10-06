@@ -8983,6 +8983,8 @@ function get(source, path, defaultValue = undefined) {
 
 ## [86. Generate Fibonacci Number](https://bigfrontend.dev/problem/fibonacci-number)
 
+### 题目
+
 ```js
 0
 1
@@ -9009,6 +9011,8 @@ Related Problems
 
 [93. Generate Fibonacci Number with recursion](https://bigfrontend.dev/problem/Generate-Fibonacci-Number-with-recursion)
 
+### 答案
+
 动态规划
 
 ```js
@@ -9017,7 +9021,6 @@ Related Problems
  * @return {number}
  */
 function fib(n) {
-  // your code here
   if(n < 2) return n;
   let dp0 = 0, dp1 = 1;
   for (let i = 2; i <= n; i++) {
@@ -9037,7 +9040,6 @@ function fib(n) {
  * @return {number}
  */
 function fib(n, ac1 = 0, ac2 = 1) {
-  // your code here
   if(n == 0) return 0;
   if(n == 1) {
     if(ac2 == 1) return 1;
@@ -9047,7 +9049,69 @@ function fib(n, ac1 = 0, ac2 = 1) {
 }
 ```
 
-### 87. longest substring with unique characters
+多种方法
+
+```js
+// Approach 1 - Recursion
+// Time: O(2^n)
+// Space: O(n)
+function fib(n) {
+  if (n < 2) return n;
+  return fib(n-1) + fib(n-2);
+}
+
+// Approach 2 - Memoized Recursion
+// Time: O(n)
+// Space: O(n)
+function fib(n) {
+  const cache = {};
+  function memo(n) {
+    if (n < 2) return n;
+    cache[n] ??= memo(n-1) + memo(n-2);
+    return cache[n];
+  }
+  return memo(n);
+}
+
+// Approach 3 - Tabulation
+// Time: O(n)
+// Space: O(n)
+function fib(n) {
+  const res = [0,1,1];
+  for(let i = 3; i <= n; i++) {
+    res.push(res[i-1] + res[i-2]);
+  }
+  return res[n];
+}
+
+// Approach 4 - Dynamic Tabulation
+// Time: O(n)
+// Space: O(1)
+function fib(n) {
+  if (n < 2) return n;
+  const res = [1,1];
+  for(let i = 2; i < n; i++) {
+    [res[0], res[1]] = [res[1], res[0] + res[1]];
+  }
+  return res[1];
+}
+
+// Approach 5 - Math (god tier)
+// Time: O(1)
+// Space: O(1)
+function fib (n) {
+  const A = (1 + Math.sqrt(5)) / 2;
+  const B = (1 - Math.sqrt(5)) / 2;
+  const fib = (Math.pow(A, n) - Math.pow(B, n)) / Math.sqrt(5);
+  return Math.floor(fib);
+}
+```
+
+
+
+## [87. longest substring with unique characters](https://bigfrontend.dev/problem/longest-substring-with-unique-characters)
+
+### 题目
 
 Given a string, please find the **longest substring that has no repeated characters**.
 
@@ -9066,14 +9130,16 @@ longestUniqueSubstr('a12#2')
 
 What is the time & space cost of your solution ? Could you do it better?
 
-```js
+### 答案
 
+滑动窗口，哈希记录上个出现字母的位置
+
+```js
 /**
  * @param {string} str
  * @return {string}
  */
 function longestUniqueSubstr(str) {
-  // your code here
   let left = 0, right = 0;
   let maxLen = 0;
   let leftIndex = 0;
@@ -9098,7 +9164,41 @@ function longestUniqueSubstr(str) {
 }
 ```
 
-### 88. support negative Array index in JavaScript
+保存上个字母的坐标
+
+```js
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function longestUniqueSubstr(str) {
+  let map = new Map();
+  let start = 0, end = 0, len = 0, i = 0;
+
+  while (end < str.length) {
+      if (map.has(str[end])) {
+      // move start to repeating char indx +1 as one by one reducing window size is not optimized
+        start = map.get(str[end]) + 1;
+      }
+      map.set(str[end], end);
+      end++;
+
+      if (len < (end - start)) {
+        len = end - start;
+        i = start;
+      }
+
+  }
+
+  return str.slice(i, i + len);
+}
+```
+
+
+
+## [88. support negative Array index in JavaScript](https://bigfrontend.dev/problem/support-negative-Array-index)
+
+### 题目
 
 Python supports negative list index , while JavaScript doesn't.
 
@@ -9149,11 +9249,12 @@ originalArr // [2,3,6]
  * @returns {?} - sorry no type hint for this
  */
 function wrap(arr) {
-  // your code here
   return new Proxy(arr, {
-   get(target, key) {
-     if (key === Symbol.iterator) { return Reflect.get(target, Symbol.iterator);}
-     return +key < 0 ?  Reflect.get(target, target.length + +key) : Reflect.get(target, key);
+    get(target, key) {
+      if (key === Symbol.iterator) {
+        return Reflect.get(target, Symbol.iterator);
+      }
+      return +key < 0 ? Reflect.get(target, target.length + +key) : Reflect.get(target, key);
     }, 
     set(target, key, value) {
       if (+key < 0) {
@@ -9168,50 +9269,7 @@ function wrap(arr) {
 }
 ```
 
-### 88. support negative Array index in JavaScript
-
-Python supports negative list index , while JavaScript doesn't.
-
-Can you write a wrapper function to make **negative array index** possible?
-
-```js
-const originalArr = [1,2,3]
-const arr = wrap(originalArr)
-
-arr[0] // 1
-arr[1] // 2
-arr[2] // 3
-arr[3] // undefined
-arr[-1] // 3
-arr[-2] // 2
-arr[-3] // 1
-arr[-4] // undefined
-```
-
-All methods on `arr` should be applied to the original array, which means
-
-```js
-arr.push(4)
-arr[3] // 4
-originalArr[3] // 4
-
-arr.shift()
-arr[0] // 2
-originalArr[0] // 2
-
-arr.bfe = 'bfe'
-originalArr.bfe // 'bfe'
-
-arr[-1] = 5
-arr // [2,3,5]
-originalArr // [2,3,5]
-
-originalArr[2] = 6
-arr // [2,3,6]
-originalArr // [2,3,6]
-```
-
-使用Proxy
+使用函数同一处理index，保留receiver处理
 
 ```js
 /**
@@ -9219,26 +9277,40 @@ originalArr // [2,3,6]
  * @returns {?} - sorry no type hint for this
  */
 function wrap(arr) {
-  // your code here
+  const isNumber = (prop) => typeof prop === 'string' && !Number.isNaN(Number(prop));
+  const normalize = (idx, arrLength) => idx >= 0 ? idx : idx + arrLength;
+  const assert = (idx) => {
+    if (idx < 0) {
+      throw new Error('incorrect index');
+    }
+  };
+
   return new Proxy(arr, {
-   get(target, key) {
-     if (key === Symbol.iterator) { return Reflect.get(target, Symbol.iterator);}
-     return +key < 0 ?  Reflect.get(target, target.length + +key) : Reflect.get(target, key);
-    }, 
-    set(target, key, value) {
-      if (+key < 0) {
-        if (target.length + +key < 0) throw new Error('');
-        Reflect.set(target, target.length + +key, value);
-        return true;
+    get (target, prop, receiver) {
+      if (isNumber(prop)) {
+        prop = normalize(Number(prop), target.length);
       }
-      Reflect.set(target, key, value);
-      return true;
+
+      return Reflect.get(target, prop, receiver);
+    },
+
+    set(target, prop, value, receiver) {
+      if (isNumber(prop)) {
+        prop = normalize(Number(prop), target.length);
+        assert(prop);
+      }
+
+      return Reflect.set(target, prop, value, receiver);
     }
   });
 }
 ```
 
-### 89. Next Right Sibling
+
+
+## [89. Next Right Sibling](https://bigfrontend.dev/problem/Next-Right-Sibiling)
+
+### 题目
 
 Given a DOM tree and a target element, please return the **next right sibling**.
 
@@ -9250,6 +9322,8 @@ If no right sibling, then return `null`.
 
 What is time & space cost of your solution ?
 
+### 答案
+
 队列+BFS
 
 ```js
@@ -9260,7 +9334,6 @@ What is time & space cost of your solution ?
  * @return {HTMLElemnt | null}
  */
 function nextRightSibling(root, target) {
-  // your code here
   if (!root) return null;
   const queue = [root];
   while (queue.length) {
@@ -9274,7 +9347,11 @@ function nextRightSibling(root, target) {
 }
 ```
 
-### 90. write your own `instanceof`
+
+
+## [90. write your own `instanceof`](https://bigfrontend.dev/problem/write-your-own-instanceof)
+
+### 题目
 
 Do you know how [instanceOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof) works ?
 
@@ -9297,17 +9374,17 @@ C.prototype = {}
 myInstanceOf(b, C) // false
 ```
 
+### 答案
+
 我用的是迭代方法
 
 ```js
-
 /**
  * @param {any} obj
  * @param {target} target
  * @return {boolean}
  */
 function myInstanceOf(obj, target) {
-  // your code here
   if (obj === null || typeof obj !== 'object') return false;
   if (typeof target !== 'function') return false;
 
@@ -9323,7 +9400,36 @@ function myInstanceOf(obj, target) {
 }
 ```
 
-### 91. invert a binary tree
+也可以用递归
+
+```js
+/**
+ * @param {any} obj
+ * @param {target} target
+ * @return {boolean}
+ */
+function myInstanceOf(obj, target) {
+  // If the object does not exist or we've reached the base Object constructor, return false
+  if (!obj || typeof obj !== "object") return false;
+
+  // Check if the target is a valid object
+  if (!target.prototype) throw Error;
+
+  // If the object's prototype matches our target's prototype, return true
+  // Otherwise, recurse down the prototypal chain
+  if (Object.getPrototypeOf(obj) === target.prototype) {
+    return true;
+  } else {
+    return myInstanceOf(Object.getPrototypeOf(obj), target);
+  }
+}
+```
+
+
+
+## [91. invert a binary tree](https://bigfrontend.dev/problem/invert-a-binary-tree)
+
+### 题目
 
 Can you invert a binary tree and get an offer from Google?
 
@@ -9333,7 +9439,9 @@ Inverting a node means swapping its left child and right child. You need to appl
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20211014220149.png)
 
-递归啊
+### 答案
+
+dfs递归
 
 ```js
 // This is the type for the node
@@ -9349,7 +9457,6 @@ Inverting a node means swapping its left child and right child. You need to appl
  * @returns {Node}
  */
 function invert(node) {
-  // your code here
   if (!node) return node;
   if (node.left) invert(node.left);
   if (node.right) invert(node.right);
@@ -9358,7 +9465,33 @@ function invert(node) {
 }
 ```
 
-### 92. throttle Promises
+看看人家写的多简洁
+
+```js
+// This is the type for the node
+// type Node = null | {
+//   value: number
+//   left: Node
+//   right: Node
+// }
+
+
+/**
+ * @param {Node} node
+ * @returns {Node}
+ */
+function invert(node) {
+  if (!node) return null;
+  [node.left, node.right] = [invert(node.right), invert(node.left)];
+  return node;
+}
+```
+
+
+
+## [92. throttle Promises](https://bigfrontend.dev/problem/throttle-Promises)
+
+### 题目
 
 Say you need to fetch some data through 100 APIs, and as soon as possible.
 
@@ -9383,17 +9516,17 @@ Related Problems
 [4. implement basic throttle() ](https://bigfrontend.dev/problem/implement-basic-throttle)
 [5. implement throttle() with leading & trailing option ](https://bigfrontend.dev/problem/implement-throttle-with-leading-and-trailing-option)
 
-包装每个函数
+### 答案
+
+包装每个函数，利用promise.all
 
 ```js
-
 /**
  * @param {() => Promise<any>} func
  * @param {number} max
  * @return {Promise}
  */
 function throttlePromises(funcs, max){
-  // your code here
   const results = [];
   async function doWork(iterator) {
     for (let [index, item] of iterator) {
@@ -9408,55 +9541,67 @@ function throttlePromises(funcs, max){
 }
 ```
 
-### 92. throttle Promises
-
-Say you need to fetch some data through 100 APIs, and as soon as possible.
-
-If you use `Promise.all()`, 100 requests go to your server at the same time, which is a burden to low spec servers.
-
-Can you **throttle your API calls so that always maximum 5 API calls at the same time**?
-
-You are asked to create a general `throttlePromises()` which takes an array of functions returning promises, and a number indicating the maximum concurrent pending promises.
+简单计数
 
 ```js
-throttleAsync(callApis, 5).then((data) => {
-  // the data is the same as `Promise.all` 
-}).catch((err) => {
-  // any error occurs in the callApis would be relayed here
-})
-```
-
-By running above code, at any time, no more than 5 APIs are requested, so low spec servers are saved.
-
-Related Problems
-
-[4. implement basic throttle() ](https://bigfrontend.dev/problem/implement-basic-throttle)
-[5. implement throttle() with leading & trailing option ](https://bigfrontend.dev/problem/implement-throttle-with-leading-and-trailing-option)
-
-```js
-
 /**
  * @param {() => Promise<any>} func
  * @param {number} max
  * @return {Promise}
  */
 function throttlePromises(funcs, max){
-  // your code here
-  const results = [];
-  async function doWork(iterator) {
-    for (let [index, item] of iterator) {
-      const result = await item();
-      results[index] = result;
+  let results = [];
+  return new Promise((resolve, reject) => {
+    let runningCount = 0;
+    let queue = [...funcs];
+    function run() {
+      while(runningCount<max && queue.length > 0) {
+          const fn = queue.shift();
+          runningCount++;
+          fn().then(data => {
+            runningCount--;
+            results.push(data)
+            run();
+          }).catch((err) => reject(err));
+      }
+      if (results.length === funcs.length) {
+        resolve(results)
+      }
     }
-  }
-
-  const iterator = Array.from(funcs).entries();
-  const workers = Array(max).fill(iterator).map(doWork);
-  return Promise.all(workers).then(() => results);
+    run();
+  });
 }
 ```
 
-### 93. Generate Fibonacci Number with recursion
+把整个函数改造成async/await
+
+```js
+/**
+ * @param {() => Promise<any>} func
+ * @param {number} max
+ * @return {Promise}
+ */
+async function throttlePromises(funcs, max){
+  let results = [];
+  const len = funcs.length;
+  while (results.length < len) {
+    try{
+      let vals = await Promise.all(funcs.splice(0, max).map(fn => fn()));
+      results.push(...vals);
+    }
+    catch(err){
+      throw err;
+    }
+  }
+  return results;
+}
+```
+
+
+
+## [93. Generate Fibonacci Number with recursion](https://bigfrontend.dev/problem/Generate-Fibonacci-Number-with-recursion)
+
+### 题目
 
 In [86. Generate Fibonacci Number](https://bigfrontend.dev/problem/fibonacci-number) you are asked to create a `fib(n)`.
 
@@ -9479,6 +9624,8 @@ Related Problems
 
 [86. Generate Fibonacci Number](https://bigfrontend.dev/problem/fibonacci-number)
 
+### 答案
+
 尾递归
 
 ```js
@@ -9492,7 +9639,20 @@ function fib(n, a = 0, b = 1){
 }
 ```
 
-### 94. implement your own `Object.create`
+大佬的一行
+
+```js
+// please modify code below to make it work for large number like `fib(1000)`
+// recursion should still be used
+
+const fib = (n, m = { 0: 0, 1: 1 }) => m[n] ??= fib(n - 1, m) + fib(n - 2, m);
+```
+
+
+
+## [94. implement your own `Object.create](https://bigfrontend.dev/problem/implement-your-own-Object-create)`
+
+### 题目
 
 You can use [Object.create()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create) to create a new object.
 
@@ -9504,13 +9664,14 @@ Can you write your own `myObjectCreate()` to do the same(well for the basic usag
 2. throw an Error if non-object is passed in. ([why](https://stackoverflow.com/questions/18198178/null-prototype-object-prototype-and-object-create)?)
 3. `Object.create()` and `Object.setPrototypeOf()` should not be used.
 
+### 答案
+
 ```js
 /**
  * @param {any} proto
  * @return {object}
  */
 function myObjectCreate(proto) {
-  // your code here
   if (typeof proto !== 'object' || proto === null) throw new Error('');
   const obj = {};
   obj.__proto__ = proto;
@@ -9518,7 +9679,25 @@ function myObjectCreate(proto) {
 }
 ```
 
-### 95. implement String.prototype.trim()
+或者用构造函数
+
+```js
+/**
+ * @param {any} proto
+ * @return {object}
+ */
+function myObjectCreate(proto) {
+  function Constructor() {}
+  Constructor.prototype = proto.prototype || proto;
+  return new Constructor();
+}
+```
+
+
+
+## [95. implement String.prototype.trim()](https://bigfrontend.dev/problem/implement-String-prototype-trim)
+
+### 题目
 
 [String.prototype.trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim) is commonly used when processing strings.
 
@@ -9526,24 +9705,16 @@ It is very easy, can you implement your own one?
 
 There are many ways to do it, can you think of different approaches?
 
-```js
-/**
- * @param {string} str
- * @return {string}
- */
-function trim(str) {
-  // your code here
-  return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-}
-```
+### 答案
 
-### 95. implement String.prototype.trim()
+正则表达式
 
-[String.prototype.trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim) is commonly used when processing strings.
-
-It is very easy, can you implement your own one?
-
-There are many ways to do it, can you think of different approaches?
+'/s' => it indicates single white space character
+ '/s+' => here '+' is a greedy character that indicates one or more
+For example 'a+' signifies one or more a
+ '^' indicates starting/leading characters of the expression
+ '$' indicates end/trailing characters of the expression
+'|' similar to logical OR operator
 
 ```js
 /**
@@ -9551,12 +9722,45 @@ There are many ways to do it, can you think of different approaches?
  * @return {string}
  */
 function trim(str) {
-  // your code here
   return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
 ```
 
-### 96. count "1" in binary form
+字符串操作
+
+```js
+const WHITESPACES = [" ", "", "\s", "\t", "\n", "\u3000"];
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function trim(str) {
+  let wordStart = 0;
+  let wordEnd = str.length;
+
+  for (let i = 0; i < str.length; i++) {
+    if (WHITESPACES.indexOf(str[i]) === -1) {
+      wordStart = i;
+      break;
+    }
+  }
+
+  for(let j = str.length - 1; j >= 0; j--) {
+    if (WHITESPACES.indexOf(str[j]) === -1) {
+      wordEnd = j;
+      break;
+    }
+  }
+
+  return str.slice(wordStart, wordEnd + 1);
+}
+```
+
+
+
+## [96. count "1" in binary form](https://bigfrontend.dev/problem/how-many-1s-in-binary)
+
+### 题目
 
 Given an integer, count "1" in its binary form.
 
@@ -9568,13 +9772,16 @@ countOne(257799) // 12, "111110111100000111"
 1. If you use built-in string methods in JavaScript, please do understand the time complexity, they are not free.
 2. Actually this could be easily done by counting the digit one by one. Could you think of some other approaches?
 
+### 答案
+
+汉明距离
+
 ```js
 /**
  * @param {number} num - integer
  * @return {number} count of 1 bit
  */
 function countOne(num) {
-  // your code here
   let res = 0;
   while (num) {
     num &= (num - 1);
@@ -9584,7 +9791,11 @@ function countOne(num) {
 }
 ```
 
-### 97. compress a string
+
+
+## [97. compress a string](https://bigfrontend.dev/problem/compress-a-string)
+
+### 题目
 
 Given a string, compress the repeating letters with count number
 
@@ -9597,6 +9808,8 @@ compress('aaabb') // 'a3b2'
 compress('aaabba') // 'a3b2a'
 ```
 
+### 答案
+
 使用正则表达式
 
 ```js
@@ -9605,7 +9818,6 @@ compress('aaabba') // 'a3b2a'
  * @return {string}
  */
 function compress(str) {
-  // your code here
   str = str.replace(/(\w)\1+/g, ($0) => {
       return $0[0] + $0.length;
   });
@@ -9613,7 +9825,33 @@ function compress(str) {
 }
 ```
 
-### 98. validate an IP address
+字符串操作
+
+```js
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function compress(str) {
+  const res = [];
+  let count = 0;
+  for (let i = 0; i < str.length; i++) {
+    count++;
+    if (str[i] !== str[i + 1]) {
+      res.push(str[i]);
+      if (count > 1) res.push(count); 
+      count = 0;
+    }
+  }
+  return res.join("");
+}
+```
+
+
+
+## [98. validate an IP address](https://bigfrontend.dev/problem/validate-an-ip-address)
+
+### 题目
 
 #### IPv4
 
@@ -9637,6 +9875,8 @@ You are given some random string, please write a function if it is valid IPv4 or
 
 Can you solve it with regular expressions ?
 
+### 答案
+
 分割判断每一位，不然更复杂
 
 ```js
@@ -9646,7 +9886,6 @@ Can you solve it with regular expressions ?
  * @return {boolean}
  */
 function isValidIP(str) {
-  // your code here
   const arr4 = str.split('.');
   const arr6 = str.split(':');
 
@@ -9663,7 +9902,25 @@ function isValidIP(str) {
 }
 ```
 
-### 99. extract all anchor element from HTML string
+完全正则表达式
+
+```js
+/**
+ * @param {string} str
+ * @return {boolean}
+ */
+function isValidIP(str) {
+  const ipv4Regex = /^([0-9]\.|[1-9][0-9]\.|1[0-9][0-9]\.|2[0-4][0-9]\.|25[0-5]\.){4}$/g;
+  const ipv6Regex = /^([0-9a-fA-F]{1,4}:){8}$/g;
+  return ipv4Regex.test(`${str}.`) || ipv6Regex.test(`${str}:`);
+}
+```
+
+
+
+## [99. extract all anchor element from HTML string](https://bigfrontend.dev/problem/extract-all-anchor-elements-from-HTML-string)
+
+### 题目
 
 Given a HTML string, write a function to extract the anchor `<a/>` tag from it.
 
@@ -9685,16 +9942,16 @@ extract(`
  //]
 ```
 
+### 答案
+
 正则表达式
 
 ```js
-
 /**
  * @param {string} str
  * @return {string[]}
  */
 function extract(str) {
-  // your code here
   return str.match(/<a(\s[^>]*)?>.*?<\s*\/\s*a>/g) || [];
 }
 ```
@@ -9702,13 +9959,11 @@ function extract(str) {
 纯粹字符串操作
 
 ```js
-
 /**
  * @param {string} str
  * @return {string[]}
  */
 function extract(str) {
-  // your code here
   let i = 0;
   let res = [];
   while (i < str.length) {
@@ -9727,7 +9982,11 @@ function extract(str) {
 }
 ```
 
-### 100. detect circle in linked list
+
+
+## [100. detect circle in linked list](https://bigfrontend.dev/problem/detect-circle-in-linked-list)
+
+### 题目
 
 A [Singly Linked List](https://en.wikipedia.org/wiki/Linked_list#Singly_linked_list) is a bunch of nodes linked in one direction.
 
@@ -9753,6 +10012,10 @@ Can you write a function to detect it?
 
 What is the space cost for your approach? Can you solve it **without extra space**?
 
+### 答案
+
+快慢指针
+
 ```js
 /**
  * @param {Node} head
@@ -9776,7 +10039,35 @@ function hasCircle(head) {
 }
 ```
 
-### 101. merge identical API calls
+哈希
+
+```js
+/**
+ * @param {Node} head
+ * @return {boolean}
+ */
+function hasCircle(head) {
+  let node = head;
+  let nodes = new Set();
+  
+  while (node) {
+    if (nodes.has(node.next)) {
+      return true
+    }
+    
+    node = node.next;
+    nodes.add(node);
+  }
+  
+  return false;
+}
+```
+
+
+
+## [101. merge identical API calls](https://bigfrontend.dev/problem/merge-identical-API-calls)
+
+### 题目
 
 Suppose we have a utility function `getAPI()` which fetches data.
 
@@ -9851,6 +10142,8 @@ For test purpose, please provide a clear method to clear all cache.
 getAPIWithMerging.clearCache()
 ```
 
+### 答案
+
 保存各值
 
 ```js
@@ -9895,7 +10188,11 @@ function getHashKey(path, config) {
 }
 ```
 
-### 102. validate string of parentheses
+
+
+## [102. validate string of parentheses](https://bigfrontend.dev/problem/validate-parenthesis)
+
+### 题目
 
 Given a string containing only following characters:
 
@@ -9925,6 +10222,8 @@ validate('{}}')
 
 What is time & space complexity of your approach ? Can you do it better?
 
+### 答案
+
 使用栈
 
 ```js
@@ -9933,7 +10232,6 @@ What is time & space complexity of your approach ? Can you do it better?
  * @return {boolean} 
  */
 function validate(str) {
-  // your code here
   const len = str.length;
   if (!len) return true;
   if (len % 2 !== 0) return false;
@@ -9954,6 +10252,8 @@ function validate(str) {
   return stack.length === 0;
 }
 ```
+
+
 
 ### 103. implement Math.sqrt()
 
@@ -9986,14 +10286,16 @@ What is time & space complexity of your solution ?Can you do better?
 
 [Source for this ](https://www.glassdoor.com/Interview/Implement-a-square-root-function-Question-related-to-array-data-manipulation-QTN_819390.htm)
 
-```js
+### 答案
 
+二分查找
+
+```js
 /**
  * @param {any} x
  * @return {number}
  */
 function mySqrt(x) {
-  // your code here
   if(typeof x !== 'number' || isNaN(x) || x < 0) return NaN;
   let start = 0, end = Math.floor(x / 2);
   let res = 1;
@@ -10013,11 +10315,17 @@ function mySqrt(x) {
 }
 ```
 
-### 104. Traverse DOM level by level
+
+
+## [104. Traverse DOM level by level](https://bigfrontend.dev/problem/Traverse-DOM-level-by-level)
+
+### 题目
 
 Given a DOM tree, flatten it into an one dimensional array, in the order of layer by layer, like below.
 
 ![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20211016160242.png)
+
+### 答案
 
 队列层次遍历
 
@@ -10027,7 +10335,6 @@ Given a DOM tree, flatten it into an one dimensional array, in the order of laye
  * @return {HTMLElement[]}
  */
 function flatten(root) {
-  // your code here
   const res = [];
   if (!root) {
     return res;
@@ -10044,7 +10351,11 @@ function flatten(root) {
 }
 ```
 
-### 105. find the first duplicate character in a string
+
+
+## [105. find the first duplicate character in a string](https://bigfrontend.dev/problem/find-the-first-duplicate-character-in-a-string)
+
+### 题目
 
 Given a string which might have duplicate letters, write a function to find the first duplicate.
 
@@ -10061,6 +10372,8 @@ firstDuplicate('abcdef')
 
 What is the time & space cost of your approach ? Can you do better?
 
+### 答案
+
 哈希表
 
 ```js
@@ -10069,7 +10382,6 @@ What is the time & space cost of your approach ? Can you do better?
  * @return {string | null}
  */
 function firstDuplicate(str) {
-  // your code here
   const visited = new Set();
   for (const char of str) {
     if (visited.has(char)) {
@@ -10082,7 +10394,11 @@ function firstDuplicate(str) {
 }
 ```
 
-### 106. Find two numbers that sum up to 0
+
+
+## [106. Find two numbers that sum up to 0](https://bigfrontend.dev/problem/Find-two-numbers-that-sum-up-to-0)
+
+### 题目
 
 Given an array of integers, find two number that sums up to 0, return their indices.
 
@@ -10099,16 +10415,16 @@ findTwo([1,2,3,4])
 // null
 ```
 
-使用哈希
+### 答案
+
+使用哈希记录数据和位置
 
 ```js
-
 /**
  * @param {number[]} arr
  * @return {number[]}
  */
 function findTwo(arr) {
-  // your code here
   if (!arr || arr.length < 2) {
     return null;
   }
@@ -10121,7 +10437,11 @@ function findTwo(arr) {
 }
 ```
 
-### 107. Find the largest difference
+
+
+## [107. Find the largest difference](https://bigfrontend.dev/problem/Find-the-largest-difference)
+
+### 题目
 
 Given an array of numbers, pick any two numbers `a` and `b`, we could get the difference by `Math.abs(a - b)`.
 
@@ -10138,6 +10458,8 @@ largestDiff([1])
 // 0
 ```
 
+### 答案
+
 找最大值和最小值，相减
 
 ```js
@@ -10146,7 +10468,6 @@ largestDiff([1])
  * @return {number}
  */
 function largestDiff(arr) {
-  // your code here
   if (!arr) return 0;
   const n = arr.length;
   if (n < 2) return 0;
@@ -10162,7 +10483,11 @@ function largestDiff(arr) {
 }
 ```
 
-### 108. Implement a Stack by using Queue
+
+
+## [108. Implement a Stack by using Queue](https://bigfrontend.dev/problem/Implement-a-Stack-by-using-Queue)
+
+### 题目
 
 > This is reversed problem of [13. Implement a Queue by using Stack](https://bigfrontend.dev/problem/implement-a-queue-by-using-stack)
 
@@ -10214,6 +10539,8 @@ Related Problems
 
 [13. Implement a Queue by using Stack ](https://bigfrontend.dev/problem/implement-a-queue-by-using-stack)
 
+### 答案
+
 封装一个栈
 
 ```js
@@ -10264,7 +10591,11 @@ class Stack {
 }
 ```
 
-### 109. implement `Math.pow()`
+
+
+## [109. implement `Math.pow()`](https://bigfrontend.dev/problem/implement-Math-pow)
+
+### 题目
 
 Can you write your own [Math.pow()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/pow) ? The power would only be integers.
 
@@ -10285,7 +10616,9 @@ All inputs are safe.
 
 You can easily solve this problem by multiplying the base one after another, but it is slow. For power of `n`, it is needed to do the multiplication `n` times, can you think of a faster solution ?
 
-按位计算
+### 答案
+
+按2的次方计算
 
 ```js
 /**
@@ -10294,7 +10627,6 @@ You can easily solve this problem by multiplying the base one after another, but
  * @return {number}
  */
 function pow(base, power){
-  // your code here
   if (power < 0) {
     return 1 / powBinary(base, -power);
   }
@@ -10311,7 +10643,11 @@ function powBinary(base, power) {
 }
 ```
 
-### 110. serialize and deserialize binary tree
+
+
+## [110. serialize and deserialize binary tree](https://bigfrontend.dev/problem/serialize-and-deserialize-binary-tree)
+
+### 题目
 
 Can you transform(serialize) a binary tree into a string and restore(deserialize) a binary tree from the string? Just like what [JSON.stringify()](https://bigfrontend.dev/problem/implement-JSON-stringify) and [JSON.parse()](https://bigfrontend.dev/problem/implement-JSON-parse) do.
 
@@ -10335,6 +10671,8 @@ expect(isIdentical(tree1, tree2)).toBe(true)
 
 Binary tree in this problem consists of value of integers.
 
+### 答案
+
 递归实现
 
 ```js
@@ -10357,7 +10695,6 @@ Binary tree in this problem consists of value of integers.
  * @return {string}
  */
 function serialize(root) {
-  // your code here
   if (!root) return 'null';
 
   return `${root.val},${serialize(root.left)},${serialize(root.right)}`
@@ -10368,7 +10705,6 @@ function serialize(root) {
  * @return {Node}
  */
 function deserialize(str) {
-  // your code here
   const arr = str.split(',');
 
   return dfs(arr);
@@ -10389,7 +10725,11 @@ function deserialize(str) {
 }
 ```
 
-### 111. Count palindromic substrings
+
+
+## [111. Count palindromic substrings](https://bigfrontend.dev/problem/Count-palindromic-substrings)
+
+### 题目
 
 A palindromic string reads the same backward as forward, such as `'madam'`.
 
@@ -10411,13 +10751,14 @@ What is the time and space cost of your solution ? Could you improve it ?
 
 > Thanks to [@TechieQian](https://bigfrontend.dev/user/TechieQian) for helping with the test cases.
 
+### 答案
+
 ```js
 /**
  * @param {string} str
  * @return {number}
  */
 function countPalindromicSubstr(str) {
-  // your code here
   let countPal = 0;
   if(str.length === 0) return countPal;
 
@@ -10439,7 +10780,39 @@ function countPalindromicSubstr(str) {
 }
 ```
 
-### 112. remove duplicate characters in a string
+巧妙利用0.5
+
+```js
+/**
+ * @param {string} str
+ * @return {number}
+ */
+function countPalindromicSubstr(str) {
+  let count = 0;
+  
+  for (let center = 0; center < str.length; center = center + 0.5) {
+    let low = Math.floor(center);
+    let high = Math.ceil(center);
+    
+    while (low >= 0 && high < str.length) {
+      if (str.charAt(low) === str.charAt(high)) {
+          count++;
+          low--;
+          high++;
+      } else {
+        break; 
+      }
+    }
+  }
+  return count;  
+}
+```
+
+
+
+## [112. remove duplicate characters in a string](https://bigfrontend.dev/problem/remove-duplicate-letters-in-a-string)
+
+### 题目
 
 Given a string which, write a function to remove the duplicate characters to make sure that each character only occurs once.
 
@@ -10464,16 +10837,16 @@ Above all substrings subsequences ([*](https://bigfrontend.dev/problem/112/discu
 
 All input only contains valid lowercase alphabets only.
 
+### 答案
+
 找到重复的字母
 
 ```js
-
 /**
  * @param {string} str
  * @return {string}
  */
 function smallestUniqueSubstr(str) {
-  // your code here
   if (str.length === 0) return str;
 
   let subStr = new Set();
@@ -10492,7 +10865,11 @@ function smallestUniqueSubstr(str) {
 }
 ```
 
-### 113. Virtual DOM I
+
+
+## [113. Virtual DOM I](https://bigfrontend.dev/problem/Virtual-DOM-I)
+
+### 题目
 
 Suppose you have solved [110. serialize and deserialize binary tree](https://bigfrontend.dev/problem/serialize-and-deserialize-binary-tree), have you wondered how to do similar task to DOM tree ?
 
@@ -10582,6 +10959,8 @@ Related Problems
 [143. Virtual DOM IV - JSX 1](https://bigfrontend.dev/problem/virtual-dom-iv-jsx-1)
 [150. Virtual DOM V - JSX 2](https://bigfrontend.dev/problem/virtual-dom-v-jsx-2)
 
+### 答案
+
 BFS转化
 
 ```js
@@ -10590,7 +10969,6 @@ BFS转化
  * @return {object} object literal presentation
  */
 function virtualize(element) {
-  // your code here
   // virtualize top level element
   // recursively handle the children (childNodes)
   const result = {
@@ -10647,7 +11025,124 @@ function render(obj) {
 }
 ```
 
-### 114. implement BigInt multiplication
+The core of this problem is familiar with DOM API, and there are few I used:
+
+Create
+
+- document.createElement(tagName)
+- document.createTextNode(tagName)
+
+Add
+
+- node.append(childNode)
+- node.classList.add(className)
+
+Set
+
+- node.setAttribute(name, value)
+
+Check
+
+- node.hasChildNodes()
+- node.hasAttributes()
+
+Get
+
+- node.childNodes
+- node.tagName
+- node.attributes // {0: {name: xxx, value: xxx}, 1: {name: xxx, value: xxx}...}
+
+NodeType
+
+- node.nodeType == 1 // element node
+- node.nodeType == 2 // attribute node
+- node.nodeType == 3 // text node
+
+```js
+function virtualize(element) {
+  const result = {
+    type: element.tagName.toLowerCase(),
+    props: {}
+  };
+
+  const props = {};
+
+  // handle props
+  if (element.hasAttributes()) {
+    for (let { name, value } of element.attributes) {
+      props[name === 'class' ? 'className' : name] = value;
+    }
+  }
+
+  // handle children
+  const children = [];
+  if (element.hasChildNodes()) {
+    for (let node of element.childNodes) {
+      if (node.nodeType === 1) {
+        children.push(virtualize(node));
+      } else if (node.nodeType === 3) {
+        children.push(node.textContent)
+      }
+    }
+  }
+
+  if (children.length) {
+    if (children.length === 1) {
+      props.children = children[0];
+    } else {
+      props.children = children;
+    }
+  }
+
+  result.props = props;
+  return result;
+}
+
+
+/**
+ * @param {object} valid object literal presentation
+ * @return {HTMLElement} 
+ */
+function render(obj) {
+  // render self
+  let { type, props: { className, children, ...restProps } } = obj;
+  const ele = document.createElement(type);
+
+  // add className
+  if (className) ele.classList.add(className);
+
+  // append children
+  if (children) {
+    // make sure children is Array
+    if (!(children instanceof Array)) {
+      children = [children];
+    }
+    // render each child and append it to parent
+    children.forEach(child => {
+      // text node
+      if (typeof child === 'string') {
+        ele.append(document.createTextNode(child));
+      } else {
+        ele.append(render(child));
+      }
+    })
+  }
+
+  // add rest props to ele
+  if (restProps) {
+    Object.entries(restProps).forEach(([key, value]) => {
+      ele.setAttribute(key, value);
+    });
+  }
+  return ele;
+}
+```
+
+
+
+## [114. implement BigInt multiplication](https://bigfrontend.dev/problem/implement-BigInt-multiplication)
+
+### 题目
 
 This is a follow-up on [76. implement BigInt addition with sign](https://bigfrontend.dev/problem/implement-BigInt-addition-with-sign).
 
@@ -10660,6 +11155,8 @@ multiply(
 )
 // '1386983673205309924427166592431045142784'
 ```
+
+### 答案
 
 按照每位进行计算
 
@@ -10706,7 +11203,11 @@ function multiply(a, b) {
 }
 ```
 
-### 115. implement BigInt division
+
+
+## [115. implement BigInt division](https://bigfrontend.dev/problem/implement-BigInt-division)
+
+### 题目
 
 This is a follow-up on [114. implement BigInt multiplication](https://bigfrontend.dev/problem/implement-BigInt-multiplication).
 
@@ -10742,7 +11243,7 @@ divide(
 // '-1'
 ```
 
-是
+### 答案
 
 ```js
 
@@ -10793,7 +11294,11 @@ function add(num1, num2) {
 }
 ```
 
-### 116. implement Object.is()
+
+
+## [116. implement Object.is()](https://bigfrontend.dev/problem/implement-Object.is)
+
+### 题目
 
 [Object.is()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is) is similar to `===` except following cases
 
@@ -10807,6 +11312,8 @@ NaN === NaN // false
 
 Here is the [detailed spec](https://www.ecma-international.org/ecma-262/6.0/#sec-samevalue), can you implement your own `is()`?
 
+### 答案
+
 特别判断一下类型
 
 ```js
@@ -10816,7 +11323,6 @@ Here is the [detailed spec](https://www.ecma-international.org/ecma-262/6.0/#sec
  * @return {boolean}
  */
 function is(a, b) {
-  // your code here
   if (typeof a === 'number' && typeof b === 'number') {
     if (Number.isNaN(a) && Number.isNaN(b)) {
       return true;
@@ -10831,7 +11337,32 @@ function is(a, b) {
 }
 ```
 
-### 117. event delegation
+大佬的巧妙方法
+
+```js
+/**
+ * @param {any} a
+ * @param {any} b
+ * @return {boolean}
+ */
+function is(a, b) {
+  if (a !== a) { // Only NaN is not equal to itself
+    return b !== b; // returns true if the second parameter is NaN too
+  }
+
+  if (a === 0 && b === 0) { // -0 === 0 is true, so when both parameters equals to 0
+    return 1 / a === 1 / b; // 1 / -0 is -Infinity and -Infinity === -Infinity
+  }
+
+  return a === b; // All other cases with regular === comparison
+}
+```
+
+
+
+## [117. event delegation](https://bigfrontend.dev/problem/event-delegation)
+
+### 题目
 
 [What is Event Delegation?](https://bigfrontend.dev/question/What-is-Event-Delegation)
 
@@ -10855,6 +11386,8 @@ onClick(
 1. [event.stopPropagation()](https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation) and [event.stopImmediatePropagation()](https://developer.mozilla.org/en-US/docs/Web/API/Event/stopImmediatePropagation) should also be supported.
 2. you should only attach one real event listener to the root element.
 
+### 答案
+
 添加监听器
 
 ```js
@@ -10865,7 +11398,6 @@ const allHandlers = new Map();
  * @param {(e: Event) => void} handler
  */
 function onClick(root, predicate, handler) {
-  // your code here
   if (allHandlers.has(root)) {
     allHandlers.get(root).push([predicate, handler]);
     return;
@@ -10914,7 +11446,44 @@ function onClick(root, predicate, handler) {
 }
 ```
 
-### 118. Virtual DOM II - createElement
+不需要用map存储
+
+```js
+/**
+ * @param {HTMLElement} root
+ * @param {(el: HTMLElement) => boolean} predicate
+ * @param {(e: Event) => void} handler
+ */
+function onClick(root, predicate, handler) {
+  if (root.handlers) {
+    root.handlers.push([predicate, handler]);
+  } else {
+    const originalstopImmediatePropagation = Event.prototype.stopImmediatePropagation;
+    Event.prototype.stopImmediatePropagation = function () {
+      this.immediatePropagationStopped = true;
+      originalstopImmediatePropagation.apply(this, arguments);
+    };
+    root.addEventListener('click', function (e) {
+      let node = e.target;
+      while (node !== root) {
+        for (const [p, h] of root.handlers) {
+          if (p(node)) h.call(node, e);
+          if (e.immediatePropagationStopped) return;
+        }
+        if (e.cancelBubble) return;
+        node = node.parentElement;
+      }
+    });
+    root.handlers = [[predicate, handler]];
+  }
+}
+```
+
+
+
+## [118. Virtual DOM II - createElement](https://bigfrontend.dev/problem/virtual-dom-II-createElement)
+
+### 题目
 
 > This is a follow-up on [113. Virtual DOM I](https://bigfrontend.dev/problem/Virtual-DOM-I).
 
@@ -10967,7 +11536,69 @@ Related Problems
 [143. Virtual DOM IV - JSX 1](https://bigfrontend.dev/problem/virtual-dom-iv-jsx-1)
 [150. Virtual DOM V - JSX 2](https://bigfrontend.dev/problem/virtual-dom-v-jsx-2)
 
-### 119. create a tokenizer
+### 答案
+
+遍历插入属性
+
+```js
+/**
+ * MyElement is the type your implementation supports
+ *
+ * type MyNode = MyElement | string
+ */
+
+/**
+ * @param { string } type - valid HTML tag name
+ * @param { object } [props] - properties.
+ * @param { ...MyNode} [children] - elements as rest arguments
+ * @return { MyElement }
+ */
+function createElement(type, props, ...children) {
+  return {
+    type,
+    props: {
+      ...props,
+      children
+    }
+  }
+}
+
+
+/**
+ * @param { MyElement }
+ * @returns { HTMLElement } 
+ */
+function render(myElement) {
+  // create the top level emlement
+  // recursively append the children
+  // textnode
+  if (typeof myElement === 'string') {
+    return document.createTextNode(myElement);
+  }
+  
+  // element
+  const {type, props: {children, ...attrs}} = myElement;
+  const element = document.createElement(type);
+
+  for (let [attr, value] of Object.entries(attrs)) {
+    element[attr] = value;
+  }
+
+  const childrenArr = Array.isArray(children) ? children : [children];
+
+  for (let child of childrenArr) {
+    element.append(render(child));
+  }
+
+  return element;
+}
+```
+
+
+
+## [119. create a tokenizer](https://bigfrontend.dev/problem/create-a-tokenizer)
+
+### 题目
 
 > Given a character sequence and a defined document unit, tokenization is the task of chopping it up into pieces, called tokens , perhaps at the same time throwing away certain characters, such as punctuation. ([ref](https://nlp.stanford.edu/IR-book/html/htmledition/tokenization-1.html))
 
@@ -11017,6 +11648,8 @@ Because it is trivial, in a real interview you talk to interviewer and implement
 1. input only contains valid non-negative integers with `+`, `-`, `*`, `/`, `(`, `)` and spaces, space should be ignored.
 2. your method should return an [Generator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) object.
 
+### 答案
+
 使用正则表达式
 
 ```js
@@ -11025,7 +11658,6 @@ Because it is trivial, in a real interview you talk to interviewer and implement
  * @return {Generator}
  */
 function* tokenize(str) {
-  // your code here
   let tokens = str.match(/(\d+)|[\+\-\*\/\(\)]/g);
   for (let token of tokens) {
     yield token;
@@ -11041,7 +11673,6 @@ function* tokenize(str) {
  * @return {Generator}
  */
 function* tokenize(str) {
-  // your code here
   let buffer = '';
   const set = new Set(['+', '-', '*', '/', '(', ')']);
   for (let s of str) {
@@ -11061,7 +11692,11 @@ function* tokenize(str) {
 }
 ```
 
-### 120. create `isPrime()`
+
+
+## [120. create `isPrime()`](https://bigfrontend.dev/problem/isPrime)
+
+### 题目
 
 A [Prime number](https://en.wikipedia.org/wiki/Prime_number) is a natural number greater than 1 that is divisible only by itself and 1, such as 2,3,5....
 
@@ -11071,6 +11706,8 @@ You are asked to implement `isPrime()` to check if a number is prime.
 
 What is the time cost of your implementation ? can you improve your approach to have the fewest comparisons?
 
+### 答案
+
 小学时代的方法
 
 ```js
@@ -11078,7 +11715,6 @@ What is the time cost of your implementation ? can you improve your approach to 
  * @param {number} num - positive integer
  */
 function isPrime(num) {
-  // your code here
   if (num <= 1) return false;
   const sqrtNum = Math.floor(Math.sqrt(num));
   for (let i = 2; i <= sqrtNum; i++) {
@@ -11121,7 +11757,11 @@ function mod(a, n) {
 }
 ```
 
-### 121. A number sequence
+
+
+## [121. A number sequence](https://bigfrontend.dev/problem/A-number-sequence)
+
+### 题目
 
 Here is a sequence:
 
@@ -11138,6 +11778,8 @@ As explained above, the sequence is generated by counting the digits of previous
 Please create `getNthNum(n)` to return the n-th number string in the sequence, n starts from 1.
 
 [Source for this ](https://www.glassdoor.com/Interview/Given-a-value-N-return-the-corresponding-string-according-to-this-pattern-1-11-21-1211-111221-312211-QTN_604640.htm)
+
+### 答案
 
 直接每次遍历字符串统计数字
 
@@ -11175,7 +11817,11 @@ const transform = (num) => {
 }
 ```
 
-### 122. implement memoizeOne()
+
+
+## [122. implement memoizeOne()](https://bigfrontend.dev/problem/A-number-sequence)
+
+### 题目
 
 In problem [14. Implement a general memoization function](https://bigfrontend.dev/problem/implement-general-memoization-function), you are asked to implement a memo function without space concern.
 
@@ -11194,6 +11840,8 @@ Related Problems
 
 [14. Implement a general memoization function - `memo()` ](https://bigfrontend.dev/problem/implement-general-memoization-function)
 
+### 答案
+
 ```js
 /**
  * @param {Function} func
@@ -11203,6 +11851,7 @@ Related Problems
 const defaultIsEqual = (args1, args2) => {
   return JSON.stringify(args1) === JSON.stringify(args2);
 }
+
 function memoizeOne(func, isEqual = defaultIsEqual) {
   let cache = {};
 
@@ -11220,11 +11869,17 @@ function memoizeOne(func, isEqual = defaultIsEqual) {
 }
 ```
 
-### 123. implement Promise.prototype.finally()
+
+
+## [123. implement Promise.prototype.finally()](https://bigfrontend.dev/problem/implement-Promise-prototype-finally)
+
+### 题目
 
 [Promise.prototype.finally()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally) could be used to run a callback when a promise is settled(either fulfilled or rejected).
 
 Notice that the callback passed `finally()` doesn't receive any argument, meaning it doesn't modify the value in the promise chain (care for rejection).
+
+### 答案
 
 利用resolve和reject
 
@@ -11235,7 +11890,6 @@ Notice that the callback passed `finally()` doesn't receive any argument, meanin
  * @returns {Promise<any>}
  */
 function myFinally(promise, onFinally) {
-  // your code here
   return promise.then((value) => {
     return Promise.resolve(onFinally())
       .then(() => value);
@@ -11246,7 +11900,11 @@ function myFinally(promise, onFinally) {
 }
 ```
 
-### 124. calculate arithmetic expression
+
+
+## [124. calculate arithmetic expression](https://bigfrontend.dev/problem/calculate-arithmetic-expression)
+
+### 题目
 
 In [119. create a tokenizer](https://bigfrontend.dev/problem/create-a-tokenizer), you are able to extract the tokens from a string with invalid spaces.
 
@@ -11263,6 +11921,8 @@ calculate('     1/0 ')
 1. the input expression is syntactically valid, containing non-negative integers, `+`, `-`, `*`, `/`, `(`, `)` and spaces
 2. Don't use `eval()`
 
+### 答案
+
 逆波兰表达式+栈
 
 ```js
@@ -11271,7 +11931,6 @@ calculate('     1/0 ')
  * @returns {Number}
  */
 function calculate(str) {
-  // your code here
   function calc(start) {
     const stack = [];
     let num = 0;
@@ -11319,7 +11978,11 @@ function calculate(str) {
 }
 ```
 
-### 125. implement classNames()
+
+
+## [125. implement classNames()](https://bigfrontend.dev/problem/implement-classnames)
+
+### 题目
 
 If using React, you can set the prop `className` to add class name to an element, it is string so you can add multiple class names like this:
 
@@ -11372,6 +12035,8 @@ classNames(['BFE', [{dev: true}, ['is', [obj]]]])
 
 It is not the goal to reimplement the original package, so the spec might be a little different, please follow the above description.
 
+### 答案
+
 ```js
 /**
  * @param {any[]} args
@@ -11400,7 +12065,38 @@ function classNames(...args) {
 }
 ```
 
-### 126. BigDecimal addition
+极简写法
+
+```js
+/**
+ * @param {any[]} args
+ * @returns {string}
+ */
+const classNames = (...args) =>
+  args.flat(Infinity).reduce((outterAcc, cur) => [
+    ...outterAcc,
+    ...(() => {
+      if (['string', 'number'].includes(typeof cur)) {
+        return [cur];
+      }
+
+      if (cur && (typeof cur === 'object')) {
+        return Object.entries(cur).reduce((innerAcc, [key, val]) => [
+          ...innerAcc,
+          ...(val ? [key] : []),
+        ], []);
+      }
+
+      return [];
+    })(),
+  ], []).join(' ');
+```
+
+
+
+## [126. BigDecimal addition](https://bigfrontend.dev/problem/decimal-addition)
+
+### 题目
 
 As you know, number data type in JavaScript cannot represent (all) float numbers accurately due to binary nature.
 
@@ -11431,4 +12127,949 @@ add(
 Related Problems
 
 [127. BigDecimal subtraction](https://bigfrontend.dev/problem/bigdecimal-subtraction)
+
+### 答案
+
+转化为bigInt和小数点位数
+
+```js
+/**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+function add(num1, num2) {
+  const a = toBig(num1), b = toBig(num2);
+  const maxPow = Math.max(a.pow, b.pow);
+
+  if (maxPow) {
+    const bigA = normalize(a, maxPow), bigB = normalize(b, maxPow);
+    let res = String(bigA + bigB);
+    let sign = '';
+    if (res[0] === '-') {
+      sign = '-';
+      res = res.substring(1);
+    }
+    if (res.length <= maxPow) {
+      res = '0'.repeat(maxPow - res.length + 1) + res;
+    }
+    const pointPos = res.length - maxPow;
+    res = res.substr(0, pointPos) + '.' + res.substr(pointPos);
+    return sign + res.replace(/\.?0+$/, '');
+  } else {
+    return String(a.num + b.num);
+  }
+}
+
+function toBig(n) {
+  let pow = 0;
+  n = n.replace(/\.(\d+?)0*$/, (_, f) => {
+    pow = f.length;
+    return f;
+  })
+  return { num: BigInt(n), pow };
+}
+
+function normalize(big, maxPow) {
+  return big.num * (10n ** BigInt(maxPow - big.pow));
+}
+```
+
+
+
+## [127. BigDecimal subtraction](https://bigfrontend.dev/problem/bigdecimal-subtraction)
+
+### 题目
+
+> This is a follow-up on [126. BigDecimal addition](https://bigfrontend.dev/problem/decimal-addition)
+
+In this problem, you are asked to **implement the subtraction of two decimals with arbitrary digits**.
+
+```js
+subtract('-999999999999999999', '-1')
+// '-999999999999999998'
+
+subtract(
+  '-999999999999999999.999999999999999999999999999999', 
+  '1.0000000000000000000000000001')
+// '-1000000000000000001.000000000000000000000000000099'
+
+subtract(
+  '999999999999999999.999999999999999999999999999999', 
+  '-1.000000000000000000000000000001')
+// '1000000000000000001'
+```
+
+1. This problem covers [77. implement BigInt subtraction with sign](https://bigfrontend.dev/problem/implement-BigInt-subtraction-with-sign).
+2. trailing zeroes in the result should be removed.
+
+Related Problems
+
+[126. BigDecimal addition ](https://bigfrontend.dev/problem/decimal-addition)
+
+### 答案
+
+与加法类似
+
+```js
+/**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+function subtract(num1, num2) {
+  const a = toBig(num1), b = toBig(num2);
+  const maxPow = Math.max(a.pow, b.pow);
+
+  if (maxPow) {
+    const bigA = normalize(a, maxPow), bigB = normalize(b, maxPow);
+    let res = String(bigA - bigB);
+    let sign = '';
+    if (res[0] === '-') {
+      sign = '-';
+      res = res.substring(1);
+    }
+    if (res.length <= maxPow) {
+      res = '0'.repeat(maxPow - res.length + 1) + res;
+    }
+    const pointPos = res.length - maxPow;
+    res = res.substr(0, pointPos) + '.' + res.substr(pointPos);
+    return sign + res.replace(/\.?0+$/, '');
+  } else {
+    return String(a.num - b.num);
+  }
+}
+
+function toBig(n) {
+  let pow = 0;
+  n = n.replace(/\.(\d+?)0*$/, (_, f) => {
+    pow = f.length;
+    return f;
+  })
+  return { num: BigInt(n), pow };
+}
+
+function normalize(big, maxPow) {
+  return big.num * (10n ** BigInt(maxPow - big.pow));
+}
+```
+
+
+
+## [128. BigDecimal multiplication](https://bigfrontend.dev/problem/bigdecimal-multiplication)
+
+### 题目
+
+> This is a follow-up on [126. BigDecimal addition](https://bigfrontend.dev/problem/decimal-addition)
+
+In this problem, you are asked to **implement the multiplication of two decimals with arbitrary digits**.
+
+```js
+multiply(
+  '1123456787654323456789', 
+  '1234567887654323456'
+)
+// '1386983673205309924427166592431045142784'
+
+multiply(
+  '-1123456787654323456789', 
+  '1234567887654323456.12348'
+)
+// '-1386983673205309924565891036570601003228.30572'
+
+multiply(
+  '-0.12345', 
+  '-1.6789012'
+)
+// '0.20726035314'
+```
+
+1. This problem covers [114. implement BigInt multiplication](https://bigfrontend.dev/problem/implement-BigInt-multiplication).
+2. trailing zeroes in the result should be removed.
+3. Big.js defaults return exponential notation when it is too big, in this problem, **don't do that**
+
+### 答案
+
+正则表达式+Bigint
+
+```js
+/**
+ * @param {string} a 
+ * @param {string} b
+ * @return {string}
+ */
+function multiply(a, b) {
+  let shift = 0;
+
+  function removePoint(_, f) {
+    shift += f.length;
+    return f;
+  }
+
+  a = a.replace(/\.(\d+)$/, removePoint);
+  b = b.replace(/\.(\d+)$/, removePoint);
+
+  let bigA = BigInt(a), bigB = BigInt(b);
+  let res = String(bigA * bigB);
+  if (!shift) {
+    return res;
+  }
+
+  let sign = ''
+  if (res[0] === '-') {
+    sign = '-';
+    res = res.substring(1);
+  }
+  if (res.length <= shift) {
+    res = '0'.repeat(shift - res.length + 1) + res;
+  }
+  res = res.substr(0, res.length - shift) + '.' + res.substr(-shift);
+  return sign + res.replace(/\.?0+$/, '');
+}
+```
+
+
+
+## [129. BigDecimal Division](https://bigfrontend.dev/problem/bigdecimal-division)
+
+### 题目
+
+> This is a follow-up on [126. BigDecimal addition](https://bigfrontend.dev/problem/decimal-addition)
+
+In this problem, you are asked to **implement the division of two decimals with arbitrary digits**.
+
+```js
+divide(
+  '100000000000000.1', 
+  '-0.001'
+)
+// '-100000000000000100'
+
+divide(
+  '-0.123', 
+  '-0.00971'
+)
+// '12.66735324407826982492'
+```
+
+1. This problem covers [115. implement BigInt division](https://bigfrontend.dev/problem/implement-BigInt-division).
+2. trailing zeroes in the result should be removed.
+3. return the result with **max 20 digit fraction part**, rest be truncated.
+
+### 答案
+
+与加减统一写法
+
+```js
+/**
+ * @param {string} a
+ * @param {string} b
+ * @return {string}
+ */
+function divide(a, b) {
+  const bigA = toBig(a), bigB = toBig(b);
+  const pow = 20 + bigB.pow - bigA.pow;
+  const multi = 10n ** BigInt(pow);
+  let res = String(bigA.num * multi / bigB.num)
+
+  let sign = '';
+  if (res[0] == '-') {
+    sign = '-';
+    res = res.substring(1);
+  }
+  const resPow = pow - bigB.pow + bigA.pow;
+  if (res.length <= resPow) {
+    res = '0'.repeat(resPow - res.length + 1) + res;
+  }
+  res = res.slice(0, res.length - resPow) + '.' + res.slice(-resPow);
+
+  return sign + res.replace(/\.?0+$/, '');
+}
+
+function toBig(n) {
+  let pow = 0;
+  let num = n.replace(/\.(\d{1,20})\d*$/, (_, f) => {
+    pow = f.length;
+    return f;
+  });
+  return { num: BigInt(num), pow };
+}
+```
+
+
+
+## [130. create LazyMan()](https://bigfrontend.dev/problem/create-lazyman)
+
+### 题目
+
+`LazyMan` is very lazy, he only eats and sleeps.
+
+`LazyMan(name: string, logFn: (log: string) => void)` would output a message, the passed `logFn` is used.
+
+```js
+LazyMan('Jack', console.log)
+// Hi, I'm Jack.
+```
+
+He can `eat(food: string)`
+
+```js
+LazyMan('Jack', console.log).eat('banana').eat('apple')
+// Hi, I'm Jack.
+// Eat banana.
+// Eat Apple.
+```
+
+He also `sleep(time: number)`, time is based on seconds.
+
+```js
+LazyMan('Jack', console.log).eat('banana').sleep(10).eat('apple').sleep(1)
+// Hi, I'm Jack.
+// Eat banana.
+// (after 10 seconds)
+// Wake up after 10 seconds.
+// Eat Apple.
+// (after 1 second)
+// Wake up after 1 second.
+```
+
+He can `sleepFirst(time: number)`, which has the highest priority among all tasks, no matter what the order is.
+
+```js
+LazyMan('Jack', console.log).eat('banana').sleepFirst(10).eat('apple').sleep(1)
+// (after 10 seconds)
+// Wake up after 10 seconds.
+// Hi, I'm Jack.
+// Eat banana
+// Eat apple
+// (after 1 second)
+// Wake up after 1 second.
+```
+
+Please create such `LazyMan()`
+
+### 答案
+
+使用队列保存各任务，结合sleep函数实现延时执行
+
+```js
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+// interface Laziness {
+//   sleep: (time: number) => Laziness
+//   sleepFirst: (time: number) => Laziness
+//   eat: (food: string) => Laziness
+// }
+
+/**
+ * @param {string} name
+ * @param {(log: string) => void} logFn
+ * @returns {Laziness}
+ */
+function LazyMan(name, logFn) {
+  const cmds = [["greet", name]];
+
+  const actions = {
+    greet: name => logFn(`Hi, I'm ${name}.`),
+    eat: food => logFn(`Eat ${food}.`),
+    sleep: ms => sleep(ms * 1000).then(() => logFn(`Wake up after ${ms} second${ms > 1 ? 's' : ''}.`)),
+  };
+
+  async function exec() {
+    for (const [cmd, val] of cmds) {
+      await actions[cmd](val);
+    }
+  }
+
+  Promise.resolve().then(exec);
+
+  return {
+    sleep(ms) {
+      cmds.push(['sleep', ms]);
+      return this;
+    },
+    sleepFirst(ms) {
+      cmds.unshift(['sleep', ms]);
+      return this;
+    },
+    eat(food) {
+      cmds.push(['eat', food]);
+      return this;
+    },
+  };
+}
+```
+
+
+
+## [131. implement _.chunk()](https://bigfrontend.dev/problem/implement-lodash-chunk)
+
+### 题目
+
+[_.chunk()](https://lodash.com/docs/4.17.15#chunk) splits array into groups with the specific size.
+
+Please implement your `chunk(arr: any[], size: number)`
+
+```js
+chunk([1,2,3,4,5], 1)
+// [[1], [2], [3], [4], [5]]
+
+chunk([1,2,3,4,5], 2)
+// [[1, 2], [3, 4], [5]]
+
+chunk([1,2,3,4,5], 3)
+// [[1, 2, 3], [4, 5]]
+
+chunk([1,2,3,4,5], 4)
+// [[1, 2, 3, 4], [5]]
+
+chunk([1,2,3,4,5], 5)
+// [[1, 2, 3, 4, 5]]
+```
+
+for size smaller than 1, return an empty array.
+
+### 答案
+
+对原生数组依次切片
+
+```js
+/** 
+ * @param {any[]} items
+ * @param {number} size
+ * @returns {any[][]}
+ */
+function chunk(items, size) {
+  if (size === 0) return [];
+  const res = [];
+  for (let i = 0; i < items.length; i += size) {
+    res.push(items.slice(i, i + size));
+  }
+  return res;
+}
+```
+
+
+
+## [132. the angle between hour hand and minute hand of a clock](https://bigfrontend.dev/problem/the-angle-between-hour-hand-and-minute-hand-of-a-clock)
+
+### 题目
+
+Given a time string in format `HH:mm`, please return the **angle between hour hand and minute hand**.
+
+You should return rounded integer representing the smaller angle in degrees.
+
+```js
+angle('12:00')
+// 0
+
+angle('23:30')
+// 165
+```
+
+### 答案
+
+分别计算分针和时针的角度，进行相减
+
+```js
+/**
+ * @param {string} time
+ * @returns {number} 
+ */
+function angle(time) {
+  const [hour, minute] = time.split(":").map(Number);
+  const minuteAngle = minute * 6;
+  const hourAngle = (hour + minute / 60) % 12 * 30;
+  const angleBetween = Math.abs(hourAngle - minuteAngle);
+  return Math.round(Math.min(angleBetween, 360 - angleBetween));
+}
+```
+
+
+
+## [133. roman numerals to integer](https://bigfrontend.dev/problem/roman-numerals-to-integer)
+
+### 题目
+
+[Roman numerals](https://en.wikipedia.org/wiki/Roman_numerals#Standard_form) are represented by combinations of following seven symbols, each with a fixed integer value.
+
+| Symbol |  I   |  V   |  X   |  L   |  C   |  D   |  M   |
+| :----: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| Value  |  1   |  5   |  10  |  50  | 100  | 500  | 1000 |
+
+For [Standard form](https://en.wikipedia.org/wiki/Roman_numerals#Standard_form), subtractive notation is used, meaning 4 is `IV` rather than `IIII`, 9 is `IX` rather than `VIIII`. Same rule applies to 40(`XL`) and 900(`CM`) .etc.
+
+Simply speaking, the roman numerals in standard form follow these rules.
+
+1. symbols are listed from highest to lowest, from left to right
+2. from left to right, if the next symbol value is bigger than current one, it means subtracting, otherwise adding.
+
+Please implement `romanToInteger()`. The input are all valid strings.
+
+```js
+romanToInteger('CXXIII')
+// 123
+
+romanToInteger('MCMXCIX')
+// 1999
+
+romanToInteger('MMMCDXX')
+// 3420
+```
+
+### 答案
+
+从左往右，当前数大则相加，否则相减
+
+```js
+/**
+ * @param {string} str - roman numeral string
+ * @returns {number} integer
+ */
+function romanToInteger(str) {
+  const numerals = new Map([
+    ["I", 1],
+    ["V", 5],
+    ["X", 10],
+    ["L", 50],
+    ["C", 100],
+    ["D", 500],
+    ["M", 1000],
+  ]);
+
+  let value = 0;
+  for (let i = 0; i < str.length; i++) {
+    const cur = numerals.get(str[i]);
+    const next = i + 1 < str.length ? numerals.get(str[i + 1]) : 0;
+
+    if (cur < next) {
+      value -= cur;
+    } else {
+      value += cur;
+    }
+  }
+
+  return value;
+}
+```
+
+
+
+## [134. create your own Cookie](https://bigfrontend.dev/problem/create-your-own-Cookie)
+
+### 题目
+
+We can get and set cookie by `document.cookie`.
+
+```js
+document.cookie = 'bfe=dev'
+// "bfe=dev"
+
+document.cookie = 'bfe1=dev1'
+// "bfe1=dev1"
+
+document.cookie
+// "bfe=dev; bfe1=dev1"
+```
+
+Please create your own `myCookie`.
+
+1. it should support get and set.
+
+```js
+document.myCookie = 'bfe=dev'
+// "bfe=dev"
+
+document.myCookie = 'bfe1=dev1'
+// "bfe1=dev1"
+
+document.myCookie
+// "bfe=dev; bfe1=dev1"
+```
+
+2. there a few options to cookie, but in this problem, you only need to support `max-age` which means the cookie should be deleted after certain time(in seconds).
+
+```js
+document.myCookie = 'bfe=dev; max-age=1'
+// "bfe=dev; max-age=1"
+
+document.myCookie
+// "bfe=dev"
+```
+
+after 1 second
+
+```js
+document.myCookie
+// ""
+```
+
+3. in your code, please enable `myCookie` in `install()` and remove the logic in `uninstall()`, these are used in judging.
+
+### 答案
+
+劫持对象实现字符串变化
+
+```js
+
+// enable myCookie
+function install() {
+  // Map<string, {value: string, maxAge?: number, createdAt: number}>
+  const store = new Map();
+  // use getter and setter
+  Object.defineProperty(document, "myCookie", {
+    get() {
+      const result = [];
+      for (const [key, entry] of store.entries()) {
+        if (entry.maxAge !== undefined) {
+          if (Date.now() - entry.createdAt >= entry.maxAge) {
+            // expire
+            store.delete(key);
+            continue;
+          }
+        }
+
+        result.push(`${key}=${entry.value}`);
+      }
+      return result.join("; ");
+    },
+
+    set(valueStr) {
+      const [keyValuePair, option] = valueStr.replace(/ /g, '').split(";");
+      const [key, value] = keyValuePair.split("=");
+
+      if (!key || !value) return;
+
+      const entry = {
+        value,
+        createdAt: Date.now()
+      }
+      if (option) {
+        const [optionKey, optionValue] = option.split("=");
+        if (optionKey) {
+          const maxAge = Number(optionValue);
+          entry.maxAge = maxAge * 1000;
+        }
+      }
+
+      store.set(key, entry);
+    },
+
+    configurable: true
+  })
+}
+
+// disable myCookie
+function uninstall() {
+  delete document.myCookie;
+}
+```
+
+
+
+## [135. localStorage with expiration](https://bigfrontend.dev/problem/localStorage-with-expiration)
+
+### 题目
+
+[localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) is a simple and handy client-side storage, but [you should avoid using it](https://www.youtube.com/watch?v=NNuTV-gjlZQ) because it is synchronous.
+
+Also [Safari's ITP](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/) actually deletes client-side script-writable storage after 7 days of Safari use without interacting on your website, and localStorage is included.
+
+Unlike Cookie, localStorage doesn't expire.
+
+In this problem, **please create a localStorage wrapper with expiration support**
+
+```js
+myLocalStorage.setItem('bfe', 'dev', 1000)
+myLocalStorage.getItem('bfe')
+// 'dev'
+```
+
+after 1 second:
+
+```js
+myLocalStorage.getItem('bfe')
+// null
+```
+
+**FYI**
+
+localStorage is replaced with our own implementation to avoid security error. But the interface is the same, actually you don't need to care :)
+
+Related Problems
+
+[134. create your own Cookie ](https://bigfrontend.dev/problem/create-your-own-Cookie)
+
+### 答案
+
+重写几个方法
+
+```js
+window.myLocalStorage = {
+  getItem(key) {
+    return window.localStorage.getItem(key);
+  },
+  
+  setItem(key, value, maxAge) {
+    window.localStorage.setItem(key, value);
+    if (maxAge === 0) {
+      window.localStorage.removeItem(key);
+    } else if (maxAge > 0) {
+      setTimeout(() => {
+        window.localStorage.removeItem(key);
+      }, maxAge);
+    }
+  },
+  
+  removeItem(key) {
+    window.localStorage.removeItem(key);
+  },
+  
+  clear() {
+    window.localStorage.clear();
+  }
+}
+```
+
+
+
+## [136. find median of two sorted array](https://bigfrontend.dev/problem/find-median-of-2-sorted-array)
+
+### 题目
+
+Given two sorted array of integers, please return the median.
+
+```js
+median([1,2],[3,4,5])
+// 3
+```
+
+If there are even numbers, return the average.
+
+```js
+median([1,2],[3,4])
+// 2.5
+```
+
+**follow-up**
+
+What is the time & space cost of your approach? Could you do better?
+
+### 答案
+
+特别的二分查找
+
+```js
+/**
+ * @param {number[]} arr1 - sorted integer array
+ * @param {number[]} arr2 - sorted integer array
+ * @returns {number}
+ */
+function median(arr1, arr2) {
+  let a = arr1, b = arr2;
+  const total = arr1.length + arr2.length;
+  const mid = Math.floor(total / 2);
+
+  if (a.length > b.length) {
+    a = arr2;
+    b = arr1;
+  }
+
+  let left = 0, right = a.length - 1;
+  while (true) {
+    let aMid = Math.floor(left + (right - left) / 2);
+    let bMid = mid - aMid - 2;
+    let aLeft = aMid >= 0 ? a[aMid] : -Infinity;
+    let bLeft = bMid >= 0 ? b[bMid] : -Infinity;
+    let aRight = aMid + 1 < a.length ? a[aMid + 1] : Infinity;
+    let bRight = bMid + 1 < b.length ? b[bMid + 1] : Infinity;
+    if (aLeft <= bRight && bLeft <= aRight) {
+      if (total % 2 === 0) {
+        return (Math.max(aLeft, bLeft) + Math.min(aRight, bRight)) / 2;
+      } else {
+        return Math.min(aRight, bRight);
+      }
+    } else if (aLeft > bRight) {
+      right = aMid - 1;
+    } else {
+      left = aMid + 1;
+    }
+  }
+}
+```
+
+
+
+## [137. binary tree vertical traversal](https://bigfrontend.dev/problem/binary-tree-vertical-traversal)
+
+### 题目
+
+Traverse a binary tree vertically from left to right, from top to bottom, the binary tree contains positive integers as node values.
+
+![img](https://cdn.jsdelivr.net/gh/huxingyi1997/my_img/img/20221005225301.png)
+
+For above binary tree, vertical traversal should return
+
+```js
+[6,4,2,7,1,9,10,3,8,5]
+```
+
+If two nodes are at the same position, their order should inherit from their parent node. For example, 9 and 10 are at the same position, since 7 is before 8, so 9 should be before 10.
+
+Related Problems
+
+[110. serialize and deserialize binary tree ](https://bigfrontend.dev/problem/serialize-and-deserialize-binary-tree)
+
+### 答案
+
+遍历时加入列参数
+
+```js
+// This is the class for the node
+// you can use this directly as it is bundled with your code
+
+// class Node {
+//   value: number
+//   left: null | Node
+//   right: null | Node
+//   constructor(val) {
+//     this.value = val
+//     this.left = null
+//     this.right = null
+//   }
+// }
+
+/**
+ * @param {Node} root
+ * @returns {number[]}
+ */
+function traverse(root) {
+  let result = {};
+  let queue = [[root, 0]];
+  
+  while (queue.length) {
+    const size = queue.length;
+    queue.sort((a,b) => (a[1] - b[1])); 
+
+    for (i = 0; i < size; i++) {
+      const [node, column] = queue.shift();
+
+      if (result[column]) {
+        result[column].push(node.value);
+      } else {
+        result[column] = [node.value];
+      }
+
+      if (node.left) {
+        queue.push([node.left, column - 1]);
+      }
+      if (node.right) {
+        queue.push([node.right, parseInt(column) + 1]);
+      }
+    }
+  }
+
+  return Object.keys(result)
+    .sort((a, b) => (a - b))
+    .reduce((res, key) => ([...res, ...result[key]]), []);
+}
+```
+
+
+
+## [138. Intersection of two sorted arrays](https://bigfrontend.dev/problem/intersection-of-two0-sorted-Arrays)
+
+### 题目
+
+Given 2 sorted array of integers, find the elements that exist in both arrays.
+
+```js
+intersect(
+  [1,2,2,3,4,4],
+  [2,2,4,5,5,6,2000]
+)
+// [2,2,4]
+```
+
+1. The arrays might have duplicate numbers.
+2. The order of returning result doesn't matter.
+3. What is the time & space cost of your approach? Could you improve it?
+
+### 答案
+
+双指针
+
+```js
+/**
+ * @param {number[]} arr1 - integers
+ * @param {number[]} arr2 - integers
+ * @returns {number[]}
+ */
+function intersect(arr1, arr2) {
+  let index1 = 0, index2 = 0;
+  const result = [];
+
+  while (index1 < arr1.length && index2 < arr2.length) {
+    if (arr1[index1] === arr2[index2]) {
+      result.push(arr1[index1]);
+      index1++;
+      index2++;
+    } else if (arr1[index1] < arr2[index2]) {
+      index1++;
+    } else {
+      index2++;
+    }
+  }
+  return result;
+}
+```
+
+
+
+## [139. implement _.partial()](https://bigfrontend.dev/problem/implement-partial)
+
+### 题目
+
+[_.partial()](https://lodash.com/docs/4.17.15#partial) works like [Function.prototype.bind()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind) but `this` is not bound.
+
+please create your own `partial()`
+
+```ts
+const func = (...args) => args
+
+const func123 = partial(func, 1,2,3)
+
+func123(4)
+// [1,2,3,4]
+```
+
+It should also support placeholder.
+
+```ts
+const _ = partial.placeholder
+const func1_3 = partial(func, 1, _, 3)
+
+func1_3(2,4)
+// [1,2,3,4]
+```
+
+### 答案
+
+```
+/**
+ * @param {Function} func
+ * @param {any[]} args
+ * @returns {Function}
+ */
+function partial(func, ...args) {
+  // your code here
+  return function(...restArgs) {
+    const copyArgs = args.map(
+      (arg) => arg === partial.placeholder ? restArgs.shift() : arg
+    );
+    return func.call(this, ...copyArgs, ...restArgs);
+  }
+}
+
+partial.placeholder = Symbol();
+```
 
