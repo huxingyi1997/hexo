@@ -13054,14 +13054,15 @@ func1_3(2,4)
 
 ### 答案
 
-```
+merge args1 and args2 and add remaining of args2
+
+```js
 /**
  * @param {Function} func
  * @param {any[]} args
  * @returns {Function}
  */
 function partial(func, ...args) {
-  // your code here
   return function(...restArgs) {
     const copyArgs = args.map(
       (arg) => arg === partial.placeholder ? restArgs.shift() : arg
@@ -13071,5 +13072,969 @@ function partial(func, ...args) {
 }
 
 partial.placeholder = Symbol();
+```
+
+
+
+## 140. Virtual DOM III - Functional Component
+
+### 题目
+
+> This is a follow-up on [118. Virtual DOM II - createElement](https://bigfrontend.dev/problem/virtual-dom-II-createElement).
+
+In problem 118, you are asked to implement `createElement()` and `render()` function which supports intrinsic HTML elements, like `<p/>`, `<div/>` etc.
+
+In this problem, you are ask to support custom **Functional Component**.
+
+[Functional Component](https://reactjs.org/docs/components-and-props.html#function-and-class-components) are functions that:
+
+1. accept **single object argument** -`props`, which contains `children`, `className` and other properties.
+2. returns an MyElement by calling `createElement()`.
+
+Say we have a Functional Component - `Title`
+
+```js
+const h = createElement
+const Title = ({children, ...res}) => h('h1', res, ...children)
+```
+
+Then we should be able to use it in `createElement` and `render()`, just the same way as an intrinsic element.
+
+```js
+h(Title, {}, 'This is a title')
+
+h(Title, {className: 'class1'}, 'This is a title')
+```
+
+Please **modify your createElement() and render()** from [118. Virtual DOM II - createElement](https://bigfrontend.dev/problem/virtual-dom-II-createElement) if necessary, so that the example in problem 118 could be rewritten as below:
+
+```js
+const Link = 
+  ({children, ...res}) => h('a', res, ...children)
+const Name = 
+  ({children, ...res}) => h('b', res, ...children)
+const Button = 
+  ({children, ...res}) => h('button', res, ...children)
+const Paragraph = 
+  ({children, ...res}) => h('p', res, ...children)
+const Container =  
+  ({children, ...res}) => h('div', res, ...children)
+
+h(
+  Container,
+  {},
+  h(Title, {}, ' this is '),
+  h(
+    Paragraph,
+    { className: 'paragraph' },
+    ' a ',
+    h(Button, {}, ' button '),
+    ' from ',
+    h(
+      Link, 
+      { href: 'https://bfe.dev' }, 
+      h(Name, {}, 'BFE'), 
+      '.dev')
+  )
+)
+```
+
+Related Problems
+
+[113. Virtual DOM I ](https://bigfrontend.dev/problem/Virtual-DOM-I)
+
+[118. Virtual DOM II - createElement ](https://bigfrontend.dev/problem/virtual-dom-II-createElement)
+
+[143. Virtual DOM IV - JSX 1 ](https://bigfrontend.dev/problem/virtual-dom-iv-jsx-1)
+
+[150. Virtual DOM V - JSX 2](https://bigfrontend.dev/problem/virtual-dom-v-jsx-2)
+
+### 答案
+
+多叉树遍历渲染DOM
+
+```js
+/**
+ * MyElement is the type your implementation supports
+ *
+ * type MyNode = MyElement | string
+ * type FunctionComponent = (props: object) => MyElement
+ */
+
+/**
+ * @param { string | FunctionComponent } type - valid HTML tag name or Function Component
+ * @param { object } [props] - properties.
+ * @param { ...MyNode} [children] - elements as rest arguments
+ * @return { MyElement }
+ */
+function createElement(type, props, ...children) {
+  if (typeof type === "function") {
+    return type({...props, children});
+  }
+
+  return {
+    type,
+    props: {
+      ...props,
+      children,
+    }
+  }
+}
+
+
+/**
+ * @param { MyElement }
+ * @returns { HTMLElement } 
+ */
+function render(myElement) {
+  if (typeof myElement === "string") {
+    return document.createTextNode(myElement);
+  }
+  const {type, props: { children, ...attrs}} = myElement;
+  const node = document.createElement(type);
+  for (const [attr, value] of Object.entries(attrs)) {
+    node[attr] = value;
+  }
+  const childrenArr = Array.isArray(children) ? children : [children];
+  for (const child of childrenArr) {
+    node.append(render(child));
+  }
+  return node;
+}
+```
+
+
+
+## [141. implement btoa()](https://bigfrontend.dev/problem/implement-btoa)
+
+### 题目
+
+[btoa()](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/btoa) accepts a binary string and returns a Base64-encoded ASCII string from it. Characters in a binary string are the ASCII character for each byte of the binary data.
+
+Please read [Base64 wiki](https://en.wikipedia.org/wiki/Base64) and implement your own `btoa()`.
+
+```js
+myBtoa('BFE')
+// 'QkZF'
+
+myBtoa('BFE.dev')
+// 'QkZFLmRldg=='
+```
+
+**note**
+
+1. Please don't use `window.btoa()` in your code.
+2. The binary string passed to your function are all valid ASCII characters, there will be another problem on the general Base64 encoding/decoding.
+
+Related Problems
+
+[160. implement atob()](https://bigfrontend.dev/problem/implement-atob)
+
+### 答案
+
+map操作
+
+```js
+const base64 = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/`;
+
+/**
+ * @param {string} str - binary string
+ * @returns {string}
+ */
+function myBtoa(str) {
+  let op1 = "", op2 = "";
+
+  for (const c of str) {
+    op1 += c.charCodeAt().toString(2).padStart(8, 0);
+  }
+
+  for (let i = 0; i < op1.length; i += 6) {
+    const num = op1.slice(i, i + 6).padEnd(6, 0);
+    const ascii = parseInt(num, 2);
+    op2 += base64[ascii];
+  }
+
+  // padding to make the length multiple of 4;
+  const padding = op2.length % 4;
+
+  return op2 + "=".repeat(padding);
+}
+```
+
+
+
+## [142. lit-html 1 - tagged templates](https://bigfrontend.dev/problem/lit-html-1-tagged-templates)
+
+### 题目
+
+According to [lit-html homepage](https://lit-html.polymer-project.org/),
+
+> lit-html lets you write HTML templates in JavaScript, then efficiently render and re-render those templates together with data to create and update DOM
+
+[This video](https://www.youtube.com/watch?v=ruql541T7gc&feature=emb_title) explains it pretty well about how it works. Let's take a look at the example.
+
+```js
+import {html, render} from 'lit-html'
+const helloTemplate = (name) => html`<div>Hello ${name}!</div>`
+
+// This renders <div>Hello Steve!</div> to the document body
+render(helloTemplate('Steve'), document.body)
+
+// This updates to <div>Hello Kevin!</div>, but only updates the ${name} part
+render(helloTemplate('Kevin'), document.body);
+```
+
+The magic happens in the second call of `render()` which only updates the necessary parts.
+
+But there will be a series of problems on BFE.dev leading to that, here you are asked to :
+
+**implement html() and render() to make above example work, without considering the rerender**, so html() could just return the raw HTML string.
+
+The input data are all valid.
+
+### 答案
+
+模板引擎操作
+
+```js
+function html(strs, ...keys) {
+  return strs.map((str, i) => `${str}${keys[i] || ""}`).join("");
+}
+
+
+// render the result from html() into the container
+function render(result, container) {
+  container.innerHTML = result;
+}
+```
+
+
+
+## [143. Virtual DOM IV - JSX 1](https://bigfrontend.dev/problem/virtual-dom-iv-jsx-1)
+
+### 题目
+
+If you are using React, you must be familiar with [JSX](https://facebook.github.io/jsx/).
+
+With JSX syntax support, transpilers are able to understand below non-standard code directly in JavaScript.
+
+```js
+<p> this is <button className="button">button</button> </p>
+```
+
+Then it is transpiled to standard JavaScript function calls.
+
+```js
+React.createElement("p", null,
+  " this is ",
+  React.createElement("button", { className: "button" }, "button"),
+  " ");
+```
+
+> have a try at [TypeScript Playground](https://www.typescriptlang.org/play?#code/DwBwfABALgFglgZwoiwBGBXKUD2A7CAYwBsBDBBAOVIFsBTAXgCJNt8mxXc9gB6L-JD7ggA)
+
+To illustrate how the transpilation works, let's start with a simple example.
+
+```js
+<a>bfe.dev</a>
+```
+
+First the parser will create an AST(Abstract Syntax Tree) from the code.
+
+Open above code [in AST Explorer](https://astexplorer.net/#/gist/46044fc473a92974cd8f933efc7635f6/8a876a4240ecf38d64c0e0af3c693a1c54d80525), you can see the AST in the right pannel, roughly something like this:
+
+```js
+expression: JSXElement {
+  openingElement: JSXOpeningElement {
+    name: JSXIdentifier {
+      name: "a"
+    }
+  }
+  closingElement: JSXClosingElement {
+    name: JSXIdentifier {
+      name: "a"
+    }
+  }
+  children: [
+    JSXText {
+      value: "bfe.dev"
+    }
+  ]
+}
+```
+
+Obviously above AST follows the [JSX Spec](https://facebook.github.io/jsx/):
+
+```js
+JSXElement:
+  JSXOpeningElement JSXChildren? JSXClosingElement
+
+JSXOpeningElement:
+  < JSXElementName JSXAttributes? >
+
+JSXChildren:
+  JSXChild JSXChildren?
+
+JSXClosingElement:
+  < / JSXElementName >
+
+JSXChild:
+  JSXText
+  JSXElement
+  { JSXChildExpression? }
+```
+
+With the above AST, it is fairly easy to generate code, we only need to traverse the AST and insert `React.createElement`:
+
+```js
+React.createElement("p", null,
+  " this is ",
+  React.createElement("button", { className: "button" }, "button"),
+  " ");
+```
+
+Also instead of React method, we could use `h()` defined in [140. Virtual DOM III - Functional Component](https://bigfrontend.dev/problem/virtual-DOM-III-Functional-Component) instead.
+
+```js
+h("p", null,
+  " this is ",
+  h("button", { className: "button" }, "button"),
+  " ");
+```
+
+**Now, please create your own parse() and generate() to transpile JSX Element code**.
+
+1. please generate code which uses `h()`, `h()` is bundled with your code.
+2. Goal of this problem is not to recreate the full parser, so only need to support the minumum spec below:
+
+```js
+JSXElement:
+  JSXOpeningElement JSXChildren? JSXClosingElement
+
+JSXOpeningElement:
+  < JSXElementName >
+
+JSXChildren:
+  JSXChild
+
+JSXClosingElement:
+  < / JSXElementName >
+
+JSXChild:
+  JSXText
+```
+
+- you can choose not to follow the naming
+- there is no newlines in the input, you can ignore [the whitespace rules](https://github.com/facebook/react/pull/480#issuecomment-31296039)
+- all input tags are smallcase HTML tags
+
+1. for simplicity, the AST creating process with `parse()` won't be tested, rather `parse()` and `generate()` are tested together like this:
+
+```js
+const result = eval(generate(parse('<a>bfe.dev</a>')))
+expect(result).toEqual(h('a', null, 'bfe.dev'))
+```
+
+1. An error should be thrown if code is not valid JSXElement, for example, the JSXOpeningElement and JSXClosingElement might not be matched.
+
+   > The test cases only cover some of the common errors.
+
+Related Problems
+
+[113. Virtual DOM I ](https://bigfrontend.dev/problem/Virtual-DOM-I)
+
+[118. Virtual DOM II - createElement ](https://bigfrontend.dev/problem/virtual-dom-II-createElement)
+
+[140. Virtual DOM III - Functional Component ](https://bigfrontend.dev/problem/virtual-DOM-III-Functional-Component)
+
+[150. Virtual DOM V - JSX 2](https://bigfrontend.dev/problem/virtual-dom-v-jsx-2)
+
+### 答案
+
+Fully parsed (All Levels Down) AST with Children Parsed via Stack
+
+```js
+const types = {
+  openingElement: "JSXOpeningElement",
+  closingElement: "JSXClosingElement",
+  element: "JSXElement",
+  textElement: "JSXText",
+};
+
+/**
+ * @param {code} string
+ * @returns {any} AST 
+ */
+
+const parse = (code) => {
+  const str = code.trim();
+  if (!str.startsWith("<") || !str.endsWith(">")) {
+    throw new Error("One root elment expected");
+  }
+
+  let stack = [];
+  let cursor = 0;
+  while (cursor < str.length) {
+    if (str.charAt(cursor) === "<") {
+      const [elem, next] = parseTag(str, cursor);
+
+      if (elem.type === types.closingElement) {
+        // Collect children
+        let children = [];
+
+        while (
+          stack.length &&
+          stack[stack.length - 1].type !== types.openingElement
+        ) {
+          children.unshift(stack.pop());
+        }
+
+        // Check tags matching
+        const openingElement = stack.pop();
+
+        if (elem.name !== openingElement.name) {
+          throw new Error("Opening and closing tags must match");
+        }
+
+        // Create new Element
+        stack.push({
+          openingElement,
+          children,
+          closingElement: elem,
+          type: types.element,
+        });
+      } else {
+        stack.push(elem);
+      }
+
+      cursor = next;
+    } else {
+      const [textElement, next] = parseText(str, cursor);
+      stack.push(textElement);
+      cursor = next;
+    }
+  }
+
+  if (stack.length !== 1 && stack[0].type !== types.element) {
+    throw new Error("Single root element expected");
+  }
+
+  return stack[0];
+};
+
+const parseTag = (str, cursor) => {
+  if (str.length < 2 || str.charAt(cursor) !== "<") {
+    throw new Error("Not a valid tag");
+  }
+
+  let i = cursor + 1;
+  let start = null;
+  let end = null;
+
+  let isClosing = false;
+  while (i < str.length) {
+    if (!start && str.charAt(i) === "/") {
+      isClosing = true;
+    }
+
+    if (!start && str.charAt(i) !== " " && str.charAt(i) !== "/") {
+      start = i;
+    }
+
+    if ((start && str.charAt(i) === " ") || str.charAt(i) === ">") {
+      end = i;
+      break;
+    }
+
+    i++;
+  }
+
+  if (start === null || end === null) {
+    throw new Error("Error while parsing tag name");
+  }
+
+  let tag = {
+    type: isClosing ? types.closingElement : types.openingElement,
+    name: str.slice(start, end).trim(),
+  };
+
+  if (!isClosing && str.charAt(end) !== ">") {
+    const [attributes, next] = parseAttributes(str, end);
+    tag.attributes = attributes;
+    end = next;
+  }
+
+  while (isClosing && end < str.length && str.charAt(end) !== ">") {
+    end++;
+  }
+
+  return [tag, end + 1];
+};
+
+const parseText = (str, cursor) => {
+  let i = cursor;
+  while (i < str.length && str.charAt(i) !== "<") {
+    // Don't agree with testcase invalid: "<a>></a>", this is valid JSX with ">" as a text child - try AST explorer
+    if (str.charAt(i) === ">") {
+      throw new Error("Unexpected Character");
+    }
+    i++;
+  }
+
+  return [
+    {
+      type: types.textElement,
+      value: str.slice(cursor, i),
+    },
+    i,
+  ];
+};
+
+const parseAttributes = (str, cursor) => {
+  let i = cursor;
+  let end = null;
+  while (i < str.length) {
+    if (str.charAt(i) === ">") {
+      end = i;
+      break;
+    }
+
+    i++;
+  }
+
+  if (end == null) {
+    throw new Error("Error while parsing attributes");
+  }
+
+  let attributes = [];
+  if (end != null) {
+    const attrStr = str.slice(cursor, end).trim();
+
+    attributes = attrStr.split(/\s/);
+    attributes = attributes.map((attr) => attr.split("="));
+  }
+
+  return [attributes, end];
+};
+
+/**
+ * @param {any} your AST
+ * @returns {string} 
+ */
+function generate(ast) {
+  const {openingElement, children} = ast;
+
+  const childrenStr = children.reduce((acc, ch) => {
+    if (ch.type === types.textElement) {
+      return acc + ch.value;
+    } else if (ch.type === types.element) {
+      return acc + generate(ch);
+    }
+
+    return acc;
+  }, "");
+
+
+  if (childrenStr.length) {
+    return h(openingElement.name, null, childrenStr);
+  } else {
+    return h(openingElement.name, null)
+  }
+
+}
+```
+
+
+
+## [144. serialize and deserialize data types not supported in JSON](https://bigfrontend.dev/problem/serialize-and-deserialize-data-types-not-supported-in-JSON)
+
+### 题目
+
+Obviously, [JSON.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) and [JSON.stringify()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) are unable to handle data types that are not supported in JSON.
+
+```ts
+JSON.stringify({a:1n}) // Error
+```
+
+Also `undefined` is ignored in object properties or changed to `null`.
+
+```ts
+JSON.stringify([undefined]) // "[null]"
+JSON.stringify({a: undefined }) // "{}"
+NaN` and `Infinity` are also treated as `null
+JSON.stringify([NaN, Infinity]) // "[null,null]"
+JSON.stringify({a: NaN, b:Infinity}) // "{"a":null,"b":null}"
+```
+
+for more info, please refer to [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description).
+
+But sometimes we might want to be able to serialize these data types.
+
+**Now please implement functions to serialize and deserialize following data types:**
+
+1. primitives (symbol is exluded)
+2. object literals
+3. array
+
+Object literals and arrays are consisting of primitives and might be nested
+
+Code below is expected to work:
+
+```ts
+parse(stringify([1n, null, undefined, NaN])) // [1n, null, undefined, NaN]
+parse(stringify({a: undefined, b: NaN}) // {a: undefined, b: NaN}
+```
+
+You can use JSON.stringify() and JSON.parse() in your code or write your own.
+
+### 答案
+
+无法处理的数据特殊处理
+
+```ts
+type SerializablePrimitives = undefined | null | number | string | bigint | boolean
+
+type Serializable = {
+  [index: string]: Serializable
+} | Serializable[] | SerializablePrimitives
+
+const stringify = (data: Serializable): string => {
+  return JSON.stringify(data, function (_key, value) {
+    if (typeof value === 'bigint') {
+      return value.toString() + 'n';
+    }
+    if (value === undefined) {
+      return "__undefined__";
+    }
+    
+    if (Number.isNaN(value)) {
+      return "__NaN__";
+    }
+    if (value === Infinity) {
+      return "__Infinity__";
+    }
+    if (value === -Infinity) {
+      return "__-Infinity__";
+    }
+    return value;
+  })
+}
+
+const parse = (data: string): Serializable => {
+  let obj = JSON.parse(data, function(_key, value) {
+    
+    if (typeof value == 'string') {
+      // check if its a number that ends with n
+      if (/^[\d]+n+$/.test(value)) {
+        return BigInt(parseInt(value.slice(0, -1)));
+      }
+      if (value ===  "__NaN__") {
+        return NaN;
+      }
+      if (value === "__Infinity__") {
+        return Infinity;
+      }
+      if (value === "__-Infinity__") {
+        return -Infinity;
+      }
+      
+    }
+    return value;
+  })
+  // handle undefined as reviver function doesnt allow us to return undefined
+  return changeToUndefined(obj);
+}
+
+function changeToUndefined(obj: any){
+  if (obj) {
+    for (let k in obj) {
+      if (obj[k]==='__undefined__') {
+        obj[k] = undefined;
+      }
+      if (obj.hasOwnProperty(k) && typeof obj[k] === 'object'){
+        changeToUndefined(obj[k]);
+      }
+    }
+  }
+  if (obj === '__undefined__') {
+    return undefined;
+  }
+  return obj;
+}
+```
+
+
+
+## [145. most frequently occurring character](https://bigfrontend.dev/problem/most-frequently-occurring-character)
+
+### 题目
+
+Given a non-empty string, return the most frequently ocurring character.
+
+If there are multiple characters with same occurrance, return an array of them.
+
+```ts
+count('abbccc')
+// 'c'
+
+count('abbcccddd')
+// ['c', 'd']
+```
+
+Follow-up: What is the time & space complexity of your approach?
+
+### 答案
+
+map统计各字母出现顺序
+
+```ts
+function count(str: string): string | string[] {
+  const map = new Map();
+  const result = [];
+
+  for(const char of str) {
+    map.set(char, (map.get(char) || 0) + 1);
+  }
+
+  const max = Math.max(...map.values());
+
+  for(const [key, value] of map) {
+    if(value === max) {
+      result.push(key);
+    }
+  }
+
+  return result.length === 1 ? result[0] : result;
+}
+```
+
+
+
+## [146. implement Array.prototype.reduce()](https://bigfrontend.dev/problem/implement-Array-prototype-reduce)
+
+### 题目
+
+[Array.prototype.reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce) is a handy method to process arrays.
+
+Here is a simple task - **Could you implement it by yourself?**
+
+```ts
+[1,2,3].myReduce((sum, item) => sum + item)
+// 6
+```
+
+1. do not use native Array.prototype.reduce() in your code
+2. your function is only tested against valid array (no array-like objects)
+3. thanks to [pajadev](https://bigfrontend.dev/category/5/discuss/693?focus=859) for suggesting this
+
+### 答案
+
+注意初始值
+
+```ts
+// copied from lib.es5.d.ts
+declare interface Array<T> {
+  myReduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;
+  myReduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
+  myReduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U
+}
+
+Array.prototype.myReduce = function (callback: Function, ...rest: any[]) {
+  let accumulator = rest[0];
+  let index = 0;
+  if (rest.length === 0) {
+    if (this.length === 0) {
+      throw new Error('Reduce of empty array with no initial value');
+    }
+    accumulator = this[0];
+    index++;
+  }
+  while (index < this.length) {
+    accumulator = callback(accumulator, this[index], index, this);
+    index++;
+  }
+  return accumulator;
+}
+```
+
+
+
+## [147. Pick up stones](https://bigfrontend.dev/problem/pickup-the-stones)
+
+### 题目
+
+There is a pile of `n` (n > 0) stones.
+
+Player A and Player B take turns to pick 1 or 2 stones from the pile. A starts first.
+
+Who picks the last stone loses the game.
+
+Now here is the question, **is there a winning strategy for A or B ?** If so, returns the player name. If there is none, return null.
+
+```ts
+winningStonePicking(1)
+// 'B'
+
+winningStonePicking(2)
+// 'A'
+
+winningStonePicking(3)
+// 'A'
+
+winningStonePicking(4)
+// 'B'
+```
+
+### 答案
+
+找规律，可以通过递归分析
+
+```ts
+function canWinStonePicking(n: number): 'A' | 'B' | null {
+  return n % 3 === 1 ? 'B' : 'A';
+}
+```
+
+
+
+## [148. create a counter object](https://bigfrontend.dev/problem/create-a-counter-object)
+
+### 题目
+
+Create an object with property `count`, which increments every time `count` is accessed, initial value is 0.
+
+```js
+const counter = createCounter()
+counter.count // 0, then it should increment
+counter.count // 1
+counter.count // 2
+counter.count = 100 // it cannot be altered
+counter.count // 3
+```
+
+### 答案
+
+使用proxy劫持set
+
+```ts
+function createCounter(): {count: number } {
+  return new Proxy({count: 0}, {
+    get: (obj, prop: "count") => obj[prop]++,
+    set: () => false
+  })
+}
+```
+
+
+
+## [149. interpolation](https://bigfrontend.dev/problem/interpolation)
+
+### 题目
+
+Have you ever added i18n support to your projects?
+
+Take [i18next](https://www.i18next.com/) as an example, generally the keys and translations are kept separately, like this JSON below.
+
+```json
+{
+  "evaluation": "BFE.dev is {{evaluation}}"
+}
+```
+
+At places where this key is used, we can then interpolate the string by passing a data object.
+
+```ts
+t('evaluation', {evaluation: 'fantastic'});
+// "BFE.dev is fantastic"
+```
+
+Now, **please create a similar `t()` function which accepts the translation directly**.
+
+#### 1. it supports `{{` and `}}` as delimiters
+
+Let's make it clearer and simpler, when a new pair `{{` is met, characters until the following `}}` are treated as the property name.
+
+For all the other cases, they should not be treated as delimiters.
+
+```ts
+t('BFE.dev is {{{evaluation}', {evaluation: 'fantastic'});
+// "BFE.dev is {{{evaluation}"
+
+t('BFE.dev is {{{evaluation}}}', {'{evaluation': 'fantastic'});
+// "BFE.dev is fantastic}"
+
+t('BFE.dev is {{evalu ation}}', {'evalu ation': 'fantastic'});
+// "BFE.dev is fantastic"
+```
+
+#### 2. if no data is passed or no property exists, just leave it empty
+
+```ts
+t('BFE.dev is {{evaluation}}');
+// "BFE.dev is "
+```
+
+### 答案
+
+字符串操作
+
+```ts
+/**
+ * @param {string} translation
+ * @param {any} data
+ * @returns {string}
+ */
+function t(translation: string, data?: any): string {
+  // linear scanning, if we haven't encountered a "{{", keep adding to new string
+  // if we encountered a "{{", don't add until we see a corresponding "}}"
+  // if we a see a corresponding "}}", we add the mapped value or empty string
+
+  let leftIndex = -1;
+  let output = "";
+
+  for (let i = 0; i < translation.length; i++) {
+    const left = translation.substring(i, i+2);
+
+    if (left !== "{{" && leftIndex === -1) {
+      output += translation[i];
+      continue;
+    }
+
+    if (leftIndex === -1 && left === "{{") {
+      leftIndex = i;
+      continue;
+    }
+
+    if (leftIndex !== -1 && left === "}}") {
+      const key = translation.substring(leftIndex+2, i);
+
+      if (data instanceof Object && key in data) {
+        output += data[key];
+      }
+      leftIndex = -1;
+      i+=1;
+    }
+  }
+
+  // if never found a corresponding "}}" and we had "{{"
+  if (leftIndex !== -1) {
+    output += translation.substring(leftIndex, translation.length);
+  }
+
+  return output;
+}
+```
+
+正则表达式
+
+```ts
+/**
+ * @param {string} translation
+ * @param {any} data
+ * @returns {string}
+ */
+function t(translation: string, data?: any): string {
+  return translation.replace(/{{(.*?)}}/g, (_, key) => data && data[key] || '');
+}
 ```
 
