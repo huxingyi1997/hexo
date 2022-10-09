@@ -13076,7 +13076,7 @@ partial.placeholder = Symbol();
 
 
 
-## 140. Virtual DOM III - Functional Component
+## [140. Virtual DOM III - Functional Component](https://bigfrontend.dev/problem/virtual-DOM-III-Functional-Component)
 
 ### 题目
 
@@ -13748,7 +13748,7 @@ const parse = (data: string): Serializable => {
 function changeToUndefined(obj: any){
   if (obj) {
     for (let k in obj) {
-      if (obj[k]==='__undefined__') {
+      if (obj[k] === '__undefined__') {
         obj[k] = undefined;
       }
       if (obj.hasOwnProperty(k) && typeof obj[k] === 'object'){
@@ -14037,4 +14037,1075 @@ function t(translation: string, data?: any): string {
   return translation.replace(/{{(.*?)}}/g, (_, key) => data && data[key] || '');
 }
 ```
+
+
+
+## [150. Virtual DOM V - JSX 2](https://bigfrontend.dev/problem/virtual-dom-v-jsx-2)
+
+### 题目
+
+> This is a follow-up on [143. Virtual DOM IV - JSX 1](https://bigfrontend.dev/problem/virtual-dom-iv-jsx-1).
+
+Congratulations on your pass on problem 143!
+
+Now in this problem, please modify your code to support following.
+
+### 1. nesting elements
+
+```ts
+<p><i>BFE.dev</i> is <b>cool</b>!</p>
+```
+
+This means JSXChild needs to support JSXElement as well.
+
+```diff
+JSXChild:
+   JSXText
++  JSXElement
+```
+
+### 2. Functional Component
+
+As a convention, intrinsic HTML tags are lower cases and [Functional Components](https://bigfrontend.dev/problem/virtual-DOM-III-Functional-Component) have capitalized initials.
+
+```ts
+const Heading = 
+  ({children, ...res}) => h('h1', res, ...children)
+  
+<Heading>BFE.<i>dev</i></Heading>
+```
+
+If your code in problem 143 already supports this, that's fantastic 👍! Just copy your code here and hope it shall pass.
+
+Related Problems
+
+[113. Virtual DOM I ](https://bigfrontend.dev/problem/Virtual-DOM-I)
+
+[118. Virtual DOM II - createElement ](https://bigfrontend.dev/problem/virtual-dom-II-createElement)
+
+[140. Virtual DOM III - Functional Component ](https://bigfrontend.dev/problem/virtual-DOM-III-Functional-Component)
+
+[143. Virtual DOM IV - JSX 1 ](https://bigfrontend.dev/problem/virtual-dom-iv-jsx-1)
+
+### 答案
+
+递归
+
+```ts
+type JSXOpeningElement = {
+  tag: string
+}
+
+type JSXClosingElement = {
+  tag: string
+}
+
+type JSXChildren = Array<string | JSXElement>
+
+type JSXElement= {
+  openingElement: JSXOpeningElement
+  children: JSXChildren
+  closingElement: JSXClosingElement
+}
+
+function parse(code: string): JSXElement {
+  // 1. extract open tag
+  let openTag = "";
+  let i = 0;
+  for (; i < code.length; i++) {
+    if (code[i] === " ") continue;
+    openTag = openTag + code[i];
+    if (code[i] === ">") break;
+  }
+
+  // 2. extract close tag
+  let closeTag = "";
+  let j = code.length - 1;
+  for (; j >= 0; j--) {
+    if (code[j] === " ") continue;
+    closeTag = code[j] + closeTag;
+    if (code[j] === "<") break;
+  }
+
+  // handle throw for <a>></a> or <a><</a> per requirement
+  handleSpecificError(code, i, j);
+
+  // 3. validate tags match
+  if (!matches(openTag, closeTag)) {
+    throw new Error(`Tags don't match`);
+  }
+
+  // 4. extract children
+  const childMarkup = code.slice(i + 1, j);
+  const children = getChildrenFromHTML(childMarkup).map((child) => {
+    // child is a html string, need to parse it recursively
+    if (child.match(/^<.*>$/)) {
+      return parse(child);
+    }
+    // child is a text string, return directly
+    return child;
+  });
+
+  return {
+    openingElement: {
+      tag: extractTagName(openTag),
+    },
+    closingElement: {
+      tag: extractTagName(closeTag),
+    },
+    children,
+  };
+}
+
+type MyElement = {
+  type: string;
+  props: {
+    [key: string]: string | MyNode | MyNode[];
+    children: MyNode | MyNode[];
+  };
+};
+
+type MyNode = MyElement | string;
+
+function generate(ast: JSXElement): MyElement {
+  let type = ast.openingElement.tag;
+  
+  // handle functional component
+  if (ast.openingElement.tag !== ast.openingElement.tag.toLowerCase()) {
+    // gets the Functional Component definition from upper scope
+    type = eval(ast.openingElement.tag);
+  }
+
+  return {
+    type,
+    props: {
+      children: ast.children.map((child) => {
+        if (typeof child === "string") {
+          // handle string child
+          return child;
+        }
+        // handle ast child recursively
+        return generate(child);
+      }),
+    },
+  };
+}
+
+/* --------------------------------------------------------------------------- */
+/* --------------------------------- Helpers --------------------------------- */
+/* --------------------------------------------------------------------------- */
+function extractTagName(tag: string): string {
+  return tag.replace(/[^a-zA-Z0-9]/gi, "");
+}
+
+// returns whether open tag matches close tag
+function matches(openTag: string, closeTag: string): boolean {
+  return (
+    !openTag.includes("/") &&
+    closeTag.length - openTag.length === 1 &&
+    extractTagName(openTag) === extractTagName(closeTag)
+  );
+}
+
+// handle throw for <a>></a> or <a><</a> per requirement
+function handleSpecificError(
+  code: string,
+  openTagEnd: number,
+  closeTagStart: number
+): void {
+  if (code[openTagEnd + 1] !== ">" && code[closeTagStart - 1] !== "<") return;
+  throw new Error();
+}
+
+// returns whether the cursor is pointing at the start of an open tag
+function isOpenTag(html: string, cursor: number): boolean {
+  return Boolean(html[cursor] === "<" && html[cursor + 1].match(/[a-zA-Z0-9]/));
+}
+
+// returns whether the cursor is point at the start of an close tag
+function isCloseTag(html: string, cursor: number): boolean {
+  return Boolean(
+    html[cursor] === "<" &&
+      html[cursor + 1] === "/" &&
+      html[cursor + 2].match(/[a-zA-Z0-9]/)
+  );
+}
+
+// returns the full tag(open or close) that starts at a given index, along with the ending index
+function getFullTag(
+  html: string,
+  statIndex: number
+): {
+  tag: string | null;
+  endIndex: number;
+} {
+  let tag = "";
+  while (statIndex < html.length) {
+    const char = html[statIndex];
+    tag += char;
+    if (char === ">") return { tag, endIndex: statIndex };
+    statIndex++;
+  }
+  return {
+    tag: null,
+    endIndex: statIndex,
+  };
+}
+
+// receives an html string, seperated it into an array of children text strings and html strings
+// this function only goes one level deep -
+// "ab<div>ab<p>c</p></div>cd<span>123</span>" -> [ "ab", "<div>ab<p>c</p></div>", "cd", "<span>123</span>" ]
+function getChildrenFromHTML(html: string): string[] {
+  const children = []; // html string | text string
+  let cursor = 0;
+  let isTagStarted = false;
+  let openTagName = "";
+  let repeatedOpenTagCount = 0; // handle situations like <div>ab<div>c</div>de</div>, in this case repeatedOpenTagCount = 1
+  let runningTag = "";
+  let runningText = "";
+  while (cursor < html.length) {
+    // handle runningTag closes
+    if (
+      isTagStarted &&
+      isCloseTag(html, cursor) &&
+      extractTagName(getFullTag(html, cursor).tag!) === openTagName
+    ) {
+      if (repeatedOpenTagCount === 0) {
+        // handle last string child
+        if (runningText.length) {
+          children.push(runningText);
+          runningText = "";
+        }
+        isTagStarted = false;
+        openTagName = "";
+        runningTag += getFullTag(html, cursor).tag;
+        children.push(runningTag);
+        cursor = getFullTag(html, cursor).endIndex + 1;
+        runningTag = "";
+      } else {
+        repeatedOpenTagCount--;
+        runningTag += html[cursor];
+        cursor++;
+      }
+      continue;
+    }
+    // handle runningTag opens
+    if (isOpenTag(html, cursor)) {
+      if (!isTagStarted) {
+        // handle last string child
+        if (runningText.length) {
+          children.push(runningText);
+          runningText = "";
+        }
+        openTagName = extractTagName(getFullTag(html, cursor).tag!); // set openTagName
+        isTagStarted = true;
+        runningTag += getFullTag(html, cursor).tag;
+        cursor = getFullTag(html, cursor).endIndex + 1;
+      } else {
+        const tagName = extractTagName(getFullTag(html, cursor).tag!);
+        if (tagName === openTagName) repeatedOpenTagCount++;
+        runningTag += html[cursor];
+        cursor++;
+      }
+      continue;
+    }
+    // handle adding char to runningTag
+    if (isTagStarted) {
+      runningTag += html[cursor];
+      cursor++;
+    } else {
+      // handle adding char to runningText
+      runningText += html[cursor];
+      cursor++;
+    }
+  }
+  if (runningText.length) children.push(runningText); // handle trailing last string child
+  return children;
+}
+/* --------------------------------------------------------------------------- */
+/* ------------------------------- End Helpers ------------------------------- */
+/* --------------------------------------------------------------------------- */
+```
+
+
+
+## [151. implement Array.prototype.map()](https://bigfrontend.dev/problem/implement-Array-prototype-map)
+
+### 题目
+
+Please implement your own [Array.prototype.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
+
+```js
+[1,2,3].myMap(num => num * 2)
+// [2,4,6]
+```
+
+> please avoid using Array.prototype.map() directly in your code.
+
+### 答案
+
+答案，借用其他es6函数
+
+```ts
+// copied from lib.es5.d.ts
+declare interface Array<T> {
+  myMap<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];
+}
+
+
+Array.prototype.myMap = function<U>(callbackfn: (value: any, index: number, array: any[]) => U, thisArg?: any) {
+  const res: Array<U> = [];
+  this.forEach((value: any, index: number, array: any[]) => {
+    res[index] = callbackfn.call(thisArg, value, index, array);
+  })
+  return res;
+}
+```
+
+
+
+## [152. Find Top k Elements](https://bigfrontend.dev/problem/top-k-elements)
+
+### 题目
+
+Given an unsorted array of integers which might have duplicates, return the top k integers in non-ascending order.
+
+```js
+topK([1,10,8,9,10,2,3,4,8,8,6], 4)
+// [10, 10, 9, 8]
+```
+
+What is the time & space cost of your code ? Could you do better ?
+
+### 答案
+
+使用堆
+
+```ts
+class Heap {
+  heap: Array<number>;
+  comparator: (a: number, b: number) => number;
+
+  constructor(comparator: (a: number, b: number) => number = (a: number, b: number) =>  a - b) {
+    this.heap = [];
+    this.comparator = comparator;
+  }
+
+  push(item: number) {
+    this.heap.push(item);
+    let child = this.heap.length - 1;
+    let parent = Math.floor((child - 1) / 2);
+    while(parent >= 0 && this.comparator(this.heap[parent], this.heap[child]) > 0) {
+      [this.heap[parent], this.heap[child]] = [this.heap[child], this.heap[parent]];
+      child = parent;
+      parent = Math.floor((child - 1) / 2);
+    }
+  }
+
+  pop(): number | undefined {
+    if(this.heap.length === 1) {
+      return this.heap.pop();
+    }
+    let res = this.heap[0];
+    this.heap[0] = this.heap.pop()!;
+    let parent = 0;
+    let lchild = parent * 2 + 1;
+    let rchild = parent * 2 + 2;
+    while(lchild < this.heap.length) {
+      let child = (rchild >= this.heap.length || this.comparator(this.heap[lchild], this.heap[rchild]) < 0) ? lchild : rchild;
+      if(this.comparator(this.heap[parent], this.heap[child]) < 0) {
+        break;
+      }
+      [this.heap[parent], this.heap[child]] = [this.heap[child], this.heap[parent]];
+      parent = child;
+      lchild = parent * 2 + 1;
+      rchild = parent * 2 + 2;
+    }
+    return res;
+  }
+
+  get length() {
+    return this.heap.length;
+  }
+}
+
+function topK(arr: number[], k: number): number[]{
+  if (arr.length <= k) {
+    arr.sort((a, b) => b - a);
+    return arr;
+  }
+  let pq = new Heap((a: number, b: number) => a - b);
+  for(const num of arr) {
+    pq.push(num);
+    if(pq.length > k) {
+      pq.pop();
+    }
+  }
+  const res: Array<number> = new Array(k);
+  for (let i = 0; i < k; i++) {
+    res[k - 1 - i] = pq.pop()!;
+  }
+  return res;
+}
+```
+
+
+
+## [153. uglify CSS class names](https://bigfrontend.dev/problem/unique-class-name)
+
+### 题目
+
+If you use [css-loader](https://github.com/webpack-contrib/css-loader) in your webpack project, `localIdentName` could be used to transform class names, like below:
+
+```js
+localIdentName: "[path][name]__[local]--[hash:base64:5]",
+```
+
+Or you can create your own function to generate class names by setting `getLocalIdent`.
+
+**Now please create a function to generate unique class names** following rules below.
+
+1. only use alphabets: `a` to `z` , `A` to `Z`
+2. return one unique class name each time function is called
+3. the class name sequence should first be in order of length, then in Alphabetical order(lowercase in front).
+4. should provide a function to reset the sequence
+
+```js
+getUniqueClassName()
+// 'a'
+
+getUniqueClassName()
+// 'b'
+
+getUniqueClassName()
+// 'c'
+
+// skip cases till 'Y'
+
+getUniqueClassName()
+// 'Z'
+
+getUniqueClassName()
+// 'aa'
+
+getUniqueClassName()
+// 'ab'
+
+getUniqueClassName()
+// 'ac'
+
+// skip more cases
+
+getUniqueClassName()
+// 'ZZ'
+
+getUniqueClassName()
+// 'aaa'
+
+getUniqueClassName()
+// 'aab'
+
+getUniqueClassName()
+// 'aac'
+
+getUniqueClassName.reset()
+
+getUniqueClassName()
+// 'a'
+```
+
+### 答案
+
+保存一个公共的数字记录当前的字符串
+
+```ts
+const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+let id: number = 0;
+
+function getUniqueClassName(): string {
+  let className = '';
+  let num = id++;
+
+  while (num >= 0) {
+    className = chars[num % chars.length] + className;
+    num = Math.floor(num / chars.length) - 1;
+  }
+  return className;
+}
+
+getUniqueClassName.reset = function() {
+  id = 0;
+}
+```
+
+
+
+## [154. Two-way binding](https://bigfrontend.dev/problem/two-way-binding)
+
+### 题目
+
+Let's do some simple two-way binding.
+
+Please create a function `model(state, element)`, to bind `state.value` to the HTMLInputElement `element`.
+
+```js
+const input = document.createElement('input')
+const state = { value: 'BFE' }
+model(state, input)
+
+console.log(input.value) // 'BFE'
+state.value = 'dev'
+console.log(input.value) // 'dev'
+input.value = 'BFE.dev'
+input.dispatchEvent(new Event('change'))
+console.log(state.value) // 'BFE.dev'
+```
+
+### 答案
+
+使用Object.defineProperty劫持属性
+
+```ts
+function model(state: {value: string}, element: HTMLInputElement) {
+  element.value = state.value;
+  Object.defineProperty(state, "value", {
+    get: () => element.value,
+    set: (value) => element.value = value
+  });
+}
+```
+
+
+
+## [155. create a count function](https://bigfrontend.dev/problem/count-function)
+
+### 题目
+
+Please create a function `count()`, when called it should return how many times it has been called, `count.reset()` should also implemented.
+
+```js
+count() // 1
+count() // 2
+count() // 3
+
+count.reset()
+
+count() // 1
+count() // 2
+count() // 3
+```
+
+Related Problems
+
+[148. create a counter object ](https://bigfrontend.dev/problem/create-a-counter-object)
+
+### 答案
+
+IIFE
+
+```ts
+const count = (() => {
+  let num: number = 0;
+  const func = () => ++num;
+  func.reset = () => num = 0;
+  return func;
+})();
+```
+
+
+
+## [156. implement `_.set()`](https://bigfrontend.dev/problem/lodash-set)
+
+### 题目
+
+[_.set(object, path, value)](https://lodash.com/docs/4.17.15#set) is a handy method to updating an object without checking the property existence.
+
+Can you create your own `set()`?
+
+```js
+const obj = {
+  a: {
+    b: {
+      c: [1,2,3]
+    }
+  }
+}
+set(obj, 'a.b.c', 'BFE')
+console.log(obj.a.b.c) // "BFE"
+
+set(obj, 'a.b.c.0', 'BFE')
+console.log(obj.a.b.c[0]) // "BFE"
+
+set(obj, 'a.b.c[1]', 'BFE')
+console.log(obj.a.b.c[1]) // "BFE"
+
+set(obj, ['a', 'b', 'c', '2'], 'BFE')
+console.log(obj.a.b.c[2]) // "BFE"
+
+set(obj, 'a.b.c[3]', 'BFE')
+console.log(obj.a.b.c[3]) // "BFE"
+
+set(obj, 'a.c.d[0]', 'BFE')
+// valid digits treated as array elements
+console.log(obj.a.c.d[0]) // "BFE"
+
+set(obj, 'a.c.d.01', 'BFE')
+// invalid digits treated as property string
+console.log(obj.a.c.d['01']) // "BFE"
+```
+
+Related Problems
+
+[85. implement `_.get()` ](https://bigfrontend.dev/problem/implement-lodash-get)
+
+### 答案
+
+分割表达式
+
+```ts
+function set<T extends object>(obj: T, path: string | string[], value: any) {
+  const keys = Array.isArray(path) ? path : path.split(/[.\[\]]/g).filter(Boolean);
+  while (keys.length > 1) {
+    const key = keys.shift();
+    if (!(obj as any)[key!]) {
+      const nextKey = keys[0];
+      (obj as any)[key!] = (+nextKey).toString() === nextKey ? [] : {};
+    }
+    obj = (obj as any)[key!];
+  }
+  (obj as any)[keys[0]] = value;
+}
+```
+
+
+
+## [157. semver compare](https://bigfrontend.dev/problem/semver-compare)
+
+### 题目
+
+Please implement a function to compare 2 [semver](https://semver.org/) strings.
+
+```js
+compare('12.1.0', '12.0.9')
+// 1, meaning first one is greater
+
+compare('12.1.0', '12.1.2')
+// -1, meaning latter one is greater
+
+compare('5.0.1', '5.0.1')
+// 0, meaning they are equal.
+```
+
+### 答案
+
+分割字符串
+
+```ts
+const getVersion = (str: string): Array<number> => str.split(".").map(Number);
+
+function compare(v1: string, v2: string): 0 | 1 | -1 {
+  const version1 = getVersion(v1);
+  const version2 = getVersion(v2);
+  for (let i = 0; i < 3; i++) {
+    if (version1[i]> version2[i]) return 1;
+    if (version1[i] < version2[i]) return -1;
+  }
+  return 0;
+}
+```
+
+
+
+## [158. Previous Left Sibling](https://bigfrontend.dev/problem/previous-left-sibling)
+
+### 题目
+
+Given a DOM tree and a target element, please return the **previous left sibling**.
+
+![img](https://cdn.bfe.dev/bfe/img/2a737BvrqUaK1F9YnxrD1JkYV58y8Le8_1063x546_1621897998092.png)
+
+Like above, the previous left sibling of green `<a/>` is the blue `<button/>`. Notice that **they don't necessarily have the same parent element.**
+
+If no left sibling, then return `null`.
+
+What is time & space cost of your solution ?
+
+### 答案
+
+BFS
+
+```ts
+function previousLeftSibling (root: Element, target: Element): Element | null {
+  const queue: Array<Element> = [root];
+  while (queue.length) {
+    const n = queue.length;
+    let prev = null;
+
+    for (let i = 0; i < n; i++) {
+      const curr = queue.shift()!;
+      if (curr === target) return prev;
+
+      queue.push(...curr.children);
+      prev = curr;
+    }
+  }
+
+  return null;
+}
+```
+
+
+
+## [159. implement promisify()](https://bigfrontend.dev/problem/promisify)
+
+### 题目
+
+Let's take a look at following error-first callback.
+
+```js
+const callback = (error, data) => {
+  if (error) {
+    // handle the error
+  } else {
+    // handle the data
+  }
+}
+```
+
+Now think about async functions that takes above error-first callback as last argument.
+
+```js
+const func = (arg1, arg2, callback) => {
+  // some async logic
+  if (hasError) {
+    callback(someError)
+  } else {
+    callback(null, someData)
+  }
+}
+```
+
+You see what needs to be done now. Please **implement promisify()** to make the code better.
+
+```js
+const promisedFunc = promisify(func)
+
+promisedFunc().then((data) => {
+  // handles data
+}).catch((error) => {
+  // handles error
+})
+```
+
+### 答案
+
+```ts
+/**
+ * @param {(...args) => void} func
+ * @returns {(...args) => Promise<any}
+ */
+function promisify(func) {
+  return function(...args) {
+    return new Promise((resolve, reject) => {
+      func.call(this, ...args, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      })
+    });
+  }
+}
+```
+
+
+
+## [160. implement atob()](https://bigfrontend.dev/problem/implement-atob)
+
+### 题目
+
+[atob()](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/atob) decodes a string of data which has been encoded using Base64 encoding.
+
+Please implement your own `myAtob()`
+
+```js
+myAtob('QkZFLmRldg==') // 'BFE.dev'
+myAtob('Q') // Error
+```
+
+Please don't use `atob()` directly in your code.
+
+Related Problems
+
+[141. implement btoa()](https://bigfrontend.dev/problem/implement-btoa)
+
+### 答案
+
+与之前的相反
+
+```ts
+function myAtob(encoded: string): string {
+ if (encoded.length % 4 !== 0) {
+    throw new Error();
+  }
+
+  // https://datatracker.ietf.org/doc/html/rfc4648#section-4
+  const b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+  const chunks = encoded.match(/.{1,4}/g) || [];
+
+  let binaryStr = "";
+
+  for (const chunk of chunks) {
+    const paddingCount = (chunk.match(/=/g) || []).length;
+    if (paddingCount > 2) {
+      throw new Error(); // can't convert 6 bits back to ascii char
+    }
+    if (paddingCount === 2) {
+      const chunkChars = chunk.split('');
+      const firstPaddingIdx = chunkChars.indexOf('=');
+      const secondPaddingIdx = chunkChars.lastIndexOf('=');
+      if (secondPaddingIdx - firstPaddingIdx > 1) {
+        throw new Error(); // padding is not at the end of the string
+      }
+    }
+    let chunkBinary = chunk.split('').map(c => b64.indexOf(c).toString(2).padStart(6, '0')).join('');
+
+    // When decoding Base64 text, four characters are typically converted back to three bytes. 
+    // The only exceptions are when padding characters exist.
+    // A single = indicates that the four characters will decode to only two bytes, while == indicates that the four characters will decode to only a single byte. 
+    if (paddingCount === 1) {
+      chunkBinary = chunkBinary.substring(0, 16);
+    }
+
+    if (paddingCount === 2) {
+      chunkBinary = chunkBinary.substring(0, 8);
+    }
+
+    binaryStr += chunkBinary;
+  }
+
+  const chunkedBinary = binaryStr.match(/.{1,8}/g) || [];
+
+  let result = '';
+
+  for (const chunk of chunkedBinary) {
+    const charValue = parseInt(chunk, 2);
+    result += String.fromCharCode(charValue);
+  }
+
+
+  return result;
+}
+```
+
+
+
+## [161. toBe() or not.toBe()](https://bigfrontend.dev/problem/jest-assertion)
+
+### 题目
+
+Here are some simple [Jest](https://jestjs.io/docs/expect#expectvalue) test code.
+
+```js
+expect(3).toBe(3) // ✅
+expect(4).toBe(3) // ❌
+```
+
+We can reverse it with `not`.
+
+```js
+expect(3).not.toBe(3) // ❌
+expect(4).not.toBe(3) // ✅
+```
+
+Please implement `myExpect()` to support `toBe()` and also `not`.
+
+### 答案
+
+利用Object.is
+
+```ts
+interface Matcher {
+  toBe(data: any): void
+}
+
+function myExpect(input: any): Matcher & {not: Matcher} {
+  const toBe = (data: any, isNot: boolean = false) => {
+    const isEqual = Object.is(data, input);
+
+    if (isNot ? !isEqual : isEqual) {
+      return true;
+    } else {
+      throw new Error('');
+    }
+  }
+
+  return {
+    toBe,
+    not: {
+      toBe(data) {
+        return toBe(data, true);
+      }
+    }
+  }
+}
+```
+
+
+
+## [162. find the single integer](https://bigfrontend.dev/problem/find-the-single-integer)
+
+### 题目
+
+Given an array of integers, all integers appear twice except one integer, could you quickly target it ?
+
+```ts
+const arr = [10, 2, 2 , 1, 0, 0, 10]
+findSingle(arr) // 1
+```
+
+What is time & space cost of your approach ? Could you do better ?
+
+### 答案
+
+异或
+
+```ts
+function findSingle(arr: number[]): number {
+  return arr.reduce((pre, cur) => pre ^ cur);
+}
+```
+
+
+
+## [163. integer to roman numerals](https://bigfrontend.dev/problem/integer-to-roman)
+
+### 题目
+
+> This is reverse of [133. roman numerals to integer](https://bigfrontend.dev/problem/roman-numerals-to-integer)
+
+[Roman numerals](https://en.wikipedia.org/wiki/Roman_numerals#Standard_form) are represented by combinations of following seven symbols, each with a fixed integer value.
+
+| Symbol |  I   |  V   |  X   |  L   |  C   |  D   |  M   |
+| :----: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| Value  |  1   |  5   |  10  |  50  | 100  | 500  | 1000 |
+
+For [Standard form](https://en.wikipedia.org/wiki/Roman_numerals#Standard_form), subtractive notation is used, meaning 4 is `IV` rather than `IIII`, 9 is `IX` rather than `VIIII`. Same rule applies to 40(`XL`) and 900(`CM`) .etc.
+
+Simply speaking, the roman numerals in standard form follow these rules.
+
+1. symbols are listed from highest to lowest, from left to right
+2. from left to right, if the next symbol value is bigger than current one, it means subtracting, otherwise adding.
+
+Please implement `integerToRoman()`. The input are all integers within valid range.
+
+```js
+integerToRoman(123)
+// 'CXXIII'
+
+integerToRoman(1999)
+// 'MCMXCIX'
+
+integerToRoman(3420)
+// 'MMMCDXX'
+```
+
+### 答案
+
+迭代
+
+```ts
+const dict = {
+  'M': 1000,
+  'CM': 900,
+  'D': 500,
+  'CD': 400,
+  'C': 100,
+  'XC': 90,
+  'L': 50,
+  'XL': 40,
+  'X': 10,
+  'IX': 9,
+  'V': 5,
+  'IV': 4,
+  'I': 1,
+};
+
+function integerToRoman(num: number): string {
+  let res: string = "";
+
+  Object.keys(dict).forEach((key) => {
+    while (num >= (dict as any)[key]) {
+      res += key;
+      num = num - (dict as any)[key];
+    }
+  })
+  return res;
+}
+```
+
+
+
+## [164. implement Immer produce()](https://bigfrontend.dev/problem/immerjs)
+
+### 题目
+
+In [12. implement Immutability helper](https://bigfrontend.dev/problem/implement-Immutability-helper), we are asked to implement immutability helpers.
+
+These helpers requires extra effort for us to remember how to use them, while [Immer](https://immerjs.github.io/immer/produce) takes another approach which might be easier to use.
+
+For example, we have a base state as below.
+
+```js
+const state = [
+  {
+    name: 'BFE',
+  },
+  {
+    name: '.',
+  }
+]
+```
+
+We can use `produce()` to patch our modification and get a new state.
+
+```js
+const newState = produce(state, draft => {
+  draft.push({name: 'dev'})
+  draft[0].name = 'bigfrontend'
+  draft[1].name = '.' // set with the same value
+})
+```
+
+Unchanged parts are not cloned.
+
+```js
+expect(newState).not.toBe(state);
+expect(newState).toEqual(
+  [
+    {
+      name: 'bigfrontend',
+    },
+    {
+      name: '.',
+    },
+    {
+      name: 'dev'
+    }
+  ]
+);
+expect(newState[0]).not.toBe(state[0])
+expect(newState[1]).toBe(state[1])
+expect(newState[2]).not.toBe(state[2])
+```
+
+**Please implement your produce()**.
+
+1. This is not to recreate Immer, test cases only cover the basic usage.
+2. You only need to support basic usage on plain object and array, things like Map/Set, Auto freezing .etc are out of scope.
+3. You need to make sure unchanged parts are not cloned.
+
+### 答案
 
