@@ -10,7 +10,7 @@
     "update": "sh update.sh"
   },
   "hexo": {
-    "version": "5.4.0"
+    "version": "5.2.0"
   },
   "dependencies": {
     "gulp": "^4.0.2",
